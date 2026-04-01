@@ -21,6 +21,7 @@
 #include "dmx/DMXRoomNodeBase.hpp"
 #include "dmx/MovingHeadRoomNode.hpp"
 #include "dmx/DimmerRoomNode.hpp"
+#include "dmx/FixtureDescriptionImporter.hpp"
 
 #include "dmx/DMXPro.hpp"
 
@@ -35,7 +36,7 @@ namespace act {
 			static	std::shared_ptr<DMXManager> create() { return std::make_shared<DMXManager>(); };
 
 			void	setup() override;
-			// void	update() override;
+			void	update() override;
 			// void	draw() override;
 			void	cleanUp() override;
 
@@ -63,11 +64,14 @@ namespace act {
 			void changeInterface(std::string interfaceName);
 
 			void loadFixtures();
+			void importFixtureCallback(ci::Json);
 			void saveFixtures();
 			int getFixtureIndexByName(std::string fixtureName);
 			std::vector<ci::Json>				m_fixtureDescriptions;
 			std::vector<std::string>			m_fixtureNames;
 			int									m_selectedFixture;
+
+			FixtureDescriptionImporterRef           m_fixtureDescriptionImporter;
 
 			void refreshLists() override;
 			std::vector<std::string>			m_availableDeviceNames;
