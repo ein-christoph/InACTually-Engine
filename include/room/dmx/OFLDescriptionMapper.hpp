@@ -81,7 +81,8 @@ namespace act {
 			OpenFixtureLibaray m_ofl;
 
 			std::vector<std::string> getInternalParameterMapping(ci::Json internalDescription);
-			int convertDegStrToInt(std::string degStr);
+			int convertDegStrToInt(std::string degStr, std::string decimalpoint = ".");
+
 
 			// Takes fineChannelAliases array and resolves them to dmx Offset in the channels List of the given mode
 			// Returns map of fine channel alias with corresponding int or -1 if fineChannelAlias could not be resolved
@@ -111,6 +112,7 @@ namespace act {
 			ci::Json translateIntensityCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
 			ci::Json translatePanCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
 			ci::Json translateTiltCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
+			ci::Json translateZoomCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
 
 		}; using OFLDescriptionMapperRef = std::shared_ptr<OFLDescriptionMapper>;
 	}

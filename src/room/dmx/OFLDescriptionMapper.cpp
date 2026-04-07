@@ -331,7 +331,7 @@ std::vector<std::string> act::room::OFLDescriptionMapper::getInternalParameterMa
 	return lookup;
 }
 
-int act::room::OFLDescriptionMapper::convertDegStrToInt(std::string degStr)
+int act::room::OFLDescriptionMapper::convertDegStrToInt(std::string degStr, std::string decimalpoint)
 {
 	size_t degPos = degStr.find("deg");
 	
@@ -340,7 +340,10 @@ int act::room::OFLDescriptionMapper::convertDegStrToInt(std::string degStr)
 
 	degStr.erase(degStr.length() - 3, 3);
 
-	return std::stoi(degStr);
+	if (degStr.find(decimalpoint) != std::string::npos)
+		return static_cast<int>(std::round(std::stof(degStr)));
+	else
+		return std::stoi(degStr);
 }
 
 std::map<std::string, int> act::room::OFLDescriptionMapper::resolveFineChannels(ci::Json const& fullExtDesc, int modeIndex, ci::Json const& extChannelDesc, int maxAliases)
@@ -408,6 +411,8 @@ ci::Json act::room::OFLDescriptionMapper::translateChannelCapability(ci::Json co
 			return translatePanCapability(internalDesc, extCapabilityDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex);
 		else if (capabilityType == "Tilt")
 			return translateTiltCapability(internalDesc, extCapabilityDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex);
+		else if (capabilityType == "Zoom")
+			return translateZoomCapability(internalDesc, extCapabilityDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex);
 		else
 			CI_LOG_W("Can not translate capability of type '" << capabilityType << "' because no mapping exists!");
 	}
@@ -492,6 +497,43 @@ ci::Json act::room::OFLDescriptionMapper::translateTiltCapability(ci::Json const
 	auto const& fineChannelMap = resolveFineChannels(fullExtDesc, modeIndex, extChannelDesc, 1);
 	if (fineChannelMap.size() == 1 && fineChannelMap.begin()->second >= 0)
 		descPatch["mapping"]["fineTilt"] = fineChannelMap.begin()->second + 1; //Add +1 because inACTually starts at 1 but channels index starts at 0
+
+	return descPatch;
+}
+
+ci::Json act::room::OFLDescriptionMapper::translateZoomCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex)
+{
+	ci::Json descPatch = ci::Json::object();
+
+	if (internalDesc.contains("mapping") && internalDesc["mapping"].contains("zoom"))
+		throw std::invalid_argument("zoom already defined in mapping!");
+
+	if (!extCapabilityDesc.contains("angleStart") || !extCapabilityDesc["angleStart"].is_string())
+		throw std::exception("No angleStart in extCapabilityDesc!");
+	int angleStart = convertDegStrToInt(extCapabilityDesc["angleStart"]);
+
+	if (!extCapabilityDesc.contains("angleEnd") || !extCapabilityDesc["angleEnd"].is_string())
+		throw std::exception("No angleEnd in extCapabilityDesc!");
+	int angleEnd = convertDegStrToInt(extCapabilityDesc["angleEnd"]);
+
+	if (angleStart > angleEnd)
+	{
+		descPatch["beamAngleMax"] = angleStart;
+		descPatch["beamAngleMin"] = angleEnd;
+	}
+	else 
+	{
+		descPatch["beamAngleMax"] = angleEnd;
+		descPatch["beamAngleMin"] = angleStart;
+	}
+
+	descPatch["beamAngle"] = descPatch["beamAngleMin"];
+
+	descPatch["mapping"]["zoom"] = dmxOffset;
+
+	auto const& fineChannelMap = resolveFineChannels(fullExtDesc, modeIndex, extChannelDesc, 1);
+	if (fineChannelMap.size() == 1 && fineChannelMap.begin()->second >= 0)
+		descPatch["mapping"]["fineZoom"] = fineChannelMap.begin()->second + 1; //Add +1 because inACTually starts at 1 but channels index starts at 0
 
 	return descPatch;
 }
