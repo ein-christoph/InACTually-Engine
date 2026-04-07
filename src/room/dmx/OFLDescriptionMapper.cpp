@@ -413,6 +413,8 @@ ci::Json act::room::OFLDescriptionMapper::translateChannelCapability(ci::Json co
 			return translateTiltCapability(internalDesc, extCapabilityDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex);
 		else if (capabilityType == "Zoom")
 			return translateZoomCapability(internalDesc, extCapabilityDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex);
+		else if (capabilityType == "ColorIntensity")
+			return translateColorIntensityCapability(internalDesc, extCapabilityDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex);
 		else
 			CI_LOG_W("Can not translate capability of type '" << capabilityType << "' because no mapping exists!");
 	}
@@ -534,6 +536,40 @@ ci::Json act::room::OFLDescriptionMapper::translateZoomCapability(ci::Json const
 	auto const& fineChannelMap = resolveFineChannels(fullExtDesc, modeIndex, extChannelDesc, 1);
 	if (fineChannelMap.size() == 1 && fineChannelMap.begin()->second >= 0)
 		descPatch["mapping"]["fineZoom"] = fineChannelMap.begin()->second + 1; //Add +1 because inACTually starts at 1 but channels index starts at 0
+
+	return descPatch;
+}
+
+ci::Json act::room::OFLDescriptionMapper::translateColorIntensityCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex)
+{
+	ci::Json descPatch = ci::Json::object();
+
+	if (!extCapabilityDesc.contains("color") || !extCapabilityDesc["color"].is_string())
+		throw std::invalid_argument("Capability Description does not contain color entry or color entry is not a string!");
+
+	// Translation from OFL Key to internal key
+	std::map<std::string, std::string> translationLookup = { {"Red", "R"}
+															,{"Green", "G"}
+															,{"Blue", "B"}
+															,{"Amber", "A"}
+															,{"White", "W"}
+															,{"UV", "UV"}
+															};
+
+	if (translationLookup.find(extCapabilityDesc["color"]) != translationLookup.end())
+	{
+		std::string color = translationLookup.at(extCapabilityDesc["color"]);
+		descPatch["mapping"][color] = dmxOffset;
+
+		auto const& fineChannelMap = resolveFineChannels(fullExtDesc, modeIndex, extChannelDesc, 1);
+		if (fineChannelMap.size() == 1 && fineChannelMap.begin()->second >= 0)
+			descPatch["mapping"]["fine" + color] = fineChannelMap.begin()->second + 1; //Add +1 because inACTually starts at 1 but channels index starts at 0
+	}
+	else
+		CI_LOG_W("Color type '" << extCapabilityDesc["color"] << "' is not supported.");
+
+
+	// Not resolving brightnessStart and brightnessEnd because InACTually currently can not use them
 
 	return descPatch;
 }
