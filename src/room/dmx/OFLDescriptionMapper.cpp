@@ -15,6 +15,7 @@
 
 #include "roompch.hpp"
 #include "dmx/OFLDescriptionMapper.hpp"
+#include "utils/RGBAWHelper.h"
 
 act::room::OFLDescriptionMapper::OFLDescriptionMapper()
 {
@@ -252,19 +253,13 @@ bool act::room::OFLDescriptionMapper::translateOFLtoInternal(OFLFixtureDescripti
 				continue;
 			}
 
+			ci::Json internalDescPatch = ci::Json();
+
 			if (externalDesc["availableChannels"][channelKey].contains("capability"))
 			{
 				try
 				{
-					ci::Json const& internalDescPatch = translateChannelCapability(modeRef->internalDescription, externalDesc["availableChannels"][channelKey]["capability"], externalDesc["availableChannels"][channelKey], externalDesc, dmxOffset + 1,modeIndex);
-					if (!internalDescPatch.is_null())
-						modeRef->internalDescription.merge_patch(internalDescPatch);
-					else
-					{
-						// If the jsonpatch is null merge_patch will clear the object which we certainly don't want to do
-						// This can happen if the empty patch is initialized with ci::Json() instead of ci::Json::object()
-						CI_LOG_E("Json Patch is Null! This would destroy the internalDescription and is therefore ignored! channelkey:" << channelKey);
-					}
+					internalDescPatch = translateChannelCapability(modeRef->internalDescription, externalDesc["availableChannels"][channelKey]["capability"], externalDesc["availableChannels"][channelKey], externalDesc, dmxOffset + 1,modeIndex);
 				}
 				catch (const std::exception& e)
 				{
@@ -273,14 +268,30 @@ bool act::room::OFLDescriptionMapper::translateOFLtoInternal(OFLFixtureDescripti
 			}
 			else if (externalDesc["availableChannels"][channelKey].contains("capabilities"))
 			{
-				CI_LOG_W("Channel key '" << channelKey << "' contains list of capabilities! Capabilitie lists are not yet supported, skipping channel.");
-				continue;
+				try
+				{
+					internalDescPatch = translateCapabilitiesChannel(modeRef->internalDescription, externalDesc["availableChannels"][channelKey]["capabilities"], externalDesc["availableChannels"][channelKey], externalDesc, dmxOffset + 1, modeIndex, channelKey);
+				}
+				catch (const std::exception& e)
+				{
+					CI_LOG_W("Could not translate capabilities of channel '" << channelKey << "' :" << e.what());
+				}
 			}
 			else
 			{
 				CI_LOG_W("Channel key '" << channelKey << "' contains neither capability object or capabilities list! Skipping channel.");
 				continue;
 			}
+
+			if (!internalDescPatch.is_null())
+				modeRef->internalDescription.merge_patch(internalDescPatch);
+			else
+			{
+				// If the jsonpatch is null merge_patch will clear the object which we certainly don't want to do
+				// This can happen if the empty patch is initialized with ci::Json() instead of ci::Json::object()
+				CI_LOG_E("Json Patch is Null! This would destroy the internalDescription and is therefore ignored! channelkey:" << channelKey);
+			}
+
 		}
 
 		try
@@ -344,6 +355,22 @@ int act::room::OFLDescriptionMapper::convertDegStrToInt(std::string degStr, std:
 		return static_cast<int>(std::round(std::stof(degStr)));
 	else
 		return std::stoi(degStr);
+}
+
+int act::room::OFLDescriptionMapper::isInJsonObjArray(std::string key, std::string value, ci::Json array)
+{
+	if (!array.is_array()) return -1;
+
+	bool matchKey = !key.empty();
+	bool matchValue = !value.empty();
+
+	for (int idx = 0; idx < array.size(); idx++)
+	{
+		for (auto const& [elemKey, elemValue] : array[idx].items())
+			if ((matchKey && key == elemKey) || (matchValue && value == elemValue)) return idx;
+	}
+
+	return -1;
 }
 
 std::map<std::string, int> act::room::OFLDescriptionMapper::resolveFineChannels(ci::Json const& fullExtDesc, int modeIndex, ci::Json const& extChannelDesc, int maxAliases)
@@ -424,6 +451,16 @@ ci::Json act::room::OFLDescriptionMapper::translateChannelCapability(ci::Json co
 	}
 
 	return ci::Json::object();
+}
+
+ci::Json act::room::OFLDescriptionMapper::translateCapabilitiesChannel(ci::Json const& internalDesc, ci::Json const& extCapabilitiesDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName)
+{
+	if (isColorWheel(channelName, extChannelDesc, fullExtDesc, dmxOffset, modeIndex))
+		return translateColorWheelCapability(internalDesc, extCapabilitiesDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex, channelName);
+	else
+		CI_LOG_W("Can not translate capabilities of channel '" << channelName << "' because no mapping exists!");
+
+	return ci::Json();
 }
 
 ci::Json act::room::OFLDescriptionMapper::translateIntensityCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex)
@@ -570,6 +607,141 @@ ci::Json act::room::OFLDescriptionMapper::translateColorIntensityCapability(ci::
 
 
 	// Not resolving brightnessStart and brightnessEnd because InACTually currently can not use them
+
+	return descPatch;
+}
+
+// Checks if there is a capability with array of type wheelSlot and a corresponding wheel description with slots of type color
+bool act::room::OFLDescriptionMapper::isColorWheel(std::string const& channelName, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex)
+{
+	if (!extChannelDesc.contains("capabilities") && !extChannelDesc["capabilities"].is_array())
+		return false; // A Color Wheeel has to have an array of WheelSlot capabilities
+
+	int idx = isInJsonObjArray("type", "WheelSlot", extChannelDesc["capabilities"]);
+
+	if (idx < 0)
+		return false; // No WheelSlot in capabilities
+
+	// WheelName can be channel name or stated explicitly in the description
+	std::string WheelName = (extChannelDesc["capabilities"][idx].contains("wheel") && extChannelDesc["capabilities"][idx]["wheel"].is_string()) ? extChannelDesc["capabilities"][idx]["wheel"].get<std::string>() : channelName;
+
+	if (!fullExtDesc.contains("wheels") || !fullExtDesc["wheels"].contains(WheelName) || !fullExtDesc["wheels"][WheelName].contains("slots") || !fullExtDesc["wheels"][WheelName]["slots"].is_array())
+		return false; // Color wheels always have a seperate description holding the information about the colors
+
+	if(isInJsonObjArray("type", "Color", fullExtDesc["wheels"][WheelName]["slots"]) < 0)
+		return false; // if no slots of the wheel holds color it is not a color wheel
+	
+	return true; // Otherwise it is a color wheel
+}
+
+ci::Json act::room::OFLDescriptionMapper::translateColorWheelCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName)
+{
+
+	if (!extChannelDesc.contains("capabilities") ||  !extChannelDesc["capabilities"].is_array())
+		throw std::invalid_argument("A Color Wheeel has to have an array of WheelSlot capabilities");
+
+	if (!fullExtDesc.contains("wheels") || !fullExtDesc["wheels"].is_object())
+		throw std::invalid_argument("For a Color Wheel a wheels object has to be present in the external description");
+
+	if (internalDesc.contains("colorMap") || (internalDesc.contains("mapping") && internalDesc["mapping"].contains("color")))
+		throw std::invalid_argument("internalDesc already contains definition for a color wheel. Currently only one color wheel is supported.");
+
+	ci::Json descPatch = ci::Json::object();
+
+	ci::Json colorMap = ci::Json::object();
+	colorMap["colors"] = ci::Json::array();
+
+	int amount = 0;
+	int start = -1;
+	int end = -1;
+
+	for (auto const& [idx, capability] : extChannelDesc["capabilities"].items())
+	{
+		if (!capability.contains("type") || !capability["type"].is_string())
+		{
+			CI_LOG_W("Found no or non string type in capability of color wheel translation! Skipping capability.");
+			continue;
+		}
+		if(capability["type"] != "WheelSlot")
+		{
+			CI_LOG_W("Found non Wheel Slot Type '" << capability["type"] << "' in color wheel translation! Skipping capability");
+			continue;
+		}
+
+		std::string WheelName = (capability.contains("wheel") && capability["wheel"].is_string()) ? capability["wheel"].get<std::string>() : channelName;
+
+		if (!fullExtDesc["wheels"].contains(WheelName))
+			throw std::invalid_argument("Wheel with name '" + WheelName + "' could not be found in wheels object.");
+
+		if (!capability.contains("dmxRange") || !capability["dmxRange"].is_array() || capability["dmxRange"].size() != 2
+			|| !capability["dmxRange"][0].is_number() || !capability["dmxRange"][1].is_number())
+			throw std::invalid_argument("Malformed dmxRange in capability!");
+
+		int dmxValue = std::round((capability["dmxRange"][0].get<int>() + capability["dmxRange"][1].get<int>()) * 0.5);
+
+		if (!capability.contains("slotNumber") || !capability["slotNumber"].is_number())
+		{
+			CI_LOG_W("Color Wheel translation WheelSlot at position "<<idx<<" does not specify slotNumbers! Half frames currently not supported, skipping slot.");
+			continue;
+		}
+
+		int slotIdx = capability["slotNumber"] - 1; //SlotNumber starts at 1 but is referencing an array
+
+		if (!fullExtDesc["wheels"][WheelName].is_object() || !fullExtDesc["wheels"][WheelName].contains("slots") || !fullExtDesc["wheels"][WheelName]["slots"].is_array())
+			throw std::invalid_argument("Malformed wheels wheel '" + WheelName + "'");
+
+		if (slotIdx >= fullExtDesc["wheels"][WheelName]["slots"].size())
+			throw std::invalid_argument("Channel '" + channelName + "' specifies slotNumber greater that available slots in wheels description!");
+
+		auto const& wheelSlotDesc = fullExtDesc["wheels"][WheelName]["slots"][slotIdx];
+
+		if (!wheelSlotDesc.contains("type") || !wheelSlotDesc["type"].is_string() || wheelSlotDesc["type"] != "Color")
+		{
+			CI_LOG_W("Channel '" << channelName << "' with wheel '" << WheelName << "' at slotNumber '" << slotIdx << "' is not of type 'Color'! Skipping slot.");
+			continue;
+		}
+
+		if (!wheelSlotDesc.contains("name") || !wheelSlotDesc["name"].is_string())
+		{
+			CI_LOG_W("Channel '" << channelName << "' with wheel '" << WheelName << "' at slotNumber '" << slotIdx << "' does not contain a name! Skipping slot.");
+			continue;
+		}
+
+		if (!wheelSlotDesc.contains("colors") || !wheelSlotDesc["colors"].is_array() || wheelSlotDesc["colors"].size() < 1)
+		{
+			CI_LOG_W("Channel '" << channelName << "' with wheel '" << WheelName << "' at slotNumber '" << slotIdx << "' does not contain a or an empty colors array! Skipping slot.");
+			continue;
+		}
+
+		auto const& colorHex = wheelSlotDesc["colors"][0].get<std::string>();
+		ci::Color const& colorRGB = RGBAWHelper::HEXtoRGB(colorHex);
+
+		ci::Json colorObj = ci::Json::object();
+		colorObj["value"] = dmxValue;
+		colorObj["label"] = wheelSlotDesc["name"];
+		colorObj["hex"] = colorHex;
+		colorObj["R"] = (uint8_t)(colorRGB.r * 255);
+		colorObj["G"] = (uint8_t)(colorRGB.g * 255);
+		colorObj["B"] = (uint8_t)(colorRGB.b * 255);
+
+		colorMap["colors"].push_back(colorObj);
+		amount++;
+
+		if (start == -1 || dmxValue < start)
+			start = dmxValue;
+		if (dmxValue > end)
+			end = dmxValue;
+	}
+
+	if (amount < 1 || start < 0 || end < 0 || start > end)
+		throw std::exception("Amount, start and/or end are not plausible after translation!");
+
+	colorMap["amount"] = amount;
+	colorMap["start"] = start;
+	colorMap["end"] = end;
+
+	descPatch["colorMap"] = colorMap;
+	descPatch["mapping"]["color"] = dmxOffset;
 
 	return descPatch;
 }

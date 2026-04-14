@@ -83,6 +83,10 @@ namespace act {
 			std::vector<std::string> getInternalParameterMapping(ci::Json internalDescription);
 			int convertDegStrToInt(std::string degStr, std::string decimalpoint = ".");
 
+			// Checks if array of objects contains the key with the value or just the value / key if one is empty
+			// returns index or -1 if nothing is found
+			int isInJsonObjArray(std::string key, std::string value, ci::Json array);
+
 
 			// Takes fineChannelAliases array and resolves them to dmx Offset in the channels List of the given mode
 			// Returns map of fine channel alias with corresponding int or -1 if fineChannelAlias could not be resolved
@@ -99,6 +103,9 @@ namespace act {
 			*/
 			ci::Json translateChannelCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
 
+			// Handles translation of Channels with multiple capabilities
+			ci::Json translateCapabilitiesChannel(ci::Json const& internalDesc, ci::Json const& extCapabilitiesDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName);
+
 			/* Translate methods of the capabilities shold all use the same signature to provide fast access to relevant context information:
 			 * (  ci::Json const& internalDesc		current internal description to which the returned patch can be applied
 			    , ci::Json const& extCapabilityDesc	reference to the capability which should be translated
@@ -114,6 +121,9 @@ namespace act {
 			ci::Json translateTiltCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
 			ci::Json translateZoomCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
 			ci::Json translateColorIntensityCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
+			
+			bool isColorWheel(std::string const& channelName, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
+			ci::Json translateColorWheelCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName);
 
 		}; using OFLDescriptionMapperRef = std::shared_ptr<OFLDescriptionMapper>;
 	}
