@@ -447,6 +447,8 @@ ci::Json act::room::OFLDescriptionMapper::translateChannelCapability(ci::Json co
 			return translateZoomCapability(internalDesc, extCapabilityDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex);
 		else if (capabilityType == "ColorIntensity")
 			return translateColorIntensityCapability(internalDesc, extCapabilityDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex);
+		else if(capabilityType == "PanTiltSpeed")
+			return translatePanTiltSpeedCapability(internalDesc, extCapabilityDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex);
 		else
 			CI_LOG_W("Can not translate capability of type '" << capabilityType << "' because no mapping exists!");
 	}
@@ -612,6 +614,18 @@ ci::Json act::room::OFLDescriptionMapper::translateColorIntensityCapability(ci::
 
 
 	// Not resolving brightnessStart and brightnessEnd because InACTually currently can not use them
+
+	return descPatch;
+}
+
+ci::Json act::room::OFLDescriptionMapper::translatePanTiltSpeedCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex)
+{
+	ci::Json descPatch = ci::Json::object();
+	
+	if (internalDesc.contains("mapping") && internalDesc["mapping"].contains("speed"))
+		throw std::exception("speed already defined in mapping, skipping PanTilTSpeed!");
+	
+	descPatch["mapping"]["speed"] = dmxOffset;
 
 	return descPatch;
 }

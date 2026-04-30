@@ -118,6 +118,7 @@ namespace act {
 			ci::Json translateTiltCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
 			ci::Json translateZoomCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
 			ci::Json translateColorIntensityCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
+			ci::Json translatePanTiltSpeedCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
 			
 			bool isColorWheel(std::string const& channelName, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
 			ci::Json translateColorWheelCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName);
