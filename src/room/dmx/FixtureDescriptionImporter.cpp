@@ -156,6 +156,8 @@ void act::room::FixtureDescriptionImporter::drawOFLImport()
 									m_showImporter = false;
 								}
 
+								bool showMindNotes = false;
+
 								if (ImGui::BeginTable((fixture->name + "Mode Details").c_str(), 3, ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg))
 								{
 
@@ -164,7 +166,7 @@ void act::room::FixtureDescriptionImporter::drawOFLImport()
 									ImGui::TableSetupColumn("InACTually Parameter Name");
 									ImGui::TableHeadersRow();
 
-									std::vector<std::string> const& internelParamsMapping = fixture->modes.at(fixture->selectedMode)->internalParamsMapping;
+									std::vector<act::room::OFLDescriptionMapper::InternalParameterInfo> const& internelParamsMapping = fixture->modes.at(fixture->selectedMode)->internalParamsMapping;
 
 									for (int dmxOffset = 0; dmxOffset < fixture->modes.at(fixture->selectedMode)->channels.size(); dmxOffset++)
 									{
@@ -174,19 +176,39 @@ void act::room::FixtureDescriptionImporter::drawOFLImport()
 										ImGui::TableSetColumnIndex(1);
 										ImGui::Text(fixture->modes.at(fixture->selectedMode)->channels.at(dmxOffset).c_str());
 										ImGui::TableSetColumnIndex(2);
-										if (internelParamsMapping.size() > dmxOffset && !internelParamsMapping.at(dmxOffset).empty())
-											ImGui::Text(internelParamsMapping.at(dmxOffset).c_str());
+										if (internelParamsMapping.size() > dmxOffset && !internelParamsMapping.at(dmxOffset).internalParamName.empty())
+											if (internelParamsMapping.at(dmxOffset).hasNote)
+											{
+												ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), internelParamsMapping.at(dmxOffset).internalParamName.c_str());
+												
+											
+												ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "NOTE:");
+										
+												for (auto const& note : fixture->modes.at(fixture->selectedMode)->internalDescription["notes"]["mapping"][dmxOffset+1])
+												{
+													if (!note.is_string())
+														ImGui::TextColored(ImVec4(1.0f, 8.0f, 0.0f, 1.0f), "Can not display non string note, please refer to the internal fixture description!");
+													else
+														ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), note.get<std::string>().c_str());
+												}
+												showMindNotes = true;
+											}
+											else
+												ImGui::Text(internelParamsMapping.at(dmxOffset).internalParamName.c_str());
 										else
 											ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Not Supported!");
 									}
 
 									ImGui::EndTable();
 
+									if (showMindNotes)
+										ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Yellow colored parameters have notes attached to them. They might not be fully supported!");
+
 									if (ImGui::TreeNode("Internal fixture Description"))
 									{
 										ImGui::Indent(1);
 										std::string const& internalDesc = fixture->modes.at(fixture->selectedMode)->internalDescription.dump(3);
-										ImGui::InputTextMultiline(("Internal Description Of" + fixture->name).c_str(), const_cast<char*>(internalDesc.c_str()), internalDesc.size(), ImVec2(-FLT_MIN, 300), ImGuiInputTextFlags_ReadOnly);
+										ImGui::TextWrapped(internalDesc.c_str());
 										ImGui::TreePop();
 										ImGui::Spacing();
 									}

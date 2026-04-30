@@ -296,7 +296,6 @@ bool act::room::OFLDescriptionMapper::translateOFLtoInternal(OFLFixtureDescripti
 
 		try
 		{
-
 			modeRef->internalParamsMapping = getInternalParameterMapping(modeRef->internalDescription);
 		}
 		catch (const std::exception& e)
@@ -307,7 +306,7 @@ bool act::room::OFLDescriptionMapper::translateOFLtoInternal(OFLFixtureDescripti
 	return true;
 }
 
-std::vector<std::string> act::room::OFLDescriptionMapper::getInternalParameterMapping(ci::Json internalDescription)
+std::vector<act::room::OFLDescriptionMapper::InternalParameterInfo> act::room::OFLDescriptionMapper::getInternalParameterMapping(ci::Json internalDescription)
 {
 	if (!internalDescription.contains("mapping") || !internalDescription["mapping"].is_object())
 		throw std::invalid_argument("internalDescription has to contain a mapping object!");
@@ -318,23 +317,29 @@ std::vector<std::string> act::room::OFLDescriptionMapper::getInternalParameterMa
 		throw std::invalid_argument("'channel' of internal description must not be negative!");
 
 	int numberOfChannels = internalDescription["channel"] + 1;//Channel index starts at 1
-	std::vector<std::string> lookup(numberOfChannels);
+	std::vector<InternalParameterInfo> lookup(numberOfChannels);
 
 	for (auto const& [parameter, dmxOffset] : internalDescription["mapping"].items())
 	{
 		if (dmxOffset > lookup.size() - 1)
 			throw std::exception("Found dmxOffset greater than number of channels!");
 
-		if (dmxOffset.is_number())
-			if (lookup.at(dmxOffset).empty())
-				lookup[dmxOffset] = parameter;
+		if (dmxOffset.is_number()) {
+			if (lookup.at(dmxOffset).internalParamName.empty())
+				lookup[dmxOffset].internalParamName = parameter;
 			else
-				lookup.at(dmxOffset).append(", " + parameter);
+				lookup.at(dmxOffset).internalParamName.append(", " + parameter);
+
+			// Check if any note on that object exists
+			lookup.at(dmxOffset).hasNote = internalDescription.contains("notes")
+				&& dmxOffset < internalDescription["notes"]["mapping"].size()
+				&& !internalDescription["notes"]["mapping"].at(dmxOffset.get<int>()).is_null();
+		}
 		else
 			CI_LOG_W("Found dmxOffset which is not number in internal mapping! parameter:"<<parameter<<" dmxOffset type"<<dmxOffset.type_name()<<" Channel will be skipped in internalParameter lookup.");
 	}
 
-	if (!lookup.at(0).empty())
+	if (!lookup.at(0).internalParamName.empty())
 		throw std::exception("internal params mapping lookup should start at index 1 but has a value at index 0");
 
 	lookup.erase(lookup.begin()); // Shift vector one to the left because internal channel key starts at 1 but dmxOffset starts at 0
@@ -646,6 +651,8 @@ ci::Json act::room::OFLDescriptionMapper::translateColorWheelCapability(ci::Json
 	if (internalDesc.contains("colorMap") || (internalDesc.contains("mapping") && internalDesc["mapping"].contains("color")))
 		throw std::invalid_argument("internalDesc already contains definition for a color wheel. Currently only one color wheel is supported.");
 
+	std::list<std::string> notes = std::list<std::string>();
+
 	ci::Json descPatch = ci::Json::object();
 
 	ci::Json colorMap = ci::Json::object();
@@ -681,7 +688,7 @@ ci::Json act::room::OFLDescriptionMapper::translateColorWheelCapability(ci::Json
 
 		if (!capability.contains("slotNumber") || !capability["slotNumber"].is_number())
 		{
-			CI_LOG_W("Color Wheel translation WheelSlot at position "<<idx<<" does not specify slotNumbers! Half frames currently not supported, skipping slot.");
+			notes.push_back("Color Wheel translation WheelSlot at position " + idx + " does not specify slotNumbers! Half frames currently not supported, skipping slot.");
 			continue;
 		}
 
@@ -742,6 +749,7 @@ ci::Json act::room::OFLDescriptionMapper::translateColorWheelCapability(ci::Json
 
 	descPatch["colorMap"] = colorMap;
 	descPatch["mapping"]["color"] = dmxOffset;
+	descPatch["notes"]["mapping"][dmxOffset] = notes;
 
 	return descPatch;
 }

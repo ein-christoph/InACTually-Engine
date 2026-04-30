@@ -28,10 +28,15 @@ namespace act {
 
 			static std::shared_ptr<OFLDescriptionMapper> create() { return std::make_shared<OFLDescriptionMapper>(); };
 
+			struct InternalParameterInfo {
+				std::string internalParamName;
+				bool hasNote = false;
+			};
+
 			struct OFLMode {
 				std::string name;
 				std::vector<std::string> channels;
-				std::vector<std::string> internalParamsMapping; // cache for the translation of dmx channel to internal parameter name
+				std::vector<InternalParameterInfo> internalParamsMapping; // cache for the translation of dmx channel to internal parameter name
 				ci::Json internalDescription;
 			}; using OFLModeRef = std::shared_ptr<OFLMode>;
 
@@ -80,7 +85,7 @@ namespace act {
 		private:
 			OpenFixtureLibaray m_ofl;
 
-			std::vector<std::string> getInternalParameterMapping(ci::Json internalDescription);
+			std::vector<InternalParameterInfo> getInternalParameterMapping(ci::Json internalDescription);
 			int convertDegStrToInt(std::string degStr, std::string decimalpoint = ".");
 
 			// Checks if array of objects contains the key with the value or just the value / key if one is empty
@@ -106,15 +111,7 @@ namespace act {
 			// Handles translation of Channels with multiple capabilities
 			ci::Json translateCapabilitiesChannel(ci::Json const& internalDesc, ci::Json const& extCapabilitiesDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName);
 
-			/* Translate methods of the capabilities shold all use the same signature to provide fast access to relevant context information:
-			 * (  ci::Json const& internalDesc		current internal description to which the returned patch can be applied
-			    , ci::Json const& extCapabilityDesc	reference to the capability which should be translated
-				, ci::Json const& extChannelDesc	reference to the full channel description in which the capability to translate is used
-				, ci::Json const& fullExtDesc		reference to the full external description if other information is needed
-				, int dmxOffset						dmx offset = key of the channel in the channels list of the mode
-				, int modeIndex						key of the mode to translate
-			   )
-			 */
+			// NOTE: Translate methods of the capabilities shold all use the same signature to provide fast access to relevant context information.
 
 			ci::Json translateIntensityCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
 			ci::Json translatePanCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
