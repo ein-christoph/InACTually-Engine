@@ -207,8 +207,18 @@ void act::room::FixtureDescriptionImporter::drawOFLImport()
 									if (ImGui::TreeNode("Internal fixture Description"))
 									{
 										ImGui::Indent(1);
-										std::string const& internalDesc = fixture->modes.at(fixture->selectedMode)->internalDescription.dump(3);
-										ImGui::InputTextMultiline(("Internal Description Of" + fixture->name).c_str(), const_cast<char*>(internalDesc.c_str()), internalDesc.size(), ImVec2(-FLT_MIN, 300), ImGuiInputTextFlags_ReadOnly);
+
+										// Show internal description in readonly textbox
+										// store json dump in map so the inputTextMultline callback has something to work with
+										std::string internalDescKey = std::to_string(manufacturerId) + std::to_string(fixtureId) + std::to_string(fixture->selectedMode);
+
+										if (m_oflTranslationJsonDmpCache.find(internalDescKey) == m_oflTranslationJsonDmpCache.end())
+										{
+											std::string newInternalDescDmp = fixture->modes.at(fixture->selectedMode)->internalDescription.dump(3);
+											m_oflTranslationJsonDmpCache.insert({ internalDescKey, newInternalDescDmp });
+										}
+										ImGui::InputTextMultiline(internalDescKey.c_str(), &m_oflTranslationJsonDmpCache.at(internalDescKey), ImVec2(-FLT_MIN, 300), ImGuiInputTextFlags_ReadOnly);
+
 										ImGui::TreePop();
 										ImGui::Spacing();
 									}

@@ -34,6 +34,7 @@ namespace act {
 
 			bool m_showImporter;
 		private:
+			std::map<std::string, std::string> m_oflTranslationJsonDmpCache;
 			bool m_openOFLInBrowser = false;
 			bool m_searchOFLAgain = false;
 			bool m_isOFLListFilteres = false;
