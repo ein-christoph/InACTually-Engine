@@ -182,14 +182,14 @@ void act::room::FixtureDescriptionImporter::drawOFLImport()
 												ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), internelParamsMapping.at(dmxOffset).internalParamName.c_str());
 												
 											
-												ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "NOTE:");
+												ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "    NOTE:");
 										
 												for (auto const& note : fixture->modes.at(fixture->selectedMode)->internalDescription["notes"]["mapping"][dmxOffset+1])
 												{
 													if (!note.is_string())
 														ImGui::TextColored(ImVec4(1.0f, 8.0f, 0.0f, 1.0f), "Can not display non string note, please refer to the internal fixture description!");
 													else
-														ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), note.get<std::string>().c_str());
+														ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), ("    "+note.get<std::string>()).c_str());
 												}
 												showMindNotes = true;
 											}
@@ -208,7 +208,7 @@ void act::room::FixtureDescriptionImporter::drawOFLImport()
 									{
 										ImGui::Indent(1);
 										std::string const& internalDesc = fixture->modes.at(fixture->selectedMode)->internalDescription.dump(3);
-										ImGui::TextWrapped(internalDesc.c_str());
+										ImGui::InputTextMultiline(("Internal Description Of" + fixture->name).c_str(), const_cast<char*>(internalDesc.c_str()), internalDesc.size(), ImVec2(-FLT_MIN, 300), ImGuiInputTextFlags_ReadOnly);
 										ImGui::TreePop();
 										ImGui::Spacing();
 									}

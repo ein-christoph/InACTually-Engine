@@ -362,6 +362,24 @@ int act::room::OFLDescriptionMapper::convertDegStrToInt(std::string degStr, std:
 		return std::stoi(degStr);
 }
 
+float act::room::OFLDescriptionMapper::speedToFloat(std::string speed)
+{
+	// Speed can have Hz, bpm or % as units
+	size_t HzPos = speed.find("Hz");
+	if (HzPos != std::string::npos)
+		speed.erase(HzPos, 2);
+
+	size_t bpmPos = speed.find("bpm");
+	if (bpmPos != std::string::npos)
+		speed.erase(bpmPos, 3);
+
+	size_t percPos = speed.find("%");
+	if (percPos != std::string::npos)
+		speed.erase(percPos, 1);
+
+	return std::stof(speed);
+}
+
 int act::room::OFLDescriptionMapper::isInJsonObjArray(std::string key, std::string value, ci::Json array)
 {
 	if (!array.is_array()) return -1;
@@ -376,6 +394,50 @@ int act::room::OFLDescriptionMapper::isInJsonObjArray(std::string key, std::stri
 	}
 
 	return -1;
+}
+
+int act::room::OFLDescriptionMapper::dmxRangeDistance(ci::Json const& distantRange, ci::Json const& baseRange)
+{
+	if (!distantRange.is_array() || !baseRange.is_array()
+		|| distantRange.size() != 2 || baseRange.size() != 2)
+		throw new std::invalid_argument("Malformed dmxRanges!");
+
+	if (distantRange[1] < baseRange[0])
+		return distantRange[1].get<int>() - baseRange[0].get<int>(); // distantRange below baseRange
+	if (baseRange[1] < distantRange[0])
+		return distantRange[0].get<int>() - baseRange[1].get<int>(); // disntantRange above baseRange 
+
+	return 0; // distantRange within baseRange (/or overlapping)
+}
+
+int act::room::OFLDescriptionMapper::dmxRangeToDmxValue(ci::Json const& dmxRange)
+{
+	if (!dmxRange.is_array() || dmxRange.size() != 2)
+		throw std::invalid_argument("Malformed dmxRange!");
+
+	return std::round((dmxRange[0].get<int>() + dmxRange[1].get<int>()) * 0.5);
+}
+
+ci::Json act::room::OFLDescriptionMapper::addMappingNotesToPatch(int dmxOffset, std::list<std::string>& notes, ci::Json const& internalDesc)
+{
+	ci::Json descPatch = ci::Json::object();
+	if (internalDesc.contains("notes") && internalDesc["notes"].is_object()
+		&& internalDesc["notes"].contains("mapping"))
+	{
+		if (!internalDesc["notes"]["mapping"].is_array())
+			throw std::invalid_argument("mapping of notes is not an array!");
+
+		descPatch["mapping"] = internalDesc["notes"]["mapping"];
+	}
+	else
+		descPatch["mapping"] = ci::Json::array();
+
+	if (dmxOffset < descPatch["mapping"].size() && !descPatch["mapping"][dmxOffset].is_null())
+		descPatch["mapping"][dmxOffset].push_back(notes);
+	else
+		descPatch["mapping"][dmxOffset] = notes;
+
+	return descPatch;
 }
 
 std::map<std::string, int> act::room::OFLDescriptionMapper::resolveFineChannels(ci::Json const& fullExtDesc, int modeIndex, ci::Json const& extChannelDesc, int maxAliases)
@@ -464,6 +526,8 @@ ci::Json act::room::OFLDescriptionMapper::translateCapabilitiesChannel(ci::Json 
 {
 	if (isColorWheel(channelName, extChannelDesc, fullExtDesc, dmxOffset, modeIndex))
 		return translateColorWheelCapability(internalDesc, extCapabilitiesDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex, channelName);
+	else if (isShutterStrobeCapability(channelName, extChannelDesc, fullExtDesc, dmxOffset, modeIndex))
+		return translateShutterStrobeCapability(internalDesc, extCapabilitiesDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex, channelName);
 	else
 		CI_LOG_W("Can not translate capabilities of channel '" << channelName << "' because no mapping exists!");
 
@@ -698,11 +762,12 @@ ci::Json act::room::OFLDescriptionMapper::translateColorWheelCapability(ci::Json
 			|| !capability["dmxRange"][0].is_number() || !capability["dmxRange"][1].is_number())
 			throw std::invalid_argument("Malformed dmxRange in capability!");
 
-		int dmxValue = std::round((capability["dmxRange"][0].get<int>() + capability["dmxRange"][1].get<int>()) * 0.5);
+		int dmxValue = dmxRangeToDmxValue(capability["dmxRange"]);
 
 		if (!capability.contains("slotNumber") || !capability["slotNumber"].is_number())
 		{
-			notes.push_back("Color Wheel translation WheelSlot at position " + idx + " does not specify slotNumbers! Half frames currently not supported, skipping slot.");
+			CI_LOG_W("Color Wheel translation WheelSlot at position " << idx << " does not specify slotNumbers! Half frames currently not supported, skipping slot.");
+			notes.push_back("Wheel slot " + idx + " unavailable, no slot number provided!");
 			continue;
 		}
 
@@ -763,7 +828,173 @@ ci::Json act::room::OFLDescriptionMapper::translateColorWheelCapability(ci::Json
 
 	descPatch["colorMap"] = colorMap;
 	descPatch["mapping"]["color"] = dmxOffset;
-	descPatch["notes"]["mapping"][dmxOffset] = notes;
+
+	descPatch["notes"] = addMappingNotesToPatch(dmxOffset, notes, internalDesc);
+
+	return descPatch;
+}
+
+bool act::room::OFLDescriptionMapper::isShutterStrobeCapability(std::string const& channelName, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex)
+{
+	// Determine if there are capabilities with an open state and a dedicated strobe state with speedStart and speedEnd
+	if (!extChannelDesc.contains("capabilities") && !extChannelDesc["capabilities"].is_array())
+		return false;
+
+	bool hasOpenState = false;
+	bool hasStrobeWithSpeed = false;
+
+	for (auto const& capability : extChannelDesc["capabilities"])
+	{
+		if (!capability.contains("type") || capability["type"] != "ShutterStrobe")
+			continue;
+		
+		if (capability.contains("shutterEffect") && capability["shutterEffect"] == "Open")
+			hasOpenState = true;
+		else if (capability.contains("shutterEffect") && capability["shutterEffect"] == "Strobe"
+			&& capability.contains("speedStart") && capability.contains("speedEnd"))
+			hasStrobeWithSpeed = true;
+
+		if (hasOpenState && hasStrobeWithSpeed)
+			break;
+	}
+
+	return hasOpenState && hasStrobeWithSpeed;
+}
+
+ci::Json act::room::OFLDescriptionMapper::translateShutterStrobeCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName)
+{
+
+	if (!extChannelDesc.contains("capabilities") && !extChannelDesc["capabilities"].is_array())
+		throw std::invalid_argument("No capabilities array found in capabolities description!");
+
+	ci::Json descPatch = ci::Json::object();
+
+	// NOTE: Currently the strobe parameter of InACTually is rather limited 
+	// so the only thing we can translate is a open state as no strobe and an strobe state
+	// which is controling the speed directly
+	// no strobe type like ramp up etc. or strobe speed controlled with different parameter is
+	// possible at the moment
+
+	int strobeIdx = -1;
+
+	// search strobe capability
+	for (int idx = 0; idx < extChannelDesc["capabilities"].size(); idx++)
+	{
+		auto const& capability = extChannelDesc["capabilities"][idx];
+
+		if (!capability.contains("type") || capability["type"] != "ShutterStrobe")
+			continue;
+
+		if (capability.contains("shutterEffect") && capability["shutterEffect"] == "Strobe")
+		{
+			if (capability.contains("speedStart") && capability.contains("speedEnd"))
+			{
+				strobeIdx = idx;
+				break;
+			}
+		}
+	}
+
+	if (strobeIdx < 0)
+	{
+		CI_LOG_W("encountered incompatible strobe capabilities list at dmxOffset " << dmxOffset);
+		return descPatch;
+	}
+
+	// find neares open position
+	ci::Json const& strobeCapability = extChannelDesc["capabilities"][strobeIdx];
+	if (!strobeCapability.contains("dmxRange") || !strobeCapability["dmxRange"].is_array() || strobeCapability["dmxRange"].size() != 2)
+	{
+		CI_LOG_W("Could not find well formatted dmxRange in strobe capability!");
+		return descPatch;
+	}
+
+	int openStateIdxAndDistance[2] = { -1, -1 };
+
+	for (int idx = 0; idx < extChannelDesc["capabilities"].size(); idx++)
+	{
+		auto const& capability = extChannelDesc["capabilities"][idx];
+
+		if (!capability.contains("type") || capability["type"] != "ShutterStrobe")
+			continue;
+
+		if (capability.contains("shutterEffect") && capability["shutterEffect"] == "Open")
+		{
+			if (!capability.contains("dmxRange") || !capability["dmxRange"].is_array() || capability["dmxRange"].size() != 2)
+			{
+				CI_LOG_W("Found capability with ShutterEffect Open but malformed dmxRange! Skipping capability.");
+				continue;
+			}
+
+			int newDistance = abs(dmxRangeDistance(capability["dmxRange"], strobeCapability["dmxRange"]));
+			if (openStateIdxAndDistance[0] < 0 || newDistance < openStateIdxAndDistance[1])
+			{
+				openStateIdxAndDistance[0] = idx;
+				openStateIdxAndDistance[1] = newDistance;
+			}
+
+
+			if (openStateIdxAndDistance[1] == 1)
+				break; // If the distance is 1 the OpenState is directly next to the strobeState
+					   // So we don't have to look further
+		}
+	}
+
+	if (openStateIdxAndDistance[0] < 0 || openStateIdxAndDistance[1] < 0)
+	{
+		CI_LOG_W("Did not found any open state for strobe at dmxOffset: "<<dmxOffset<<" skipping strobe translation!");
+		return descPatch;
+	}
+
+	descPatch["strobeMap"] = ci::Json::object();
+	int minValue, maxValue = -1;
+	int noneValue = dmxRangeToDmxValue(extChannelDesc["capabilities"][openStateIdxAndDistance[0]]["dmxRange"]);
+	descPatch["strobeMap"]["none"] = noneValue;
+	
+	// Check if speedStart is lower than speedEnd
+	std::string str_speedStart = strobeCapability["speedStart"].get<std::string>();
+	std::string str_speedEnd = strobeCapability["speedEnd"].get<std::string>();
+	float speedStart, speedEnd;
+
+	if (str_speedStart == "slow")
+		speedStart = -2;
+	else if (str_speedStart == "fast")
+		speedStart = -1;
+	else
+		speedStart = speedToFloat(str_speedStart);
+
+	if (str_speedEnd == "slow")
+		speedEnd = -2;
+	else if (str_speedEnd == "fast")
+		speedEnd = -1;
+	else
+		speedEnd = speedToFloat(str_speedEnd);
+
+	if (speedStart < speedEnd)
+	{
+		minValue = strobeCapability["dmxRange"][0].get<int>();
+		maxValue = strobeCapability["dmxRange"][1].get<int>();
+
+		if(speedEnd > 0)
+			descPatch["strobeSpeed"] = speedEnd;
+	}
+	else
+	{
+		minValue = strobeCapability["dmxRange"][1].get<int>();
+		maxValue = strobeCapability["dmxRange"][0].get<int>();
+
+		if (speedStart > 0)
+			descPatch["strobeSpeed"] = speedStart;
+	}
+	descPatch["strobeMap"]["min"] = minValue;
+	descPatch["strobeMap"]["max"] = maxValue;
+
+	descPatch["mapping"]["strobe"] = dmxOffset;
+	std::list<std::string> notes = std::list<std::string>();
+	notes.push_back("Strobe is limited to none, min and max!");
+	notes.push_back("Using dmx values: no-strobe="+std::to_string(noneValue)+", min="+ std::to_string(minValue)+", max="+ std::to_string(maxValue));
+	descPatch["notes"] = addMappingNotesToPatch(dmxOffset, notes, internalDesc);
+
 
 	return descPatch;
 }

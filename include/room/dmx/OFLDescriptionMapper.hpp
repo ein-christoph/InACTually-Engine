@@ -88,9 +88,18 @@ namespace act {
 			std::vector<InternalParameterInfo> getInternalParameterMapping(ci::Json internalDescription);
 			int convertDegStrToInt(std::string degStr, std::string decimalpoint = ".");
 
+			float speedToFloat(std::string speed);
+
 			// Checks if array of objects contains the key with the value or just the value / key if one is empty
 			// returns index or -1 if nothing is found
 			int isInJsonObjArray(std::string key, std::string value, ci::Json array);
+
+			// Calculates the distance in address offset from baseRange to distantRange
+			// assumes lower address first, higher address second
+			int dmxRangeDistance(ci::Json const& distantRange, ci::Json const& baseRange);
+			int dmxRangeToDmxValue(ci::Json const& dmxRange);
+
+			ci::Json addMappingNotesToPatch(int dmxOffset, std::list<std::string>& notes, ci::Json const& internalDesc);
 
 
 			// Takes fineChannelAliases array and resolves them to dmx Offset in the channels List of the given mode
@@ -122,6 +131,9 @@ namespace act {
 			
 			bool isColorWheel(std::string const& channelName, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
 			ci::Json translateColorWheelCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName);
+
+			bool isShutterStrobeCapability(std::string const& channelName, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
+			ci::Json translateShutterStrobeCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName);
 
 		}; using OFLDescriptionMapperRef = std::shared_ptr<OFLDescriptionMapper>;
 	}
