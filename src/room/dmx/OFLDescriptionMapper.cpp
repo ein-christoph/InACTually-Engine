@@ -347,6 +347,12 @@ std::vector<act::room::OFLDescriptionMapper::InternalParameterInfo> act::room::O
 	return lookup;
 }
 
+std::string act::room::OFLDescriptionMapper::getWheelNameKey(std::string const& channelName, ci::Json const& extCapabilities)
+{
+	// WheelName can be channel name or stated explicitly in the description
+	return (extCapabilities.contains("wheel") && extCapabilities["wheel"].is_string()) ? extCapabilities["wheel"].get<std::string>() : channelName;
+}
+
 int act::room::OFLDescriptionMapper::convertDegStrToInt(std::string degStr, std::string decimalpoint)
 {
 	size_t degPos = degStr.find("deg");
@@ -390,7 +396,13 @@ int act::room::OFLDescriptionMapper::isInJsonObjArray(std::string key, std::stri
 	for (int idx = 0; idx < array.size(); idx++)
 	{
 		for (auto const& [elemKey, elemValue] : array[idx].items())
-			if ((matchKey && key == elemKey) || (matchValue && value == elemValue)) return idx;
+		{
+			if (!elemValue.is_string())
+				continue;
+			if ((matchKey && key == elemKey) && (matchValue && value == elemValue)) return idx; // return if key and value match
+			else if (!matchKey && matchValue && value == elemValue) return idx; // return if value matches and no key was provided
+			else if (!matchValue && matchKey && key == elemKey) return idx; // return if key matches and no value was provided
+		}
 	}
 
 	return -1;
@@ -526,6 +538,8 @@ ci::Json act::room::OFLDescriptionMapper::translateCapabilitiesChannel(ci::Json 
 {
 	if (isColorWheel(channelName, extChannelDesc, fullExtDesc, dmxOffset, modeIndex))
 		return translateColorWheelCapability(internalDesc, extCapabilitiesDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex, channelName);
+	else if (isGoboWheel(channelName, extChannelDesc, fullExtDesc, dmxOffset, modeIndex))
+		return translateGoboWheelCapability(internalDesc, extCapabilitiesDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex, channelName);
 	else if (isShutterStrobeCapability(channelName, extChannelDesc, fullExtDesc, dmxOffset, modeIndex))
 		return translateShutterStrobeCapability(internalDesc, extCapabilitiesDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex, channelName);
 	else
@@ -705,8 +719,7 @@ bool act::room::OFLDescriptionMapper::isColorWheel(std::string const& channelNam
 	if (idx < 0)
 		return false; // No WheelSlot in capabilities
 
-	// WheelName can be channel name or stated explicitly in the description
-	std::string WheelName = (extChannelDesc["capabilities"][idx].contains("wheel") && extChannelDesc["capabilities"][idx]["wheel"].is_string()) ? extChannelDesc["capabilities"][idx]["wheel"].get<std::string>() : channelName;
+	std::string WheelName = getWheelNameKey(channelName, extChannelDesc["capabilities"][idx]);
 
 	if (!fullExtDesc.contains("wheels") || !fullExtDesc["wheels"].contains(WheelName) || !fullExtDesc["wheels"][WheelName].contains("slots") || !fullExtDesc["wheels"][WheelName]["slots"].is_array())
 		return false; // Color wheels always have a seperate description holding the information about the colors
@@ -766,8 +779,16 @@ ci::Json act::room::OFLDescriptionMapper::translateColorWheelCapability(ci::Json
 
 		if (!capability.contains("slotNumber") || !capability["slotNumber"].is_number())
 		{
-			CI_LOG_W("Color Wheel translation WheelSlot at position " << idx << " does not specify slotNumbers! Half frames currently not supported, skipping slot.");
-			notes.push_back("Wheel slot " + idx + " unavailable, no slot number provided!");
+			CI_LOG_W("Color Wheel translation WheelSlot at position " << idx << " does not specify single slotNumbers! Half frames currently not supported, skipping slot.");
+
+			int dmxMin = capability["dmxRange"][0];
+			int dmxMax = capability["dmxRange"][1];
+
+			if (capability.contains("slotNumberStart") && capability.contains("slotNumberEnd"))
+				notes.push_back("Dmx range " + std::to_string(dmxMin) + " - " + std::to_string(dmxMax) + " unavailable, split slots not supported.");
+			else
+				notes.push_back("Dmx range " + std::to_string(dmxMin) + " - " + std::to_string(dmxMax) + " unavailable, no unique slot identified.");
+
 			continue;
 		}
 
@@ -777,7 +798,7 @@ ci::Json act::room::OFLDescriptionMapper::translateColorWheelCapability(ci::Json
 			throw std::invalid_argument("Malformed wheels wheel '" + WheelName + "'");
 
 		if (slotIdx >= fullExtDesc["wheels"][WheelName]["slots"].size())
-			throw std::invalid_argument("Channel '" + channelName + "' specifies slotNumber greater that available slots in wheels description!");
+			throw std::invalid_argument("Channel '" + channelName + "' specifies slotNumber greater than available slots in wheels description!");
 
 		auto const& wheelSlotDesc = fullExtDesc["wheels"][WheelName]["slots"][slotIdx];
 
@@ -829,7 +850,181 @@ ci::Json act::room::OFLDescriptionMapper::translateColorWheelCapability(ci::Json
 	descPatch["colorMap"] = colorMap;
 	descPatch["mapping"]["color"] = dmxOffset;
 
-	descPatch["notes"] = addMappingNotesToPatch(dmxOffset, notes, internalDesc);
+	if (!notes.empty())
+		descPatch["notes"] = addMappingNotesToPatch(dmxOffset, notes, internalDesc);
+
+	return descPatch;
+}
+
+bool act::room::OFLDescriptionMapper::isGoboWheel(std::string const& channelName, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex)
+{
+	if (!extChannelDesc.contains("capabilities") && !extChannelDesc["capabilities"].is_array())
+		return false; // A Gobo Wheeel has to have an array of WheelSlot capabilities
+
+	int idx = isInJsonObjArray("type", "WheelSlot", extChannelDesc["capabilities"]);
+
+	if (idx < 0)
+		return false; // No WheelSlot in capabilities
+
+	// WheelName can be channel name or stated explicitly in the description
+	std::string WheelName = getWheelNameKey(channelName, extChannelDesc["capabilities"][idx]);
+
+	if (!fullExtDesc.contains("wheels") || !fullExtDesc["wheels"].contains(WheelName) || !fullExtDesc["wheels"][WheelName].contains("slots") || !fullExtDesc["wheels"][WheelName]["slots"].is_array())
+		return false; // Gobo wheels always have a seperate description holding the information about the gobos
+
+	if (isInJsonObjArray("type", "Gobo", fullExtDesc["wheels"][WheelName]["slots"]) < 0)
+		return false; // if no slots of the wheel holds gobo it is not a gobo wheel
+
+	return true; // Otherwise it is a gobo wheel
+}
+
+ci::Json act::room::OFLDescriptionMapper::translateGoboWheelCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName)
+{
+
+	if (!extChannelDesc.contains("capabilities") || !extChannelDesc["capabilities"].is_array())
+		throw std::invalid_argument("A Gobo Wheeel has to have an array of WheelSlot capabilities");
+
+	if (!fullExtDesc.contains("wheels") || !fullExtDesc["wheels"].is_object())
+		throw std::invalid_argument("For a Gobo Wheel a wheels object has to be present in the external description");
+
+	if (internalDesc.contains("goboMap") || (internalDesc.contains("mapping") && internalDesc["mapping"].contains("gobo")))
+		throw std::invalid_argument("internalDesc already contains definition for a gobo wheel. Currently only one gobo wheel is supported.");
+
+	std::list<std::string> notes = std::list<std::string>();
+
+	ci::Json descPatch = ci::Json::object();
+
+	int amount = 0;
+	int goboStart = -1, goboEnd = -1;
+	int shakeStart = -1, shakeEnd = -1;
+
+	for (auto const& [idx, capability] : extChannelDesc["capabilities"].items())
+	{
+		if (!capability.contains("type") || !capability["type"].is_string())
+		{
+			CI_LOG_W("Found no or non string type in capability of gobo wheel translation! Skipping capability.");
+			continue;
+		}
+		if (capability["type"] != "WheelSlot" && capability["type"] != "WheelShake")
+		{
+			CI_LOG_W("Found unexpected type '" << capability["type"] << "' in gobo wheel translation! Skipping capability");
+			continue;
+		}
+
+		std::string WheelName = (capability.contains("wheel") && capability["wheel"].is_string()) ? capability["wheel"].get<std::string>() : channelName;
+
+		if (!fullExtDesc["wheels"].contains(WheelName))
+			throw std::invalid_argument("Wheel with name '" + WheelName + "' could not be found in wheels object.");
+
+		if (!capability.contains("dmxRange") || !capability["dmxRange"].is_array() || capability["dmxRange"].size() != 2
+			|| !capability["dmxRange"][0].is_number() || !capability["dmxRange"][1].is_number())
+			throw std::invalid_argument("Malformed dmxRange in capability!");
+
+		int dmxMin = capability["dmxRange"][0];
+		int dmxMax = capability["dmxRange"][1];
+		if (dmxMax < dmxMin)
+		{
+			dmxMax = dmxMin;
+			dmxMin = capability["dmxRange"][1];
+		}
+
+		if (!capability.contains("slotNumber") || !capability["slotNumber"].is_number())
+		{
+			CI_LOG_W("Gobo Wheel capability at position " << idx << " does not specify slotNumber, skipping slot!");
+			notes.push_back("Wheel slot " + idx + " unavailable, no slot number provided!");
+			continue;
+		}
+
+		int slotIdx = capability["slotNumber"] - 1; //SlotNumber starts at 1 but is referencing an array
+
+		if (!fullExtDesc["wheels"][WheelName].is_object() || !fullExtDesc["wheels"][WheelName].contains("slots") || !fullExtDesc["wheels"][WheelName]["slots"].is_array())
+			throw std::invalid_argument("Malformed wheels wheel '" + WheelName + "'");
+
+		if (slotIdx >= fullExtDesc["wheels"][WheelName]["slots"].size())
+			throw std::invalid_argument("Channel '" + channelName + "' specifies slotNumber greater than available slots in wheels description!");
+
+		auto const& wheelSlotDesc = fullExtDesc["wheels"][WheelName]["slots"][slotIdx];
+
+		if (!wheelSlotDesc.contains("type") || !wheelSlotDesc["type"].is_string() || (wheelSlotDesc["type"] != "Gobo" && wheelSlotDesc["type"] != "Open"))
+		{
+			CI_LOG_W("Channel '" << channelName << "' with wheel '" << WheelName << "' at slotNumber '" << slotIdx << "' is not of type 'Gobo' or 'Open'! Skipping slot.");
+			continue;
+		}
+
+		// InACTually currently expects a continious range for gobo selection and wheelshake
+		// so we have to ensure the new dmx range is at the lower or upper bound of the knwon range
+
+		if (capability["type"] == "WheelSlot")
+		{
+			bool foundPlace = false;
+			if (goboStart < 0 || (dmxMax + 1) == goboStart)
+			{
+				// gobo sits below the current range
+				goboStart = dmxMin;
+				foundPlace = true;
+			}
+			if (goboEnd < 0 || (dmxMin - 1) == goboEnd)
+			{
+				// gobo sits above the current range
+				goboEnd = dmxMax;
+				foundPlace = true;
+			}
+
+			if (foundPlace)
+				amount++;
+			else
+			{
+				CI_LOG_W("Gobo at slot index " << slotIdx << " does not fit into a continous range of gobos so it will be ignored!");
+				notes.push_back("Gobo at slot " + std::to_string(slotIdx + 1) + " (dmx Values " + std::to_string(dmxMin) + " - " + std::to_string(dmxMax) + ") will be unavailable because it's not in a continous dmx gobo range.");
+				continue;
+			}
+		}
+		else if (capability["type"] == "WheelShake")
+		{
+			bool foundPlace = false;
+			if (shakeStart < 0 || (dmxMax + 1) == shakeStart)
+			{
+				// gobo sits below the current range
+				shakeStart = dmxMin;
+				foundPlace = true;
+			}
+			if (shakeEnd < 0 || (dmxMin - 1) == shakeEnd)
+			{
+				// gobo sits above the current range
+				shakeEnd = dmxMax;
+				foundPlace = true;
+			}
+
+			if (!foundPlace)
+			{ 
+				CI_LOG_W("Wheel shake at slot index " << slotIdx << " does not fit into a continous range of wheek shakes so it will be ignored!");
+				notes.push_back("Wheel shake at slot " + std::to_string(slotIdx + 1) + " (dmx Values "+std::to_string(dmxMin) + " - " + std::to_string(dmxMax) + ") will be unavailable because it's not in a continous dmx range.");
+				continue;
+			}
+		}
+	}
+
+	if (amount < 1 || goboStart < 0 || goboEnd < 0 || goboEnd < goboStart)
+	{
+		CI_LOG_W("Gobo Wheel translation at dmx offset" << dmxOffset << " did not result in plausible values, aborting translation!");
+		return ci::Json::object();
+	}
+
+	descPatch["goboMap"] = ci::Json::object();
+	descPatch["goboMap"]["amount"] = amount;
+	descPatch["goboMap"]["start"] = goboStart;
+	descPatch["goboMap"]["end"] = goboEnd;
+
+	if (shakeStart >= 0 && shakeEnd >= 0 && shakeStart < shakeEnd)
+	{
+		descPatch["goboMap"]["shake-min"] = shakeStart;
+		descPatch["goboMap"]["shake-max"] = shakeEnd;
+	}
+
+	descPatch["mapping"]["gobo"] = dmxOffset;
+
+	if(!notes.empty())
+		descPatch["notes"] = addMappingNotesToPatch(dmxOffset, notes, internalDesc);
 
 	return descPatch;
 }
