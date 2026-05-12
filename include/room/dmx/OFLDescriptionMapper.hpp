@@ -72,8 +72,8 @@ namespace act {
 
 			std::string getName();
 			bool searchLibraryPath();
-			std::string getLibarayPath();
-			bool setLibarayPath(std::string);
+			fs::path getLibarayPath();
+			bool setLibarayPath(fs::path path);
 			std::vector<OFLManufacturerRef> getManufacturers(bool allowParsing);
 
 			bool parseLibraryMeta();
@@ -83,6 +83,7 @@ namespace act {
 			bool translateOFLtoInternal(OFLFixtureDescriptionRef fixtureDescription);
 
 		private:
+			std::string m_ManufacturerIdxFileName = "manufacturers.json";
 			OpenFixtureLibaray m_ofl;
 
 			std::vector<InternalParameterInfo> getInternalParameterMapping(ci::Json internalDescription);

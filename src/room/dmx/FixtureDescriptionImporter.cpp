@@ -100,7 +100,7 @@ void act::room::FixtureDescriptionImporter::drawOFLImport()
 		}
 
 		//== Header with library path an search box
-		ImGui::Text(("Library Path: " + m_oflDescriptionMapper->getLibarayPath()).c_str());
+		ImGui::Text(("Library Path: " + m_oflDescriptionMapper->getLibarayPath().string()).c_str());
 
 		ImGui::Spacing();
 		if (ImGui::InputText("Search OFL Fixture", m_oflFixtureFilterBuffer, IM_ARRAYSIZE(m_oflFixtureFilterBuffer)))

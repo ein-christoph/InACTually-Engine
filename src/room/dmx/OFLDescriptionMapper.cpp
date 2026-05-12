@@ -35,25 +35,27 @@ std::string act::room::OFLDescriptionMapper::getName()
 
 bool act::room::OFLDescriptionMapper::searchLibraryPath()
 {
-	m_ofl.libraryPath = app::getAssetPath("dmx/ofl_export_ofl");
-	if (!m_ofl.libraryPath.empty() && ci::fs::is_directory(m_ofl.libraryPath))
+	fs::path usualPath = app::getAssetPath("dmx/ofl_export_ofl");
+	return setLibarayPath(usualPath);
+}
+
+fs::path act::room::OFLDescriptionMapper::getLibarayPath()
+{
+	return m_ofl.libraryPath;
+}
+
+bool act::room::OFLDescriptionMapper::setLibarayPath(fs::path path)
+{
+	// Check if a manufacturer index exists at provided path
+	fs::path check = path;
+	check.append(m_ManufacturerIdxFileName);
+	if (!fs::exists(check))
 	{
-		CI_LOG_I("Found Open Fixture Library:"<<m_ofl.libraryPath);
-		return true;
+		CI_LOG_W("No Open Fixture Library found at path '" << path.string() << "'");
+		return false;
 	}
-	CI_LOG_W("Did not find any open fixture library path!");
-	return false;
-}
-
-std::string act::room::OFLDescriptionMapper::getLibarayPath()
-{
-	return m_ofl.libraryPath.string();
-}
-
-bool act::room::OFLDescriptionMapper::setLibarayPath(std::string path)
-{
 	m_ofl.libraryPath = path;
-	//TODO: Check if location is correct
+	CI_LOG_I("Found Open Fixture Library:" << m_ofl.libraryPath);
 	return true;
 }
 
@@ -71,7 +73,7 @@ bool act::room::OFLDescriptionMapper::parseLibraryMeta()
 {
 	ci::Json manufacturersJson;
 	fs::path manufacturersDescriptionPath = m_ofl.libraryPath;
-	manufacturersDescriptionPath.append("manufacturers.json");
+	manufacturersDescriptionPath.append(m_ManufacturerIdxFileName);
 	try
 	{
 		manufacturersJson = ci::loadJson(loadFile(manufacturersDescriptionPath));
