@@ -31,6 +31,8 @@ namespace act {
 			void	draw();
 			void	update();
 			void	drawOFLImport();
+			void	drawOFLFixtureDetails(OFLDescriptionMapper::OFLFixtureDescriptionRef fixture, int manufacturerId, int fixtureId);
+			void	drawOFLFixtureTranslationTable(OFLDescriptionMapper::OFLFixtureDescriptionRef fixture, int manufacturerId, int fixtureId);
 
 			bool m_showImporter;
 		private:
