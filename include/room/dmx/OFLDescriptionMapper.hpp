@@ -28,26 +28,33 @@ namespace act {
 
 			static std::shared_ptr<OFLDescriptionMapper> create() { return std::make_shared<OFLDescriptionMapper>(); };
 
-			struct InternalParameterInfo {
-				std::string internalParamName;
-				bool hasNote = false;
-			};
+			struct OFLChannelDescPatch {
+				ci::Json descriptionPatch;
+				bool includePatch = true;
+			}; using OFLChannelDescPatchRef = std::shared_ptr<OFLChannelDescPatch>;
+
+			struct OFLChannelTranslation {
+				std::string oflChannelKey;
+				OFLChannelDescPatchRef channelDescPatch;
+			}; using OFLChannelTranslationRef = std::shared_ptr<OFLChannelTranslation>;
 
 			struct OFLMode {
 				std::string name;
-				std::vector<std::string> channels;
-				std::vector<InternalParameterInfo> internalParamsMapping; // cache for the translation of dmx channel to internal parameter name
-				ci::Json internalDescription;
+				std::map<int, OFLChannelTranslationRef> channelTranslationMapping; // cache for the translation of dmx channel to internal parameter name
+				ci::Json internalDescBase;
 			}; using OFLModeRef = std::shared_ptr<OFLMode>;
 
 			struct OFLFixtureDescription {
+				act::UID uid;
 				std::string name;
 				fs::path descriptionPath;
 				ci::Json externalDescription;
 				std::vector<OFLModeRef> modes;
 				std::string type;
 				int selectedMode;
-				bool isDescriptionLoaded; // externalDescription loaded and metadata (name, modes, type) set
+				bool queuedForLoading = false;
+				bool queuedForImport = false;
+				bool hasError = false;
 				bool showInListing = true; // used for filtering in UI
 			}; using OFLFixtureDescriptionRef = std::shared_ptr<OFLFixtureDescription>;
 
@@ -74,6 +81,7 @@ namespace act {
 			bool searchLibraryPath();
 			fs::path getLibarayPath();
 			bool setLibarayPath(fs::path path);
+			bool getIsParsed();
 			std::vector<OFLManufacturerRef> getManufacturers(bool allowParsing);
 
 			bool parseLibraryMeta();
@@ -82,11 +90,15 @@ namespace act {
 
 			bool translateOFLtoInternal(OFLFixtureDescriptionRef fixtureDescription);
 
+			static ci::Json getInternalDescription(OFLFixtureDescriptionRef fixture);
+
 		private:
 			std::string m_ManufacturerIdxFileName = "manufacturers.json";
 			OpenFixtureLibaray m_ofl;
 
-			std::vector<InternalParameterInfo> getInternalParameterMapping(ci::Json internalDescription);
+			void addDescToOtherAffectedChannels(OFLModeRef modeRef, OFLChannelDescPatchRef channelDescPatchRef, std::string const& channelKey, int primaryDmxOffset);
+			void attachNoteToChannelDesc(ci::Json& internalDescPatch, int dmxOffset, std::string note);
+
 			std::string getWheelNameKey(std::string const& channelName, ci::Json const& extCapabilities);
 			int convertDegStrToInt(std::string degStr, std::string decimalpoint = ".");
 
@@ -101,9 +113,6 @@ namespace act {
 			int dmxRangeDistance(ci::Json const& distantRange, ci::Json const& baseRange);
 			int dmxRangeToDmxValue(ci::Json const& dmxRange);
 
-			ci::Json addMappingNotesToPatch(int dmxOffset, std::list<std::string>& notes, ci::Json const& internalDesc);
-
-
 			// Takes fineChannelAliases array and resolves them to dmx Offset in the channels List of the given mode
 			// Returns map of fine channel alias with corresponding int or -1 if fineChannelAlias could not be resolved
 			std::map<std::string, int> resolveFineChannels(ci::Json const& fullExtDesc, int mode, ci::Json const& extChannelDesc, int maxAliases = 1);
@@ -117,28 +126,28 @@ namespace act {
 				, int modeIndex						key of the mode to translate
 			  )
 			*/
-			ci::Json translateChannelCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
+			ci::Json translateChannelCapability(ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
 
 			// Handles translation of Channels with multiple capabilities
-			ci::Json translateCapabilitiesChannel(ci::Json const& internalDesc, ci::Json const& extCapabilitiesDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName);
+			ci::Json translateCapabilitiesChannel(ci::Json const& extCapabilitiesDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName);
 
 			// NOTE: Translate methods of the capabilities shold all use the same signature to provide fast access to relevant context information.
 
-			ci::Json translateIntensityCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
-			ci::Json translatePanCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
-			ci::Json translateTiltCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
-			ci::Json translateZoomCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
-			ci::Json translateColorIntensityCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
-			ci::Json translatePanTiltSpeedCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
+			ci::Json translateIntensityCapability(ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
+			ci::Json translatePanCapability(ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
+			ci::Json translateTiltCapability(ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
+			ci::Json translateZoomCapability(ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
+			ci::Json translateColorIntensityCapability(ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
+			ci::Json translatePanTiltSpeedCapability(ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
 			
 			bool isColorWheel(std::string const& channelName, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
-			ci::Json translateColorWheelCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName);
+			ci::Json translateColorWheelCapability(ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName);
 
 			bool isGoboWheel(std::string const& channelName, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
-			ci::Json translateGoboWheelCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName);
+			ci::Json translateGoboWheelCapability(ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName);
 
 			bool isShutterStrobeCapability(std::string const& channelName, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
-			ci::Json translateShutterStrobeCapability(ci::Json const& internalDesc, ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName);
+			ci::Json translateShutterStrobeCapability(ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName);
 
 		}; using OFLDescriptionMapperRef = std::shared_ptr<OFLDescriptionMapper>;
 	}

@@ -36,9 +36,13 @@ namespace act {
 
 			bool m_showImporter;
 		private:
+
 			std::map<std::string, std::string> m_oflTranslationJsonDmpCache;
+			std::list<OFLDescriptionMapper::OFLFixtureDescriptionRef> m_oflFetchFixtureQueue;
+			std::list<OFLDescriptionMapper::OFLFixtureDescriptionRef> m_importQueue;
 			bool m_openOFLInBrowser = false;
 			bool m_searchOFLAgain = false;
+			bool m_oflReparse = false;
 			bool m_isOFLListFilteres = false;
 			bool m_oflFixtureFilterChanged = false;
 			char m_oflFixtureFilterBuffer[128] = "";
