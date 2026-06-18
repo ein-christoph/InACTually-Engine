@@ -995,10 +995,7 @@ ci::Json act::room::OFLDescriptionMapper::translateGoboWheelCapability(ci::Json 
 	}
 
 	if (amount < 1 || goboStart < 0 || goboEnd < 0 || goboEnd < goboStart)
-	{
-		CI_LOG_W("Gobo Wheel translation at dmx offset" << dmxOffset << " did not result in plausible values, aborting translation!");
-		return ci::Json::object();
-	}
+		throw std::exception(("Gobo Wheel translation at dmx offset" + std::to_string(dmxOffset) + " did not result in plausible values, aborting translation!").c_str());
 
 	descPatch["goboMap"] = ci::Json::object();
 	descPatch["goboMap"]["amount"] = amount;
@@ -1081,18 +1078,12 @@ ci::Json act::room::OFLDescriptionMapper::translateShutterStrobeCapability(ci::J
 	}
 
 	if (strobeIdx < 0)
-	{
-		CI_LOG_W("encountered incompatible strobe capabilities list at dmxOffset " << dmxOffset);
-		return descPatch;
-	}
+		throw std::exception(("Encountered incompatible strobe capabilities list at dmxOffset " + std::to_string(dmxOffset)).c_str());
 
 	// find neares open position
 	ci::Json const& strobeCapability = extChannelDesc["capabilities"][strobeIdx];
 	if (!strobeCapability.contains("dmxRange") || !strobeCapability["dmxRange"].is_array() || strobeCapability["dmxRange"].size() != 2)
-	{
-		CI_LOG_W("Could not find well formatted dmxRange in strobe capability!");
-		return descPatch;
-	}
+		throw std::exception("Could not find well formatted dmxRange in strobe capability!");
 
 	int openStateIdxAndDistance[2] = { -1, -1 };
 
@@ -1126,10 +1117,7 @@ ci::Json act::room::OFLDescriptionMapper::translateShutterStrobeCapability(ci::J
 	}
 
 	if (openStateIdxAndDistance[0] < 0 || openStateIdxAndDistance[1] < 0)
-	{
-		CI_LOG_W("Did not found any open state for strobe at dmxOffset: "<<dmxOffset<<" skipping strobe translation!");
-		return descPatch;
-	}
+		throw std::exception(("Did not found any open state for strobe at dmxOffset: "+std::to_string(dmxOffset)+" skipping strobe translation!").c_str());
 
 	descPatch["strobeMap"] = ci::Json::object();
 	int minValue, maxValue = -1;
@@ -1179,7 +1167,6 @@ ci::Json act::room::OFLDescriptionMapper::translateShutterStrobeCapability(ci::J
 	notes.push_back("Strobe is limited to none, min and max!");
 	notes.push_back("Using dmx values: no-strobe="+std::to_string(noneValue)+", min="+ std::to_string(minValue)+", max="+ std::to_string(maxValue));
 	descPatch["notes"]["channel-"+std::to_string(dmxOffset)] = notes;
-
 
 	return descPatch;
 }
