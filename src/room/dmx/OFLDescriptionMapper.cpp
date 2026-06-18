@@ -275,33 +275,15 @@ bool act::room::OFLDescriptionMapper::translateOFLtoInternal(OFLFixtureDescripti
 
 			ci::Json internalDescPatch = ci::Json::object();
 
-			if (externalDesc["availableChannels"][channelKey].contains("capability"))
+			try
 			{
-				try
-				{
-					internalDescPatch = translateChannelCapability(externalDesc["availableChannels"][channelKey]["capability"], externalDesc["availableChannels"][channelKey], externalDesc, dmxOffset + 1, modeIndex);
-				}
-				catch (const std::exception& e)
-				{
-					CI_LOG_W("Could not translate capability of channel '" << channelKey << "' :" << e.what());
-				}
+				internalDescPatch = translateChannel(externalDesc["availableChannels"][channelKey], externalDesc, dmxOffset + 1, modeIndex, channelKey);
 			}
-			else if (externalDesc["availableChannels"][channelKey].contains("capabilities"))
+			catch (const std::exception& e)
 			{
-				try
-				{
-					internalDescPatch = translateCapabilitiesChannel(externalDesc["availableChannels"][channelKey]["capabilities"], externalDesc["availableChannels"][channelKey], externalDesc, dmxOffset + 1, modeIndex, channelKey);
-				}
-				catch (const std::exception& e)
-				{
-					CI_LOG_W("Could not translate capabilities of channel '" << channelKey << "' :" << e.what());
-				}
+				CI_LOG_W("Could not translate channel '" << channelKey << "' :" << e.what());
 			}
-			else
-			{
-				CI_LOG_W("Channel key '" << channelKey << "' contains neither capability object or capabilities list! Skipping channel.");
-				continue;
-			}
+			
 
 			if (internalDescPatch.is_null())
 			{
@@ -553,18 +535,20 @@ std::map<std::string, int> act::room::OFLDescriptionMapper::resolveFineChannels(
 	return retLookup;
 }
 
-ci::Json act::room::OFLDescriptionMapper::translateChannelCapability(ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex)
+// Determine the capability or capabilities of a channel and call the correct translate function
+// Register new translation in this method.
+// For a list of current capability types see https://github.com/OpenLightingProject/open-fixture-library/blob/master/docs/capability-types.md
+ci::Json act::room::OFLDescriptionMapper::translateChannel(ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName)
 {
-	if (!extCapabilityDesc.contains("type"))
-		throw std::invalid_argument("external capability description does not include 'type' key!");
-	if (!extCapabilityDesc["type"].is_string())
-		throw std::invalid_argument("type of external capability description is not a string!");
-
-	std::string const& capabilityType = extCapabilityDesc["type"];
-
-	//For a list of current capability types see https://github.com/OpenLightingProject/open-fixture-library/blob/master/docs/capability-types.md
-	try
+	if (extChannelDesc.contains("capability")) // === Translate single capability
 	{
+		ci::Json const& extCapabilityDesc = extChannelDesc["capability"];
+
+		if (!extCapabilityDesc.contains("type") || !extCapabilityDesc["type"].is_string())
+			throw std::invalid_argument("Capability has to have a type attribute that is a string!");
+
+		std::string const& capabilityType = extCapabilityDesc["type"];
+
 		if (capabilityType == "NoFunction")
 			return ci::Json::object(); // NoFunction can be ignored except for some special cases which should not matter for our purpose
 		else if (capabilityType == "Intensity")
@@ -577,29 +561,22 @@ ci::Json act::room::OFLDescriptionMapper::translateChannelCapability(ci::Json co
 			return translateZoomCapability(extCapabilityDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex);
 		else if (capabilityType == "ColorIntensity")
 			return translateColorIntensityCapability(extCapabilityDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex);
-		else if(capabilityType == "PanTiltSpeed")
+		else if (capabilityType == "PanTiltSpeed")
 			return translatePanTiltSpeedCapability(extCapabilityDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex);
-		else
-			CI_LOG_W("Can not translate capability of type '" << capabilityType << "' because no mapping exists!");
 	}
-	catch (const std::exception& e)
+	else if (extChannelDesc.contains("capabilities")) // === Translate capabilities list
 	{
-		CI_LOG_W("Could not translate capability of type '" << capabilityType << "'! " << e.what() << " Skipping capability translation.");
+		ci::Json const& extCapabilitiesDesc = extChannelDesc["capabilities"];
+
+		if (isColorWheel(channelName, extChannelDesc, fullExtDesc, dmxOffset, modeIndex))
+			return translateColorWheelCapability(extCapabilitiesDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex, channelName);
+		else if (isGoboWheel(channelName, extChannelDesc, fullExtDesc, dmxOffset, modeIndex))
+			return translateGoboWheelCapability(extCapabilitiesDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex, channelName);
+		else if (isShutterStrobeCapability(channelName, extChannelDesc, fullExtDesc, dmxOffset, modeIndex))
+			return translateShutterStrobeCapability(extCapabilitiesDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex, channelName);
 	}
 
-	return ci::Json::object();
-}
-
-ci::Json act::room::OFLDescriptionMapper::translateCapabilitiesChannel(ci::Json const& extCapabilitiesDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName)
-{
-	if (isColorWheel(channelName, extChannelDesc, fullExtDesc, dmxOffset, modeIndex))
-		return translateColorWheelCapability(extCapabilitiesDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex, channelName);
-	else if (isGoboWheel(channelName, extChannelDesc, fullExtDesc, dmxOffset, modeIndex))
-		return translateGoboWheelCapability(extCapabilitiesDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex, channelName);
-	else if (isShutterStrobeCapability(channelName, extChannelDesc, fullExtDesc, dmxOffset, modeIndex))
-		return translateShutterStrobeCapability(extCapabilitiesDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex, channelName);
-	else
-		CI_LOG_W("Can not translate capabilities of channel '" << channelName << "' because no mapping exists!");
+	CI_LOG_W("No mapping exists for channel '" << channelName << "'");
 
 	return ci::Json::object();
 }

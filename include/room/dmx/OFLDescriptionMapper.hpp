@@ -117,22 +117,18 @@ namespace act {
 			// Returns map of fine channel alias with corresponding int or -1 if fineChannelAlias could not be resolved
 			std::map<std::string, int> resolveFineChannels(ci::Json const& fullExtDesc, int mode, ci::Json const& extChannelDesc, int maxAliases = 1);
 
-			/* Translates a Capability of a Channel description into a patch of the internal description calling the corresponding translate methods of the capability
-			* (   ci::Json const& internalDesc		current internal description to which the returned patch can be applied
-			    , ci::Json const& extCapabilityDesc	reference to the capability which should be translated
+			//Translates a channel into a json patch of the internal description calling the corresponding translate methods
+			ci::Json translateChannel(ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName);
+
+			/* Translation methods should all use the same signature to provide fast access to relevant context information
+			 * (  ci::Json const& extCapabilityDesc	reference to the capability which should be translated
 				, ci::Json const& extChannelDesc	reference to the full channel description in which the capability to translate is used
 				, ci::Json const& fullExtDesc		reference to the full external description if other information is needed
 				, int dmxOffset						dmx offset = key of the channel in the channels list of the mode
 				, int modeIndex						key of the mode to translate
+				, std::string const& channelName	Optional, for translation of capabilities
 			  )
 			*/
-			ci::Json translateChannelCapability(ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
-
-			// Handles translation of Channels with multiple capabilities
-			ci::Json translateCapabilitiesChannel(ci::Json const& extCapabilitiesDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName);
-
-			// NOTE: Translate methods of the capabilities shold all use the same signature to provide fast access to relevant context information.
-
 			ci::Json translateIntensityCapability(ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
 			ci::Json translatePanCapability(ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
 			ci::Json translateTiltCapability(ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex);
