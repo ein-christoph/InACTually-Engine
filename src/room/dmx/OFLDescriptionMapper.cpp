@@ -16,6 +16,7 @@
 #include "roompch.hpp"
 #include "dmx/OFLDescriptionMapper.hpp"
 #include "utils/RGBAWHelper.h"
+#include "utils/jsonHelper.hpp"
 
 act::room::OFLDescriptionMapper::OFLDescriptionMapper()
 {
@@ -216,7 +217,7 @@ bool act::room::OFLDescriptionMapper::translateOFLtoInternal(OFLFixtureDescripti
 		throw std::invalid_argument("external description does not contain array of fixture categories!");
 
 	// Check if it is a laser and abort transltion if it is
-	if (isInJsonArray("Laser", externalDesc["categories"]))
+	if (act::util::isInJsonArray("Laser", externalDesc["categories"]))
 	{
 		fixtureDescription->type = "laser";
 		fixtureDescription->isSupportedType = false;
@@ -226,7 +227,7 @@ bool act::room::OFLDescriptionMapper::translateOFLtoInternal(OFLFixtureDescripti
 	// Check if it is one of the supported types
 	if (externalDesc["categories"].size() == 1 && externalDesc["categories"][0] == "Dimmer")
 		fixtureDescription->type = "dimmer";
-	else if (isInJsonArray("Moving Head", externalDesc["categories"]) || isInJsonArray("Color Changer", externalDesc["categories"]))
+	else if (act::util::isInJsonArray("Moving Head", externalDesc["categories"]) || act::util::isInJsonArray("Color Changer", externalDesc["categories"]))
 		fixtureDescription->type = "mv";
 	else if (fixtureDescription->forceTranslation)
 		fixtureDescription->type = "mv";
@@ -479,42 +480,6 @@ float act::room::OFLDescriptionMapper::speedToFloat(std::string speed)
 	return std::stof(speed);
 }
 
-int act::room::OFLDescriptionMapper::isInJsonObjArray(std::string key, std::string value, ci::Json const& array)
-{
-	if (!array.is_array()) return -1;
-
-	bool matchKey = !key.empty();
-	bool matchValue = !value.empty();
-
-	for (int idx = 0; idx < array.size(); idx++)
-	{
-		for (auto const& [elemKey, elemValue] : array[idx].items())
-		{
-			if (!elemValue.is_string())
-				continue;
-			if ((matchKey && key == elemKey) && (matchValue && value == elemValue)) return idx; // return if key and value match
-			else if (!matchKey && matchValue && value == elemValue) return idx; // return if value matches and no key was provided
-			else if (!matchValue && matchKey && key == elemKey) return idx; // return if key matches and no value was provided
-		}
-	}
-
-	return -1;
-}
-
-bool act::room::OFLDescriptionMapper::isInJsonArray(std::string value, ci::Json const& array)
-{
-	if (!array.is_array())
-		return false;
-	for (auto const& entry : array)
-	{
-		if (!entry.is_string())
-			continue;
-		if (entry == value)
-			return true;
-	}
-	return false;
-}
-
 int act::room::OFLDescriptionMapper::dmxRangeDistance(ci::Json const& distantRange, ci::Json const& baseRange)
 {
 	if (!distantRange.is_array() || !baseRange.is_array()
@@ -757,7 +722,7 @@ bool act::room::OFLDescriptionMapper::isColorWheel(std::string const& channelNam
 	if (!extChannelDesc.contains("capabilities") && !extChannelDesc["capabilities"].is_array())
 		return false; // A Color Wheeel has to have an array of WheelSlot capabilities
 
-	int idx = isInJsonObjArray("type", "WheelSlot", extChannelDesc["capabilities"]);
+	int idx = act::util::isInJsonObjArray("type", "WheelSlot", extChannelDesc["capabilities"]);
 
 	if (idx < 0)
 		return false; // No WheelSlot in capabilities
@@ -767,7 +732,7 @@ bool act::room::OFLDescriptionMapper::isColorWheel(std::string const& channelNam
 	if (!fullExtDesc.contains("wheels") || !fullExtDesc["wheels"].contains(WheelName) || !fullExtDesc["wheels"][WheelName].contains("slots") || !fullExtDesc["wheels"][WheelName]["slots"].is_array())
 		return false; // Color wheels always have a seperate description holding the information about the colors
 
-	if(isInJsonObjArray("type", "Color", fullExtDesc["wheels"][WheelName]["slots"]) < 0)
+	if(act::util::isInJsonObjArray("type", "Color", fullExtDesc["wheels"][WheelName]["slots"]) < 0)
 		return false; // if no slots of the wheel holds color it is not a color wheel
 	
 	return true; // Otherwise it is a color wheel
@@ -901,7 +866,7 @@ bool act::room::OFLDescriptionMapper::isGoboWheel(std::string const& channelName
 	if (!extChannelDesc.contains("capabilities") && !extChannelDesc["capabilities"].is_array())
 		return false; // A Gobo Wheeel has to have an array of WheelSlot capabilities
 
-	int idx = isInJsonObjArray("type", "WheelSlot", extChannelDesc["capabilities"]);
+	int idx = act::util::isInJsonObjArray("type", "WheelSlot", extChannelDesc["capabilities"]);
 
 	if (idx < 0)
 		return false; // No WheelSlot in capabilities
@@ -912,7 +877,7 @@ bool act::room::OFLDescriptionMapper::isGoboWheel(std::string const& channelName
 	if (!fullExtDesc.contains("wheels") || !fullExtDesc["wheels"].contains(WheelName) || !fullExtDesc["wheels"][WheelName].contains("slots") || !fullExtDesc["wheels"][WheelName]["slots"].is_array())
 		return false; // Gobo wheels always have a seperate description holding the information about the gobos
 
-	if (isInJsonObjArray("type", "Gobo", fullExtDesc["wheels"][WheelName]["slots"]) < 0)
+	if (act::util::isInJsonObjArray("type", "Gobo", fullExtDesc["wheels"][WheelName]["slots"]) < 0)
 		return false; // if no slots of the wheel holds gobo it is not a gobo wheel
 
 	return true; // Otherwise it is a gobo wheel

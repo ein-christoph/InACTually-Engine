@@ -106,11 +106,6 @@ namespace act {
 
 			float speedToFloat(std::string speed);
 
-			// Checks if array of objects contains the key with the value or just the value / key if one is empty
-			// returns index or -1 if nothing is found
-			int isInJsonObjArray(std::string key, std::string value, ci::Json const& array);
-			bool isInJsonArray(std::string value, ci::Json const& array);
-
 			// Calculates the distance in address offset from baseRange to distantRange
 			// assumes lower address first, higher address second
 			int dmxRangeDistance(ci::Json const& distantRange, ci::Json const& baseRange);
