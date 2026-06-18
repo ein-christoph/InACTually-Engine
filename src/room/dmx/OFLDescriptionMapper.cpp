@@ -553,10 +553,8 @@ ci::Json act::room::OFLDescriptionMapper::translateChannel(ci::Json const& extCh
 			return ci::Json::object(); // NoFunction can be ignored except for some special cases which should not matter for our purpose
 		else if (capabilityType == "Intensity")
 			return translateIntensityCapability(extCapabilityDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex);
-		else if (capabilityType == "Pan")
-			return translatePanCapability(extCapabilityDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex);
-		else if (capabilityType == "Tilt")
-			return translateTiltCapability(extCapabilityDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex);
+		else if (capabilityType == "Pan" || capabilityType == "Tilt")
+			return translatePanTiltCapability(extCapabilityDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex);
 		else if (capabilityType == "Zoom")
 			return translateZoomCapability(extCapabilityDesc, extChannelDesc, fullExtDesc, dmxOffset, modeIndex);
 		else if (capabilityType == "ColorIntensity")
@@ -594,11 +592,20 @@ ci::Json act::room::OFLDescriptionMapper::translateIntensityCapability(ci::Json 
 	return descPatch;
 }
 
-ci::Json act::room::OFLDescriptionMapper::translatePanCapability(ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex)
+ci::Json act::room::OFLDescriptionMapper::translatePanTiltCapability(ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex)
 {
+	// The translation of Pan and Tilt is so similar it is combined into one function
+
 	ci::Json descPatch = ci::Json::object();
 
-	// Check angle start and angle end to calculate panRange
+	if (!extCapabilityDesc.contains("type") || (extCapabilityDesc["type"] != "Pan" && extCapabilityDesc["type"] != "Tilt"))
+		throw std::exception("translatePanTiltCapability called but capability is neither pan or tilt!");
+
+	std::string panTiltIdentifier = extCapabilityDesc["type"]; // panTileIdentifier holds the information if we are translating pan or tilt
+	std::string panTiltIdentifierL = panTiltIdentifier; // panTiltIdentifierL is the lowercase equivalent
+	std::transform(panTiltIdentifierL.begin(), panTiltIdentifierL.end(), panTiltIdentifierL.begin(), [](unsigned char c) {return std::tolower(c);});
+
+	// Check angle start and angle end to calculate Range
 	if (!extCapabilityDesc.contains("angleStart") || !extCapabilityDesc["angleStart"].is_string()) 
 		throw std::exception("No angleStart in extCapabilityDesc!");
 	int angleStart = convertDegStrToInt(extCapabilityDesc["angleStart"]);
@@ -607,41 +614,15 @@ ci::Json act::room::OFLDescriptionMapper::translatePanCapability(ci::Json const&
 		throw std::exception("No angleEnd in extCapabilityDesc!");
 	int angleEnd = convertDegStrToInt(extCapabilityDesc["angleEnd"]);
 
-	if (angleEnd < angleStart) throw std::exception("angleStart is larger that angleEnd in pan capability!");
+	if (angleEnd < angleStart) throw std::exception("angleStart is larger that angleEnd in pan or tilt capability!");
 
-	descPatch["panRange"] = angleEnd - angleStart;
+	descPatch[panTiltIdentifierL +"Range"] = angleEnd - angleStart;
 
-	descPatch["mapping"]["pan"] = dmxOffset;
-
-	auto const& fineChannelMap = resolveFineChannels(fullExtDesc, modeIndex, extChannelDesc, 1);
-	if (fineChannelMap.size() == 1 && fineChannelMap.begin()->second >= 0)
-		descPatch["mapping"]["finePan"] = fineChannelMap.begin()->second + 1; //Add +1 because inACTually starts at 1 but channels index starts at 0
-
-	return descPatch;
-}
-
-ci::Json act::room::OFLDescriptionMapper::translateTiltCapability(ci::Json const& extCapabilityDesc, ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex)
-{
-	ci::Json descPatch = ci::Json::object();
-
-	// Check angle start and angle end to calculate tiltRange
-	if (!extCapabilityDesc.contains("angleStart") || !extCapabilityDesc["angleStart"].is_string())
-		throw std::exception("No angleStart in extCapabilityDesc!");
-	int angleStart = convertDegStrToInt(extCapabilityDesc["angleStart"]);
-
-	if (!extCapabilityDesc.contains("angleEnd") || !extCapabilityDesc["angleEnd"].is_string())
-		throw std::exception("No angleEnd in extCapabilityDesc!");
-	int angleEnd = convertDegStrToInt(extCapabilityDesc["angleEnd"]);
-
-	if (angleEnd < angleStart) throw std::exception("angleStart is larger that angleEnd in tilt capability!");
-
-	descPatch["tiltRange"] = angleEnd - angleStart;
-
-	descPatch["mapping"]["tilt"] = dmxOffset;
+	descPatch["mapping"][panTiltIdentifierL] = dmxOffset;
 
 	auto const& fineChannelMap = resolveFineChannels(fullExtDesc, modeIndex, extChannelDesc, 1);
 	if (fineChannelMap.size() == 1 && fineChannelMap.begin()->second >= 0)
-		descPatch["mapping"]["fineTilt"] = fineChannelMap.begin()->second + 1; //Add +1 because inACTually starts at 1 but channels index starts at 0
+		descPatch["mapping"]["fine"+ panTiltIdentifier] = fineChannelMap.begin()->second + 1; //Add +1 because inACTually starts at 1 but channels index starts at 0
 
 	return descPatch;
 }
