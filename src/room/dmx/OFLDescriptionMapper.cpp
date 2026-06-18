@@ -415,6 +415,9 @@ std::string act::room::OFLDescriptionMapper::getWheelNameKey(std::string const& 
 
 int act::room::OFLDescriptionMapper::convertDegStrToInt(std::string degStr, std::string decimalpoint)
 {
+	// NOTE: angles in OFL can also be in % but since inACTually currently can not handle 
+	// proportional angles it wont be converted but result in an exception
+
 	size_t degPos = degStr.find("deg");
 	
 	if (degPos == std::string::npos) throw std::invalid_argument("degStr does not contain 'deg'!");
