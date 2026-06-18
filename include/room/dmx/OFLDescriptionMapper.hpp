@@ -51,6 +51,8 @@ namespace act {
 				ci::Json externalDescription;
 				std::vector<OFLModeRef> modes;
 				std::string type;
+				bool isSupportedType = false;
+				bool forceTranslation = false;
 				int selectedMode;
 				bool queuedForLoading = false;
 				bool queuedForImport = false;
@@ -106,7 +108,8 @@ namespace act {
 
 			// Checks if array of objects contains the key with the value or just the value / key if one is empty
 			// returns index or -1 if nothing is found
-			int isInJsonObjArray(std::string key, std::string value, ci::Json array);
+			int isInJsonObjArray(std::string key, std::string value, ci::Json const& array);
+			bool isInJsonArray(std::string value, ci::Json const& array);
 
 			// Calculates the distance in address offset from baseRange to distantRange
 			// assumes lower address first, higher address second

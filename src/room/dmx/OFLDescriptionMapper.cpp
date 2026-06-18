@@ -191,9 +191,17 @@ bool act::room::OFLDescriptionMapper::parseBasicDescription(OFLFixtureDescriptio
 		fixtureDescription->modes.push_back(std::make_shared<OFLMode>(oflMode));
 	}
 
-	translateOFLtoInternal(fixtureDescription);
-
-	fixtureDescription->hasError = false;
+	try
+	{
+		translateOFLtoInternal(fixtureDescription);
+		fixtureDescription->hasError = false;
+	}
+	catch (const std::exception& e)
+	{
+		fixtureDescription->hasError = true;
+		CI_LOG_E("Could not translate fixture: '" << fixtureDescription->name << "'! : " << e.what());
+		return false;
+	}
 
 	return true;
 }
@@ -202,6 +210,30 @@ bool act::room::OFLDescriptionMapper::parseBasicDescription(OFLFixtureDescriptio
 bool act::room::OFLDescriptionMapper::translateOFLtoInternal(OFLFixtureDescriptionRef fixtureDescription)
 {
 	auto const& externalDesc = fixtureDescription->externalDescription;
+
+	// Type
+	if (!externalDesc.contains("categories") || !externalDesc["categories"].is_array())
+		throw std::invalid_argument("external description does not contain array of fixture categories!");
+
+	// Check if it is a laser and abort transltion if it is
+	if (isInJsonArray("Laser", externalDesc["categories"]))
+	{
+		fixtureDescription->type = "laser";
+		fixtureDescription->isSupportedType = false;
+		throw std::exception("Fixture is or contains a laser! InACTually currently can not handle lasers so no translation will be performed.");
+	}
+
+	// Check if it is one of the supported types
+	if (externalDesc["categories"].size() == 1 && externalDesc["categories"][0] == "Dimmer")
+		fixtureDescription->type = "dimmer";
+	else if (isInJsonArray("Moving Head", externalDesc["categories"]) || isInJsonArray("Color Changer", externalDesc["categories"]))
+		fixtureDescription->type = "mv";
+	else if (fixtureDescription->forceTranslation)
+		fixtureDescription->type = "mv";
+	else
+		throw std::exception("Fixture type is not supported");
+
+	fixtureDescription->isSupportedType = true;
 
 	for (int modeIndex = 0; modeIndex < fixtureDescription->modes.size(); modeIndex++)
 	{
@@ -214,12 +246,7 @@ bool act::room::OFLDescriptionMapper::translateOFLtoInternal(OFLFixtureDescripti
 		std::string fixtureName = externalDesc["name"];
 		modeRef->internalDescBase["name"] = fixtureName + " (" + modeRef->name + " mode)";
 
-		// Type
-		// Check if it is only a dimmer
-		if (externalDesc.contains("categories") && externalDesc["categories"].is_array() && externalDesc["categories"].size() == 1 && externalDesc["categories"][0] == "Dimmer")
-			modeRef->internalDescBase["type"] = "dimmer";
-		else
-			modeRef->internalDescBase["type"] = "mv"; // currentry InACTually only supports dimmers and moving heads
+		modeRef->internalDescBase["type"] = fixtureDescription->type;
 
 		// Determine number of channels
 		if (!externalDesc.contains("modes") || externalDesc["modes"].size() - 1 < modeIndex)
@@ -290,6 +317,9 @@ bool act::room::OFLDescriptionMapper::translateOFLtoInternal(OFLFixtureDescripti
 				CI_LOG_E("Json Patch is Null! This would destroy the internalDescription and is therefore ignored! channelkey:" << channelKey);
 				continue;
 			}
+
+			if (fixtureDescription->forceTranslation)
+				modeRef->internalDescBase["notes"]["forcedTranslation"] = "CHECK TRANSLATION BEFORE USING THE DESCRIPTION! Fixture type is not a supported fixture type. Translation was forced by the user.";
 
 			descPatchRef->descriptionPatch = internalDescPatch;
 
@@ -449,7 +479,7 @@ float act::room::OFLDescriptionMapper::speedToFloat(std::string speed)
 	return std::stof(speed);
 }
 
-int act::room::OFLDescriptionMapper::isInJsonObjArray(std::string key, std::string value, ci::Json array)
+int act::room::OFLDescriptionMapper::isInJsonObjArray(std::string key, std::string value, ci::Json const& array)
 {
 	if (!array.is_array()) return -1;
 
@@ -469,6 +499,20 @@ int act::room::OFLDescriptionMapper::isInJsonObjArray(std::string key, std::stri
 	}
 
 	return -1;
+}
+
+bool act::room::OFLDescriptionMapper::isInJsonArray(std::string value, ci::Json const& array)
+{
+	if (!array.is_array())
+		return false;
+	for (auto const& entry : array)
+	{
+		if (!entry.is_string())
+			continue;
+		if (entry == value)
+			return true;
+	}
+	return false;
 }
 
 int act::room::OFLDescriptionMapper::dmxRangeDistance(ci::Json const& distantRange, ci::Json const& baseRange)

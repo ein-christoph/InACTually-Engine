@@ -211,6 +211,31 @@ void act::room::FixtureDescriptionImporter::drawOFLFixtureDetails(OFLDescription
 		return;
 	}
 
+	if (!fixture->isSupportedType) 
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+		ImGui::Text("Fixture type is not supported!");
+		ImGui::PopStyleColor();
+		if (fixture->type == "laser")
+		{
+			ImGui::Text("InACTually can not handle lasers so they won't be translated.");
+			return;
+		}
+
+		bool checkBoxBefore = fixture->forceTranslation;
+		ImGui::Checkbox(("Force translation of '"+fixture->name + "' anyway").c_str(), &fixture->forceTranslation);
+		if (fixture->forceTranslation != checkBoxBefore && fixture->forceTranslation)
+		{
+			// set externalDescription to empty to force new traslation
+			fixture->externalDescription = ci::Json();
+			fixture->queuedForLoading = true;
+			m_oflFetchFixtureQueue.push_back(fixture);
+		}
+
+		if(!fixture->forceTranslation) // Continue only if we force translated the fixture
+			return; 
+	}
+
 	if (fixture->hasError)
 	{
 		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
