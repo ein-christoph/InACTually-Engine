@@ -98,25 +98,16 @@ namespace act {
 			std::string m_ManufacturerIdxFileName = "manufacturers.json";
 			OpenFixtureLibaray m_ofl;
 
+			//Translates a channel into a json patch of the internal description calling the corresponding translate methods
+			ci::Json translateChannel(ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName);
+			
+			// Checks all channels in mapping of description patch and adds the descriptionRef to the translation of those channels if they do not have a translation jet
+			// The mapping with the primaryDMXOffset will be ignored because it should already have the description
 			void addDescToOtherAffectedChannels(OFLModeRef modeRef, OFLChannelDescPatchRef channelDescPatchRef, std::string const& channelKey, int primaryDmxOffset);
-			void attachNoteToChannelDesc(ci::Json& internalDescPatch, int dmxOffset, std::string note);
-
-			std::string getWheelNameKey(std::string const& channelName, ci::Json const& extCapabilities);
-			int convertDegStrToInt(std::string degStr, std::string decimalpoint = ".");
-
-			float speedToFloat(std::string speed);
-
-			// Calculates the distance in address offset from baseRange to distantRange
-			// assumes lower address first, higher address second
-			int dmxRangeDistance(ci::Json const& distantRange, ci::Json const& baseRange);
-			int dmxRangeToDmxValue(ci::Json const& dmxRange);
 
 			// Takes fineChannelAliases array and resolves them to dmx Offset in the channels List of the given mode
 			// Returns map of fine channel alias with corresponding int or -1 if fineChannelAlias could not be resolved
 			std::map<std::string, int> resolveFineChannels(ci::Json const& fullExtDesc, int mode, ci::Json const& extChannelDesc, int maxAliases = 1);
-
-			//Translates a channel into a json patch of the internal description calling the corresponding translate methods
-			ci::Json translateChannel(ci::Json const& extChannelDesc, ci::Json const& fullExtDesc, int dmxOffset, int modeIndex, std::string const& channelName);
 
 			/* Translation methods should all use the same signature to provide fast access to relevant context information
 			 * (  ci::Json const& extCapabilityDesc	reference to the capability which should be translated

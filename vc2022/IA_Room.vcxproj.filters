@@ -195,6 +195,9 @@
     <ClInclude Include="..\include\room\dmx\FixtureDescriptionImporter.hpp">
       <Filter>Source Files\dmx</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\room\dmx\OFLHelper.hpp">
+      <Filter>Source Files\dmx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="IA_Room_ClassDiagram.cd" />

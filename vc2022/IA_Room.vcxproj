@@ -156,6 +156,7 @@
     <ClInclude Include="..\include\room\dmx\FixtureDescriptionImporter.hpp" />
     <ClInclude Include="..\include\room\dmx\MovingHeadRoomNode.hpp" />
     <ClInclude Include="..\include\room\dmx\OFLDescriptionMapper.hpp" />
+    <ClInclude Include="..\include\room\dmx\OFLHelper.hpp" />
     <ClInclude Include="..\include\room\kinect\KinectDevice.hpp" />
     <ClInclude Include="..\include\room\kinect\KinectDummy.hpp" />
     <ClInclude Include="..\include\room\kinect\KinectManager.hpp" />

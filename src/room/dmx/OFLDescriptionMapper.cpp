@@ -15,6 +15,7 @@
 
 #include "roompch.hpp"
 #include "dmx/OFLDescriptionMapper.hpp"
+#include "dmx/OFLHelper.hpp"
 #include "utils/RGBAWHelper.h"
 #include "utils/jsonHelper.hpp"
 
@@ -358,10 +359,6 @@ ci::Json act::room::OFLDescriptionMapper::getInternalDescription(OFLFixtureDescr
 
 void act::room::OFLDescriptionMapper::addDescToOtherAffectedChannels(OFLModeRef modeRef, OFLChannelDescPatchRef channelDescPatchRef, std::string const& channelKey, int primaryDmxOffset)
 {
-	// Checks all channels in mapping of description patch and adds the description ref to the translation 
-	// if no translation exists jet
-	// the mapping with the primaryDMXOffset will be ignored because it should already have the description
-
 	// Loop over Mapping and add TranslationRef to corresponding TranslationMappings
 	if (channelDescPatchRef->descriptionPatch.is_null() || channelDescPatchRef->descriptionPatch.empty())
 		return;
@@ -396,10 +393,10 @@ void act::room::OFLDescriptionMapper::addDescToOtherAffectedChannels(OFLModeRef 
 				// So we dont include both by default and add a warning
 				std::string note = "The parameter has two conflicting translations! Caused by parameter '" + parameter + "'!";
 				channelDescPatchRef->includePatch = false;
-				attachNoteToChannelDesc(channelDescPatchRef->descriptionPatch, inACTparamOffset, note);
+				OFLHelper::attachNoteToChannelDesc(channelDescPatchRef->descriptionPatch, inACTparamOffset, note);
 
 				channelTranslationRef->channelDescPatch->includePatch = false;
-				attachNoteToChannelDesc(channelTranslationRef->channelDescPatch->descriptionPatch, inACTparamOffset, note);
+				OFLHelper::attachNoteToChannelDesc(channelTranslationRef->channelDescPatch->descriptionPatch, inACTparamOffset, note);
 				continue;
 			}
 
@@ -415,91 +412,6 @@ void act::room::OFLDescriptionMapper::addDescToOtherAffectedChannels(OFLModeRef 
 			modeRef->channelTranslationMapping.insert({ paramDmxOffset, translationRef });
 		}
 	}
-}
-
-void act::room::OFLDescriptionMapper::attachNoteToChannelDesc(ci::Json& internalDescPatch, int dmxOffset, std::string note)
-{
-	if (!internalDescPatch.contains("notes"))
-		internalDescPatch["notes"] = ci::Json::object();
-
-	std::string channelKey = "channel-" + std::to_string(dmxOffset);
-
-	if (internalDescPatch["notes"].contains(channelKey) && !internalDescPatch["notes"][channelKey].is_array())
-	{
-		// There is already a notes list for that channel but it is not an array
-		CI_LOG_E("could not attach note to channel " << channelKey << " because there are notes but not as array! note:"<<note);
-		return;
-	}
-	else
-	{
-		// There is no notes list jet so we create an array
-		internalDescPatch["notes"][channelKey] = ci::Json::array();
-	}
-	internalDescPatch["notes"][channelKey].push_back(note);
-}
-
-std::string act::room::OFLDescriptionMapper::getWheelNameKey(std::string const& channelName, ci::Json const& extCapabilities)
-{
-	// WheelName can be channel name or stated explicitly in the description
-	return (extCapabilities.contains("wheel") && extCapabilities["wheel"].is_string()) ? extCapabilities["wheel"].get<std::string>() : channelName;
-}
-
-int act::room::OFLDescriptionMapper::convertDegStrToInt(std::string degStr, std::string decimalpoint)
-{
-	// NOTE: angles in OFL can also be in % but since inACTually currently can not handle 
-	// proportional angles it wont be converted but result in an exception
-
-	size_t degPos = degStr.find("deg");
-	
-	if (degPos == std::string::npos) throw std::invalid_argument("degStr does not contain 'deg'!");
-	if (degStr.length() - degPos != 3) throw std::invalid_argument("degStr does not contain 'deg' as last three characters!");
-
-	degStr.erase(degStr.length() - 3, 3);
-
-	if (degStr.find(decimalpoint) != std::string::npos)
-		return static_cast<int>(std::round(std::stof(degStr)));
-	else
-		return std::stoi(degStr);
-}
-
-float act::room::OFLDescriptionMapper::speedToFloat(std::string speed)
-{
-	// Speed can have Hz, bpm or % as units
-	size_t HzPos = speed.find("Hz");
-	if (HzPos != std::string::npos)
-		speed.erase(HzPos, 2);
-
-	size_t bpmPos = speed.find("bpm");
-	if (bpmPos != std::string::npos)
-		speed.erase(bpmPos, 3);
-
-	size_t percPos = speed.find("%");
-	if (percPos != std::string::npos)
-		speed.erase(percPos, 1);
-
-	return std::stof(speed);
-}
-
-int act::room::OFLDescriptionMapper::dmxRangeDistance(ci::Json const& distantRange, ci::Json const& baseRange)
-{
-	if (!distantRange.is_array() || !baseRange.is_array()
-		|| distantRange.size() != 2 || baseRange.size() != 2)
-		throw new std::invalid_argument("Malformed dmxRanges!");
-
-	if (distantRange[1] < baseRange[0])
-		return distantRange[1].get<int>() - baseRange[0].get<int>(); // distantRange below baseRange
-	if (baseRange[1] < distantRange[0])
-		return distantRange[0].get<int>() - baseRange[1].get<int>(); // disntantRange above baseRange 
-
-	return 0; // distantRange within baseRange (/or overlapping)
-}
-
-int act::room::OFLDescriptionMapper::dmxRangeToDmxValue(ci::Json const& dmxRange)
-{
-	if (!dmxRange.is_array() || dmxRange.size() != 2)
-		throw std::invalid_argument("Malformed dmxRange!");
-
-	return std::round((dmxRange[0].get<int>() + dmxRange[1].get<int>()) * 0.5);
 }
 
 std::map<std::string, int> act::room::OFLDescriptionMapper::resolveFineChannels(ci::Json const& fullExtDesc, int modeIndex, ci::Json const& extChannelDesc, int maxAliases)
@@ -620,11 +532,11 @@ ci::Json act::room::OFLDescriptionMapper::translatePanTiltCapability(ci::Json co
 	// Check angle start and angle end to calculate Range
 	if (!extCapabilityDesc.contains("angleStart") || !extCapabilityDesc["angleStart"].is_string()) 
 		throw std::exception("No angleStart in extCapabilityDesc!");
-	int angleStart = convertDegStrToInt(extCapabilityDesc["angleStart"]);
+	int angleStart = OFLHelper::convertDegStrToInt(extCapabilityDesc["angleStart"]);
 
 	if (!extCapabilityDesc.contains("angleEnd") || !extCapabilityDesc["angleEnd"].is_string())
 		throw std::exception("No angleEnd in extCapabilityDesc!");
-	int angleEnd = convertDegStrToInt(extCapabilityDesc["angleEnd"]);
+	int angleEnd = OFLHelper::convertDegStrToInt(extCapabilityDesc["angleEnd"]);
 
 	if (angleEnd < angleStart) throw std::exception("angleStart is larger that angleEnd in pan or tilt capability!");
 
@@ -645,11 +557,11 @@ ci::Json act::room::OFLDescriptionMapper::translateZoomCapability(ci::Json const
 
 	if (!extCapabilityDesc.contains("angleStart") || !extCapabilityDesc["angleStart"].is_string())
 		throw std::exception("No angleStart in extCapabilityDesc!");
-	int angleStart = convertDegStrToInt(extCapabilityDesc["angleStart"]);
+	int angleStart = OFLHelper::convertDegStrToInt(extCapabilityDesc["angleStart"]);
 
 	if (!extCapabilityDesc.contains("angleEnd") || !extCapabilityDesc["angleEnd"].is_string())
 		throw std::exception("No angleEnd in extCapabilityDesc!");
-	int angleEnd = convertDegStrToInt(extCapabilityDesc["angleEnd"]);
+	int angleEnd = OFLHelper::convertDegStrToInt(extCapabilityDesc["angleEnd"]);
 
 	if (angleStart > angleEnd)
 	{
@@ -727,7 +639,7 @@ bool act::room::OFLDescriptionMapper::isColorWheel(std::string const& channelNam
 	if (idx < 0)
 		return false; // No WheelSlot in capabilities
 
-	std::string WheelName = getWheelNameKey(channelName, extChannelDesc["capabilities"][idx]);
+	std::string WheelName = OFLHelper::getWheelNameKey(channelName, extChannelDesc["capabilities"][idx]);
 
 	if (!fullExtDesc.contains("wheels") || !fullExtDesc["wheels"].contains(WheelName) || !fullExtDesc["wheels"][WheelName].contains("slots") || !fullExtDesc["wheels"][WheelName]["slots"].is_array())
 		return false; // Color wheels always have a seperate description holding the information about the colors
@@ -780,7 +692,7 @@ ci::Json act::room::OFLDescriptionMapper::translateColorWheelCapability(ci::Json
 			|| !capability["dmxRange"][0].is_number() || !capability["dmxRange"][1].is_number())
 			throw std::invalid_argument("Malformed dmxRange in capability!");
 
-		int dmxValue = dmxRangeToDmxValue(capability["dmxRange"]);
+		int dmxValue = OFLHelper::dmxRangeToDmxValue(capability["dmxRange"]);
 
 		if (!capability.contains("slotNumber") || !capability["slotNumber"].is_number())
 		{
@@ -872,7 +784,7 @@ bool act::room::OFLDescriptionMapper::isGoboWheel(std::string const& channelName
 		return false; // No WheelSlot in capabilities
 
 	// WheelName can be channel name or stated explicitly in the description
-	std::string WheelName = getWheelNameKey(channelName, extChannelDesc["capabilities"][idx]);
+	std::string WheelName = OFLHelper::getWheelNameKey(channelName, extChannelDesc["capabilities"][idx]);
 
 	if (!fullExtDesc.contains("wheels") || !fullExtDesc["wheels"].contains(WheelName) || !fullExtDesc["wheels"][WheelName].contains("slots") || !fullExtDesc["wheels"][WheelName]["slots"].is_array())
 		return false; // Gobo wheels always have a seperate description holding the information about the gobos
@@ -1114,7 +1026,7 @@ ci::Json act::room::OFLDescriptionMapper::translateShutterStrobeCapability(ci::J
 				continue;
 			}
 
-			int newDistance = abs(dmxRangeDistance(capability["dmxRange"], strobeCapability["dmxRange"]));
+			int newDistance = abs(OFLHelper::dmxRangeDistance(capability["dmxRange"], strobeCapability["dmxRange"]));
 			if (openStateIdxAndDistance[0] < 0 || newDistance < openStateIdxAndDistance[1])
 			{
 				openStateIdxAndDistance[0] = idx;
@@ -1133,7 +1045,7 @@ ci::Json act::room::OFLDescriptionMapper::translateShutterStrobeCapability(ci::J
 
 	descPatch["strobeMap"] = ci::Json::object();
 	int minValue, maxValue = -1;
-	int noneValue = dmxRangeToDmxValue(extChannelDesc["capabilities"][openStateIdxAndDistance[0]]["dmxRange"]);
+	int noneValue = OFLHelper::dmxRangeToDmxValue(extChannelDesc["capabilities"][openStateIdxAndDistance[0]]["dmxRange"]);
 	descPatch["strobeMap"]["none"] = noneValue;
 	
 	// Check if speedStart is lower than speedEnd
@@ -1146,14 +1058,14 @@ ci::Json act::room::OFLDescriptionMapper::translateShutterStrobeCapability(ci::J
 	else if (str_speedStart == "fast")
 		speedStart = -1;
 	else
-		speedStart = speedToFloat(str_speedStart);
+		speedStart = OFLHelper::speedToFloat(str_speedStart);
 
 	if (str_speedEnd == "slow")
 		speedEnd = -2;
 	else if (str_speedEnd == "fast")
 		speedEnd = -1;
 	else
-		speedEnd = speedToFloat(str_speedEnd);
+		speedEnd = OFLHelper::speedToFloat(str_speedEnd);
 
 	if (speedStart < speedEnd)
 	{
