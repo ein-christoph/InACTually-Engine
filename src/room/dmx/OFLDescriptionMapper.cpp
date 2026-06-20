@@ -147,14 +147,18 @@ bool act::room::OFLDescriptionMapper::parseLibraryMeta()
 	return true;
 }
 
-bool act::room::OFLDescriptionMapper::parseBasicDescription(OFLFixtureDescriptionRef fixtureDescription)
+bool act::room::OFLDescriptionMapper::parseFixtureDescription(OFLFixtureDescriptionRef fixtureDescription)
 {
+	CI_LOG_I("Parsing Description of '" << fixtureDescription->name << "' ...");
 	fixtureDescription->externalDescription.clear();
 	fixtureDescription->modes.clear();
 	fixtureDescription->hasError = true;
 
 	if (!fixtureDescription->descriptionPath.has_extension() || fixtureDescription->descriptionPath.extension() != ".json")
-		throw std::invalid_argument("OFLDescriptionMapper::parseBasicDescription: Could not load fixture description because path does not lead to a json file!");
+	{
+		CI_LOG_E("OFLDescriptionMapper::parseBasicDescription: Could not load fixture description because path does not lead to a json file!");
+		return false;
+	}
 
 	try
 	{
@@ -174,55 +178,20 @@ bool act::room::OFLDescriptionMapper::parseBasicDescription(OFLFixtureDescriptio
 	if (!externalDesc.contains("availableChannels") || !externalDesc["availableChannels"].is_object())
 		return false;
 
-	// Check and set category
+	//=== Check and set fixture type
 	if (!externalDesc.contains("categories") || !externalDesc["categories"].is_array())
-		return false;
-
-	// Check and set modes and corresponding channels
-	if (!externalDesc.contains("modes") || !externalDesc["modes"].is_array())
-		return false;
-
-	for (const auto& modeDesc : externalDesc["modes"])
 	{
-		if (!modeDesc.is_object() || !modeDesc.contains("name") || !modeDesc.contains("channels") || !modeDesc["channels"].is_array())
-			return false;
-
-		OFLMode oflMode = {
-			.name = modeDesc["name"]
-		};
-		fixtureDescription->modes.push_back(std::make_shared<OFLMode>(oflMode));
-	}
-
-	try
-	{
-		translateOFLtoInternal(fixtureDescription);
-		fixtureDescription->hasError = false;
-	}
-	catch (const std::exception& e)
-	{
-		fixtureDescription->hasError = true;
-		CI_LOG_E("Could not translate fixture: '" << fixtureDescription->name << "'! : " << e.what());
+		CI_LOG_E("External description does not contain array of fixture categories!");
 		return false;
 	}
-
-	return true;
-}
-
-// Takes a OFLFixtureDescription and tries to translate the parameters of the available modes into the inACTually internal fixture format
-bool act::room::OFLDescriptionMapper::translateOFLtoInternal(OFLFixtureDescriptionRef fixtureDescription)
-{
-	auto const& externalDesc = fixtureDescription->externalDescription;
-
-	// Type
-	if (!externalDesc.contains("categories") || !externalDesc["categories"].is_array())
-		throw std::invalid_argument("external description does not contain array of fixture categories!");
-
+		
 	// Check if it is a laser and abort transltion if it is
 	if (act::util::isInJsonArray("Laser", externalDesc["categories"]))
 	{
 		fixtureDescription->type = "laser";
 		fixtureDescription->isSupportedType = false;
-		throw std::exception("Fixture is or contains a laser! InACTually currently can not handle lasers so no translation will be performed.");
+		CI_LOG_W("Fixture is or contains a laser! InACTually currently can not handle lasers so no translation will be performed.");
+		return false;
 	}
 
 	// Check if it is one of the supported types
@@ -233,105 +202,137 @@ bool act::room::OFLDescriptionMapper::translateOFLtoInternal(OFLFixtureDescripti
 	else if (fixtureDescription->forceTranslation)
 		fixtureDescription->type = "mv";
 	else
-		throw std::exception("Fixture type is not supported");
+	{
+		CI_LOG_W("Fixture type is not supported");
+		return false;
+	}
 
 	fixtureDescription->isSupportedType = true;
 
-	for (int modeIndex = 0; modeIndex < fixtureDescription->modes.size(); modeIndex++)
+	//=== Check and set modes and corresponding channels
+	if (!externalDesc.contains("modes") || !externalDesc["modes"].is_array())
+		return false;
+
+	for (int modeIndex = 0; modeIndex < externalDesc["modes"].size(); modeIndex++)
 	{
-		OFLModeRef modeRef = fixtureDescription->modes.at(modeIndex);
-		modeRef->internalDescBase = ci::Json::object();
+		ci::Json const& modeDesc = externalDesc["modes"][modeIndex];
+		if (!modeDesc.is_object() || !modeDesc.contains("name") || !modeDesc.contains("channels") || !modeDesc["channels"].is_array())
+			return false;
 
-		//Fixture Name (always mode specific)
-		if (!externalDesc.contains("name") || !externalDesc["name"].is_string()) 
-			{ CI_LOG_E("OFL fixture import failed! No Name in external Description found."); return false; }
-		std::string fixtureName = externalDesc["name"];
-		modeRef->internalDescBase["name"] = fixtureName + " (" + modeRef->name + " mode)";
+		OFLMode oflMode = {
+			.name = modeDesc["name"]
+		};
+		OFLModeRef oflModeRef = std::make_shared<OFLMode>(oflMode);
+		fixtureDescription->modes.push_back(oflModeRef);
 
-		modeRef->internalDescBase["type"] = fixtureDescription->type;
-
-		// Determine number of channels
-		if (!externalDesc.contains("modes") || externalDesc["modes"].size() - 1 < modeIndex)
-			throw std::invalid_argument("Mode not found in external Description.");
-		if (!externalDesc["modes"][modeIndex].contains("channels") || !externalDesc["modes"][modeIndex]["channels"].is_array())
-			throw std::invalid_argument("No ChannelArray found for selected mode.");
-		modeRef->internalDescBase["channel"] = externalDesc["modes"][modeIndex]["channels"].size();
-		
-		// Translate channels for selected mode to mapping
-		// adding other information to the description if needed
-		if (!externalDesc.contains("availableChannels") || !externalDesc["availableChannels"].is_object())
-			throw std::invalid_argument("AvailableChannels missing in externalDescription");
-
-		for (int dmxOffset = 0; dmxOffset < externalDesc["modes"][modeIndex]["channels"].size(); dmxOffset++)
+		// Translate ofl description into inACTually description (mode specific)
+		try
 		{
-			if (!externalDesc["modes"][modeIndex]["channels"][dmxOffset].is_string())
-			{
-				CI_LOG_W("Unexpected channels format in external fixture defifition! Skipping non-string entries.");
-				continue;
-			}
+			translateOFLModeToInternal(modeDesc, fixtureDescription, oflModeRef, modeIndex);
+			fixtureDescription->hasError = false;
+		}
+		catch (const std::exception& e)
+		{
+			fixtureDescription->hasError = true;
+			CI_LOG_E("Could not translate fixture: '" << fixtureDescription->name << "'! : " << e.what());
+			continue;
+		}
+	}
 
-			const std::string& channelKey = externalDesc["modes"][modeIndex]["channels"][dmxOffset];
+	return true;
+}
 
-			OFLChannelDescPatchRef descPatchRef = std::make_shared<OFLChannelDescPatch>();
-			descPatchRef->includePatch = false;
+bool act::room::OFLDescriptionMapper::translateOFLModeToInternal(ci::Json const& modeDesc, OFLFixtureDescriptionRef fixtureDescription, OFLModeRef modeRef, int modeIndex)
+{
+	ci::Json const& externalDesc = fixtureDescription->externalDescription;
+	modeRef->internalDescBase = ci::Json::object();
 
-			// Check if there is already a translation for this channel
-			// checkOtherAffectedChannels could produce that
-			OFLChannelTranslationRef channelTranslationRef;
-			if (!modeRef->channelTranslationMapping.contains(dmxOffset))
-			{
-				OFLChannelTranslation channelTranslation;
-				channelTranslation.oflChannelKey = channelKey;
-				channelTranslation.channelDescPatch = descPatchRef;
+	//Fixture Name (always mode specific)
+	modeRef->internalDescBase["name"] = fixtureDescription->name + " (" + modeRef->name + " mode)";
 
-				channelTranslationRef = std::make_shared<OFLChannelTranslation>(channelTranslation);
-				modeRef->channelTranslationMapping.insert({ dmxOffset, channelTranslationRef });
-			}
-			else
-			{
-				channelTranslationRef = modeRef->channelTranslationMapping.at(dmxOffset);
-				if (channelTranslationRef->oflChannelKey == "unknown")
-					channelTranslationRef->oflChannelKey = channelKey;
-			}
+	modeRef->internalDescBase["type"] = fixtureDescription->type;
 
-			// Channels are arbitrary keys so we need to lookup type of the capability which should follow a standardised naming
-			// So lets check if the channel key is in the available channels and has a capability with a type
-			if (!externalDesc["availableChannels"].contains(channelKey))
-			{
-				CI_LOG_W("Could not find channl key '" << channelKey << "' in availableChannels! Skipping channel.");
-				continue;
-			}
+	// Determine number of channels
+	if (!modeDesc.contains("channels") || !modeDesc["channels"].is_array())
+		throw std::invalid_argument("No ChannelArray found for selected mode.");
 
-			ci::Json internalDescPatch = ci::Json::object();
+	modeRef->internalDescBase["channel"] = modeDesc["channels"].size();
+		
+	// Translate channels for selected mode to mapping
+	// adding other information to the description if needed
+	if (!externalDesc.contains("availableChannels") || !externalDesc["availableChannels"].is_object())
+		throw std::invalid_argument("AvailableChannels missing in externalDescription");
 
-			try
-			{
-				internalDescPatch = translateChannel(externalDesc["availableChannels"][channelKey], externalDesc, dmxOffset + 1, modeIndex, channelKey);
-			}
-			catch (const std::exception& e)
-			{
-				CI_LOG_W("Could not translate channel '" << channelKey << "' :" << e.what());
-			}
+	for (int dmxOffset = 0; dmxOffset < modeDesc["channels"].size(); dmxOffset++)
+	{
+		if (!modeDesc["channels"][dmxOffset].is_string())
+		{
+			CI_LOG_W("Unexpected channels format in external fixture defifition! Skipping non-string entries.");
+			continue;
+		}
+
+		const std::string& channelKey = modeDesc["channels"][dmxOffset];
+
+		OFLChannelDescPatchRef descPatchRef = std::make_shared<OFLChannelDescPatch>();
+		descPatchRef->includePatch = false;
+
+		// Check if there is already a translation for this channel
+		// checkOtherAffectedChannels could produce that
+		OFLChannelTranslationRef channelTranslationRef;
+		if (!modeRef->channelTranslationMapping.contains(dmxOffset))
+		{
+			OFLChannelTranslation channelTranslation;
+			channelTranslation.oflChannelKey = channelKey;
+			channelTranslation.channelDescPatch = descPatchRef;
+
+			channelTranslationRef = std::make_shared<OFLChannelTranslation>(channelTranslation);
+			modeRef->channelTranslationMapping.insert({ dmxOffset, channelTranslationRef });
+		}
+		else
+		{
+			channelTranslationRef = modeRef->channelTranslationMapping.at(dmxOffset);
+			if (channelTranslationRef->oflChannelKey == "unknown")
+				channelTranslationRef->oflChannelKey = channelKey;
+		}
+
+		// Channels are arbitrary keys so we need to lookup type of the capability which should follow a standardised naming
+		// So lets check if the channel key is in the available channels and has a capability with a type
+		if (!externalDesc["availableChannels"].contains(channelKey))
+		{
+			CI_LOG_W("Could not find channl key '" << channelKey << "' in availableChannels! Skipping channel.");
+			continue;
+		}
+
+		ci::Json internalDescPatch = ci::Json::object();
+
+		try
+		{
+			internalDescPatch = translateChannel(externalDesc["availableChannels"][channelKey], externalDesc, dmxOffset + 1, modeIndex, channelKey);
+		}
+		catch (const std::exception& e)
+		{
+			CI_LOG_W("Could not translate channel '" << channelKey << "' :" << e.what());
+		}
 			
 
-			if (internalDescPatch.is_null())
-			{
-				CI_LOG_E("Json Patch is Null! This would destroy the internalDescription and is therefore ignored! channelkey:" << channelKey);
-				continue;
-			}
-
-			if (fixtureDescription->forceTranslation)
-				modeRef->internalDescBase["notes"]["forcedTranslation"] = "CHECK TRANSLATION BEFORE USING THE DESCRIPTION! Fixture type is not a supported fixture type. Translation was forced by the user.";
-
-			descPatchRef->descriptionPatch = internalDescPatch;
-
-			addDescToOtherAffectedChannels(modeRef, descPatchRef, channelKey, dmxOffset);
-
-			if (!internalDescPatch.empty() && !internalDescPatch.contains("notes"))
-				descPatchRef->includePatch = true;
-			else
-				CI_LOG_W("Channel " << channelKey << " wont be included in final translation by default because it's translation resulted in notes.");
+		if (internalDescPatch.is_null())
+		{
+			CI_LOG_E("Json Patch is Null! This would destroy the internalDescription and is therefore ignored! channelkey:" << channelKey);
+			continue;
 		}
+
+		if (fixtureDescription->forceTranslation)
+			modeRef->internalDescBase["notes"]["forcedTranslation"] = "CHECK TRANSLATION BEFORE USING THE DESCRIPTION! Fixture type is not a supported fixture type. Translation was forced by the user.";
+
+		descPatchRef->descriptionPatch = internalDescPatch;
+
+		// Add description to all channels in the mapping of the description patch
+		addDescToOtherAffectedChannels(modeRef, descPatchRef, channelKey, dmxOffset);
+
+		if (!internalDescPatch.empty() && !internalDescPatch.contains("notes"))
+			descPatchRef->includePatch = true;
+		else
+			CI_LOG_W("Channel " << channelKey << " wont be included in final translation by default because it's translation resulted in notes.");
 	}
 	return true;
 }

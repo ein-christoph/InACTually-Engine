@@ -86,12 +86,20 @@ namespace act {
 			bool getIsParsed();
 			std::vector<OFLManufacturerRef> getManufacturers(bool allowParsing);
 
+			// Parse OFL meta information like which manufactueres there are and which fixtures they contain
 			bool parseLibraryMeta();
 
-			bool parseBasicDescription(OFLFixtureDescriptionRef fixtureDescription);
+			// Parse description of an OFL fixture like name and name of modes
+			// calling translateOFLModeToInternal for each mode
+			// returns true if successful, false if errors occure, errors get logged
+			bool parseFixtureDescription(OFLFixtureDescriptionRef fixtureDescription);
 
-			bool translateOFLtoInternal(OFLFixtureDescriptionRef fixtureDescription);
+			// Translates the mode description of a fixture into an internal representation and sets it to the fixtureModeRef
+			// throws exceptions on errors
+			bool translateOFLModeToInternal(ci::Json const& modeDesc, OFLFixtureDescriptionRef fixtureDescription, OFLModeRef fixtureModeRef, int modeIndex);
 
+			// Returns one combined inACTually internal fixture description 
+			// depending on which channels are selected to be included
 			static ci::Json getInternalDescription(OFLFixtureDescriptionRef fixture);
 
 		private:

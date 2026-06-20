@@ -89,7 +89,7 @@ void act::room::FixtureDescriptionImporter::update()
 		bool success = false;
 		// Fetch and parse description if not present
 		if (fixture->externalDescription.empty())
-			success = m_oflDescriptionMapper->parseBasicDescription(fixture);
+			success = m_oflDescriptionMapper->parseFixtureDescription(fixture);
 		else
 			success = true;
 
