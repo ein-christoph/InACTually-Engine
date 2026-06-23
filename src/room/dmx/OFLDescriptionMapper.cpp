@@ -299,7 +299,8 @@ bool act::room::OFLDescriptionMapper::translateOFLModeToInternal(ci::Json const&
 		// So lets check if the channel key is in the available channels and has a capability with a type
 		if (!externalDesc["availableChannels"].contains(channelKey))
 		{
-			CI_LOG_W("Could not find channl key '" << channelKey << "' in availableChannels! Skipping channel.");
+			if(channelKey.substr(channelKey.length() - 4, 4) != "fine") // fine channels end with "fine" and get resolved within the channel description of the main channel
+				CI_LOG_W("Could not find channl key '" << channelKey << "' in availableChannels! Skipping channel.");
 			continue;
 		}
 
@@ -329,10 +330,15 @@ bool act::room::OFLDescriptionMapper::translateOFLModeToInternal(ci::Json const&
 		// Add description to all channels in the mapping of the description patch
 		addDescToOtherAffectedChannels(modeRef, descPatchRef, channelKey, dmxOffset);
 
-		if (!internalDescPatch.empty() && !internalDescPatch.contains("notes"))
-			descPatchRef->includePatch = true;
-		else
-			CI_LOG_W("Channel " << channelKey << " wont be included in final translation by default because it's translation resulted in notes.");
+		if (!internalDescPatch.empty())
+		{
+			// Check if translation resulted in notes, if so there is probably something the user should actively notice
+			// so we dont include the patch by default
+			if (!internalDescPatch.contains("notes"))
+				descPatchRef->includePatch = true;
+			else
+				CI_LOG_W("Channel " << channelKey << " wont be included in final translation by default because it's translation resulted in notes.");
+		}
 	}
 	return true;
 }
