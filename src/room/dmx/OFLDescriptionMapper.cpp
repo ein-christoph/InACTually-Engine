@@ -699,16 +699,16 @@ ci::Json act::room::OFLDescriptionMapper::translateColorWheelCapability(ci::Json
 			|| !capability["dmxRange"][0].is_number() || !capability["dmxRange"][1].is_number())
 			throw std::invalid_argument("Malformed dmxRange in capability!");
 
+		int dmxMin = capability["dmxRange"][0];
+		int dmxMax = capability["dmxRange"][1];
 		int dmxValue = OFLHelper::dmxRangeToDmxValue(capability["dmxRange"]);
 
-		if (!capability.contains("slotNumber") || !capability["slotNumber"].is_number())
+		if (!capability.contains("slotNumber") || !capability["slotNumber"].is_number_integer())
 		{
 			CI_LOG_W("Color Wheel translation WheelSlot at position " << idx << " does not specify single slotNumbers! Half frames currently not supported, skipping slot.");
 
-			int dmxMin = capability["dmxRange"][0];
-			int dmxMax = capability["dmxRange"][1];
-
-			if (capability.contains("slotNumberStart") && capability.contains("slotNumberEnd"))
+			if (  (capability.contains("slotNumberStart") && capability.contains("slotNumberEnd")) // Split slots can be identified by two slot numbers
+				|| capability.contains("slotNumber") && capability["slotNumber"].is_number_float()) // or by a float as slot number
 				notes.push_back("Dmx range " + std::to_string(dmxMin) + " - " + std::to_string(dmxMax) + " unavailable, split slots not supported.");
 			else
 				notes.push_back("Dmx range " + std::to_string(dmxMin) + " - " + std::to_string(dmxMax) + " unavailable, no unique slot identified.");
@@ -729,18 +729,21 @@ ci::Json act::room::OFLDescriptionMapper::translateColorWheelCapability(ci::Json
 		if (!wheelSlotDesc.contains("type") || !wheelSlotDesc["type"].is_string() || wheelSlotDesc["type"] != "Color")
 		{
 			CI_LOG_W("Channel '" << channelName << "' with wheel '" << WheelName << "' at slotNumber '" << slotIdx << "' is not of type 'Color'! Skipping slot.");
+			notes.push_back("Slot at index " + std::to_string(slotIdx) + ", dmx range " + std::to_string(dmxMin) + " - " + std::to_string(dmxMax) + " is unavailable because it is not a color.");
 			continue;
 		}
 
 		if (!wheelSlotDesc.contains("name") || !wheelSlotDesc["name"].is_string())
 		{
 			CI_LOG_W("Channel '" << channelName << "' with wheel '" << WheelName << "' at slotNumber '" << slotIdx << "' does not contain a name! Skipping slot.");
+			notes.push_back("Slot at index " + std::to_string(slotIdx) + ", dmx range " + std::to_string(dmxMin) + " - " + std::to_string(dmxMax) + " is unavailable because it does not have a name.");
 			continue;
 		}
 
 		if (!wheelSlotDesc.contains("colors") || !wheelSlotDesc["colors"].is_array() || wheelSlotDesc["colors"].size() < 1)
 		{
 			CI_LOG_W("Channel '" << channelName << "' with wheel '" << WheelName << "' at slotNumber '" << slotIdx << "' does not contain a or an empty colors array! Skipping slot.");
+			notes.push_back("Slot at index " + std::to_string(slotIdx) + ", dmx range " + std::to_string(dmxMin) + " - " + std::to_string(dmxMax) + " is unavailable because no single color could be determined.");
 			continue;
 		}
 
