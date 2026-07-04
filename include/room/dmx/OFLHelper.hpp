@@ -71,6 +71,60 @@ namespace act {
 					return std::stoi(degStr);
 			};
 
+			// Tries to convert a BeamAngle into a degree range
+			// BeamAngles can be in deg or in % (also specified as 0% = "closed", 1% = "narrow, 100% = "wide"
+			// If a % BeamAngle is found the function looks if deg can be retrived from the physical lens description
+			static int beamAngleToDegRange(std::string const& beamAngle, int modeIdx, ci::Json const& fullExtDesc) {
+				if (beamAngle.find("deg") != std::string::npos)
+					return convertDegStrToInt(beamAngle);
+
+				// we dont have the degree directly specified so lets try to find the physical description of the lens
+				ci::Json physicalLensDesc = ci::Json();
+				// in rare cases it can be mode specific so lets search there first
+				if (fullExtDesc.contains("modes") && modeIdx >= 0 && fullExtDesc["modes"] > modeIdx
+					&& fullExtDesc["modes"][modeIdx].contains("physical")
+					&& fullExtDesc["modes"][modeIdx]["physical"].contains("lens"))
+				{
+					physicalLensDesc = fullExtDesc["modes"][modeIdx]["physical"]["lens"];
+				}
+				else if (fullExtDesc.contains("physical") && fullExtDesc["physical"].contains("lens")) // otherwise look for a physical description at first level
+				{
+					physicalLensDesc = fullExtDesc["physical"]["lens"];
+				}
+				else
+					throw std::invalid_argument("beamAngle does not specify deg explicit or implicit (by a physical lens description).");
+
+				// check for degreesMinMax
+				if (!physicalLensDesc.is_object()
+					|| !physicalLensDesc.contains("degreesMinMax")
+					|| !physicalLensDesc["degreesMinMax"].is_array()
+					|| physicalLensDesc["degreesMinMax"].size() != 2)
+				{
+					throw std::invalid_argument("beamAngle does not specify deg explicit or implicit (physical lens description does not contain degreesMinMax).");
+				}
+
+				if (!physicalLensDesc["degreesMinMax"][0].is_number() || !physicalLensDesc["degreesMinMax"][1].is_number())
+					throw std::exception("physical lens description contains non number degreesMinMax!");
+
+				if (physicalLensDesc["degreesMinMax"][0] > physicalLensDesc["degreesMinMax"][1])
+					throw std::exception("physical lens description degreesMinMax in wrong order!");
+
+				// Determine which degree to take
+				// NOTE: possible float to int conversion but InACTually currently can not handle float zoom values
+				if (beamAngle == "narrow" || beamAngle == "1%")
+					return physicalLensDesc["degreesMinMax"][0];
+				else if (beamAngle == "wide" || beamAngle == "100%")
+					return physicalLensDesc["degreesMinMax"][1];
+				else if (beamAngle == "closed")
+					return 0;
+				else
+					throw std::exception("Could not map physical lens description degreesMinMax to a degree!");
+					// NOTE: x% outside of 1% and 100% is not mapped to specifies range because values other than those
+					// three were not present for beam angles as of writing this function
+					// they would however be spec-compliant
+
+			};
+
 			// converts an ofl speed string into a float
 			static float speedToFloat(std::string speed)
 			{

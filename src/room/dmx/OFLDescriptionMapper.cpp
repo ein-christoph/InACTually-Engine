@@ -565,11 +565,11 @@ ci::Json act::room::OFLDescriptionMapper::translateZoomCapability(ci::Json const
 
 	if (!extCapabilityDesc.contains("angleStart") || !extCapabilityDesc["angleStart"].is_string())
 		throw std::exception("No angleStart in extCapabilityDesc!");
-	int angleStart = OFLHelper::convertDegStrToInt(extCapabilityDesc["angleStart"]);
+	int angleStart = OFLHelper::beamAngleToDegRange(extCapabilityDesc["angleStart"], modeIndex, fullExtDesc);
 
 	if (!extCapabilityDesc.contains("angleEnd") || !extCapabilityDesc["angleEnd"].is_string())
 		throw std::exception("No angleEnd in extCapabilityDesc!");
-	int angleEnd = OFLHelper::convertDegStrToInt(extCapabilityDesc["angleEnd"]);
+	int angleEnd = OFLHelper::beamAngleToDegRange(extCapabilityDesc["angleEnd"], modeIndex, fullExtDesc);
 
 	if (angleStart > angleEnd)
 	{
