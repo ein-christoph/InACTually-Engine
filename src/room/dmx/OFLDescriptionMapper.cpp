@@ -267,7 +267,8 @@ bool act::room::OFLDescriptionMapper::translateOFLModeToInternal(ci::Json const&
 	{
 		if (!modeDesc["channels"][dmxOffset].is_string())
 		{
-			CI_LOG_W("Unexpected channels format in external fixture defifition! Skipping non-string entries.");
+			if(!modeDesc["channels"][dmxOffset].is_null()) // null is specified value if channel is empty so dont log a warning
+				CI_LOG_W("Unexpected channels format in external fixture defifition! Skipping non-string entries.");
 			continue;
 		}
 
