@@ -146,11 +146,11 @@ void act::room::CameraManager::fromJson(ci::Json json)
 		auto nodesJson = json["nodes"];
 		for (auto&& node : nodesJson) {
 			std::string deviceName = "";
-			util::setValueFromJson(node, "deviceName", deviceName);
+			util::setValueFromJson(node, "name", deviceName);
 
-			std::string name = deviceName;
-			util::setValueFromJson(node, "name", name);
-			auto camRoomNode = addDevice(deviceName, name);
+			std::string caption = deviceName;
+			util::setValueFromJson(node, "caption", caption);
+			auto camRoomNode = addDevice(deviceName, caption);
 
 			camRoomNode->fromJson(node);
 

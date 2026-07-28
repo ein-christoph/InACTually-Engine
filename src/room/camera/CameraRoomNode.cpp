@@ -25,6 +25,7 @@ act::room::CameraRoomNode::CameraRoomNode(CameraDeviceRef camera, std::string na
 	: RoomNodeBase("camera", position, rotation, radius, replyUID)
 {
 	m_camera = camera;
+	setCaption(name);
 	/*if (m_capture) {
 		m_name = m_capture->getDevice()->getName();
 		m_captureSize = m_capture->getSize();
@@ -57,6 +58,7 @@ act::room::CameraRoomNode::CameraRoomNode(ci::Capture::DeviceRef deviceRef, std:
 	: RoomNodeBase("camera", position, rotation, radius, replyUID)
 {
 	m_camera = CameraDevice::create(deviceRef);
+	setCaption(name);
 
 	m_cameraImagePort = proc::ImageOutputPort::create(act::proc::PT_IMAGE, "cameraImage");
 

@@ -79,7 +79,7 @@ void act::aio::AudioDeviceManager::init()
 	// !!! you might want to set your device directly here 
 	
 	//setDevice("Headphones (High Definition Audio Device)", "Analogue 1 + 2");
-	//setDevice(deviceWithMaxOutputs->getKey());
+	setDevice(deviceWithMaxOutputs->getKey());
 	//setDevice("Dante Virtual Soundcard(x64)");
 	//setDevice("0 - ASIO - Focusrite USB ASIO");
 	//setDevice("Main", "Input 1/2");
