@@ -184,7 +184,7 @@ void act::proc::ContainerProcNode::drawEditor() {
 		auto out = getOutputPortByRuntimeID(start_attr);
 		auto in = getInputPortByRuntimeID(end_attr);
 
-		connect(out->getUID(), in->getUID());
+		connect(out, in);
 	}
 
 	ImGui::End();
@@ -263,7 +263,7 @@ act::proc::PortBaseRef act::proc::ContainerProcNode::getOutputPortByUID(act::UID
 			port = container->getOutputPortByUID(uid);
 		}
 		else {
-			port = node->getOutputPortByUid(uid);
+			port = node->getOutputPortByUID(uid);
 		}
 
 		if (port)
@@ -282,7 +282,7 @@ act::proc::PortBaseRef act::proc::ContainerProcNode::getInputPortByUID(act::UID 
 			port = container->getInputPortByUID(uid);
 		}
 		else {
-			port = node->getInputPortByUid(uid);
+			port = node->getInputPortByUID(uid);
 		}
 
 		if (port)
@@ -335,24 +335,24 @@ act::proc::ProcNodeBaseRef act::proc::ContainerProcNode::getNodeByPort(act::UID 
 			if (container) {
 				if (container->getInputPortByUID(uid) != nullptr) {
 					for (auto&& n : container->getNodes()) {
-						if (n->getInputPortByUid(uid) != nullptr) {
+						if (n->getInputPortByUID(uid) != nullptr) {
 							return n;
 						}
 					}
 				}
 				if (container->getOutputPortByUID(uid) != nullptr) {
 					for (auto&& n : container->getNodes()) {
-						if (n->getOutputPortByUid(uid) != nullptr) {
+						if (n->getOutputPortByUID(uid) != nullptr) {
 							return n;
 						}
 					}
 				}
 			}
- 			if (node->getInputPortByUid(uid) != nullptr) {
+ 			if (node->getInputPortByUID(uid) != nullptr) {
 				return node;
 			}
 
-			if (node->getOutputPortByUid(uid) != nullptr) {
+			if (node->getOutputPortByUID(uid) != nullptr) {
 				return node;
 			}
 	}
@@ -405,10 +405,10 @@ bool act::proc::ContainerProcNode::deleteNodeByUID(UID uid)
 };
 
 void act::proc::ContainerProcNode::connect(act::UID from, act::UID to) {
-	auto _from = getOutputPortByUID(from);
-	auto _to = getInputPortByUID(to);
+	auto fromPort = getOutputPortByUID(from);
+	auto toPort = getInputPortByUID(to);
 
-	connect(_from, _to);
+	connect(fromPort, toPort);
 };
 
 std::vector<int> act::proc::ContainerProcNode::getAllPortsConnectedTo(int runtimeID) {

@@ -108,7 +108,7 @@ namespace act {
 					}
 			}
 
-			PortBaseRef getOutputPortByUid(act::UID uid) {
+			PortBaseRef getOutputPortByUID(act::UID uid) {
 				for (auto&& port : m_outputPorts) {
 					if (port->getUID() == uid)
 						return port;
@@ -140,7 +140,7 @@ namespace act {
 				return nullptr;
 			}
 
-			PortBaseRef getInputPortByUid(act::UID uid) {
+			PortBaseRef getInputPortByUID(act::UID uid) {
 				for (auto&& port : m_inputPorts) {
 					if (port->getUID() == uid)
 						return port;

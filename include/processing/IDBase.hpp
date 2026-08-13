@@ -35,7 +35,6 @@ namespace act {
 			unsigned int getID() { return m_id; }
 
 			static unsigned int getNextID() { return nextID; }
-			static void setNextID(unsigned int ID) { nextID = ID; }
 			static void resetNextID() { nextID = 1; }
 
 		protected:
