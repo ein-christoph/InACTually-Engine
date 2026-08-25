@@ -448,17 +448,13 @@ std::map<std::string, int> act::room::OFLDescriptionMapper::resolveFineChannels(
 		{
 			std::string fineChannelAlias = extChannelDesc["fineChannelAliases"][i];
 			auto const& channelList = fullExtDesc["modes"][modeIndex]["channels"];
-			
+
 			auto iter = std::find(channelList.begin(), channelList.end(), fineChannelAlias);
 			if (iter != channelList.end())
 			{
 				retLookup.insert({ fineChannelAlias, std::distance(channelList.begin(), iter)});
 			}
-			else
-			{
-				retLookup.insert({ fineChannelAlias, -1 });
-				CI_LOG_W("Could not resolve fineChannelAlias: " << fineChannelAlias);
-			}
+			// If the fineChannelAlias is not found in channels list this mode does not contain this fine channel so we ignore it
 		}
 		else
 			CI_LOG_W("Found non string fineChannelAlias! Skipping fine channel translation.");
