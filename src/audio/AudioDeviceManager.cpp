@@ -125,6 +125,12 @@ void act::aio::AudioDeviceManager::printContextInfo()
 void act::aio::AudioDeviceManager::refreshDeviceList()
 {
 	std::string deviceDescriptions = ci::audio::Device::printDevicesToString();
+	
+	size_t pos = 0;
+	while ((pos = deviceDescriptions.find("%0\r\n", pos)) != std::string::npos) {
+		deviceDescriptions.erase(pos, 6);
+	}
+
 	std::vector<std::string> lines = util::splitString(deviceDescriptions, "\n");
 
 	AudioDevice device;
@@ -144,7 +150,10 @@ void act::aio::AudioDeviceManager::refreshDeviceList()
 		case 1: // key: x - driver - name
 			{
 				std::vector<std::string> entries = util::splitString(line, " - ");
-				device.key = util::splitString(line, ": ")[1]; // util::splitString(entries[0], ": ")[1];
+				std::vector<std::string> keyEntries = util::splitString(entries[0], ": ");
+				if(keyEntries.size() > 1)
+					device.key = keyEntries[1]; // util::splitString(entries[0], ": ")[1];
+
 				if(entries.size() > 1)
 					device.driver	= entries[1];
 				if(entries.size() > 2)
