@@ -33,6 +33,12 @@ These third party projects may contain other projects to function. Please refer 
 - Source on [GitHub](https://github.com/opencv/opencv)
 - Notes: not included, but needed
 
+### oneTBB
+- License: [Apache License Version 2.0](3rd/oneTBB/LICENSE.txt)
+- Copyright (c) 2005-2025 Intel Corporation
+- Copyright (c) 2026 UXL Foundation Contributors
+- Source on [GitHub](https://github.com/uxlfoundation/oneTBB)
+
 ### ByteTrack
 - License: [MIT License](3rd/ByteTrack/LICENSE)
 - Copyright (c) 2022 Vertical Beach (lp6m, medalotte)

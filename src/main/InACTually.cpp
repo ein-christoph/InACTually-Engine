@@ -30,6 +30,10 @@
 #include "cinder/audio/ContextPortAudio.h"
 #include "cinder/audio/DeviceManagerPortAudio.h"
 
+#include "oneapi/tbb/flow_graph.h"
+#include "oneapi/tbb/tick_count.h"
+#include "oneapi/tbb/global_control.h"
+
 using namespace act;
 
 GeneralAppState AppState::m_state = AS_STARTUP;
@@ -73,18 +77,20 @@ void InACTually::init()
 
 	CI_LOG_I("\n##############################\n\n" << "InACTually has been started :)" << "\n\n##############################\n\n");
 
-	
-	CI_LOG_I("# InACTually "
-	<< "has OpenCl " << cv::ocl::haveOpenCL() << "has CUDA " << cv::cuda::getCudaEnabledDeviceCount() << "\n"
-	<< "has AMD FFT " << cv::ocl::haveAmdFft() << ", has AMD BLAS " << cv::ocl::haveAmdBlas() << ", has SVM " << cv::ocl::haveSVM() 
-	<< "\n");
+	int numOfThreads = oneapi::tbb::this_task_arena::max_concurrency();
+
+	CI_LOG_I("has OpenCl " << cv::ocl::haveOpenCL() << ", has CUDA " << cv::cuda::getCudaEnabledDeviceCount());
+	CI_LOG_I("has AMD FFT " << cv::ocl::haveAmdFft() << ", has AMD BLAS " << cv::ocl::haveAmdBlas() << ", has SVM " << cv::ocl::haveSVM());
+	CI_LOG_I("running with " << numOfThreads << " worker threads" << "\n");
+
+	oneapi::tbb::global_control c(oneapi::tbb::global_control::max_allowed_parallelism,	numOfThreads);
 
 	if (cv::ocl::haveOpenCL()) {
 		cv::ocl::setUseOpenCL(cv::ocl::haveOpenCL());
 
 		std::vector<cv::ocl::PlatformInfo> plattformInfo;
 		cv::ocl::getPlatfomsInfo(plattformInfo);
-		CI_LOG_D("OpenCL Platform: " << plattformInfo[0].deviceNumber() << " - " << plattformInfo[0].name());
+		CI_LOG_I("using OpenCL on Platform: " << plattformInfo[0].deviceNumber() << " - " << plattformInfo[0].name());
 	}
 
 	m_drawGUI = Settings::get().showDebugGUI;

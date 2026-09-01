@@ -53,3 +53,4 @@ assets/3rd/depth-anything/depth_anything_v2_vits_dynamic.onnx
 vc2022/enc_temp_folder/
 assets/recentLLM.json
 projects/
+3rd/oneTBB/lib/
