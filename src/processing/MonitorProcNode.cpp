@@ -94,18 +94,22 @@ void act::proc::MonitorProcNode::draw() {
 
 void act::proc::MonitorProcNode::onMat(cv::UMat event) {
 	m_imagePort->send(event);
-	if (m_show || m_display || m_fullscreen) {
-		m_texture = gl::Texture2d::create(fromOcv(event));
-		m_drawSize = ivec2(m_texture->getWidth(), m_texture->getHeight());
 
-		auto windowData = ci::app::getWindow()->getUserData<act::WindowData>();
-		
-		if (m_fullscreen) {
-			windowData->setFullscreenTex(m_texture);
+	auto frame = fromOcv(event);
+	ci::app::App::get()->dispatchAsync([this, frame, event]() {
+		if (m_show || m_display || m_fullscreen) {
+			m_texture = gl::Texture2d::create(frame);
+			m_drawSize = ivec2(m_texture->getWidth(), m_texture->getHeight());
+
+			auto windowData = ci::app::getWindow()->getUserData<act::WindowData>();
+
+			if (m_fullscreen) {
+				windowData->setFullscreenTex(m_texture);
+			}
 		}
-	}
-	if (m_display)
-		m_texturePort->send(m_texture);
+		if (m_display)
+			m_texturePort->send(m_texture);
+	});
 }
 
 ci::ivec2 act::proc::MonitorProcNode::adaptSize(ci::ivec2 size) {

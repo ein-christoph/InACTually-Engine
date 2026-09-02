@@ -200,6 +200,9 @@ void act::room::CameraCalibrator::draw()
 
 void act::room::CameraCalibrator::setCamera(CameraDeviceRef camera)
 {
+	if (!camera)
+		return;
+
 	// reset things
 	m_calibTextures.clear();
 	

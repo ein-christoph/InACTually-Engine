@@ -70,7 +70,8 @@ void act::proc::VideoPlayerProcNode::update() {
 		cv::UMat frame;
 		auto frameTexture = m_video->getTexture();
 		auto src = frameTexture->createSource();
-		frame = toOcv(src).getUMat(cv::ACCESS_FAST);
+		auto mat = toOcv(src).clone();
+		mat.copyTo(frame);
 
 		if (m_fadeAt.isComplete())
 			m_isFading = false;
