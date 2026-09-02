@@ -110,12 +110,8 @@ void act::proc::MovingHeadProcNode::onZoom(float zoom)
 }
 
 void act::proc::MovingHeadProcNode::onColor(ci::Color color) {
-	ci::app::App::get()->dispatchAsync([this, color]() {
-		ci::app::timeline().apply(&m_color, color, 3, ci::easeInOutSine).updateFn([this]() {
-			if (m_movingHead)
-				m_movingHead->setColor(m_color);
-		});
-	}); 
+	if (m_movingHead)
+		m_movingHead->setColor(m_color);
 }
 
 void act::proc::MovingHeadProcNode::onLookAt(vec3 lookAt) {
