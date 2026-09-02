@@ -9,7 +9,7 @@
 	Licensed under the MIT License.
 	See LICENSE file in the project root for full license information.
 
-	This file is created and substantially modified: 2021-2024
+	This file is created and substantially modified: 2021-2026
 
 	contributors:
 	Lars Engeln - mail@lars-engeln.de
@@ -23,6 +23,7 @@
 #include "UniqueIDBase.hpp"
 
 #include "PortType.hpp"
+#include "FlowRuntime.hpp"
 
 #include "imnodes.h"
 
@@ -275,6 +276,29 @@ namespace act {
 			}
 
 			void recieve(T data, K context = nullptr) override {
+				m_functionNode.try_put({ std::move(data), std::move(context) });
+			}
+
+		protected:
+			tbb::flow::function_node<std::pair<T, K>, tbb::flow::continue_msg> m_functionNode {
+				FlowRuntime::getGraph(), tbb::flow::unlimited, [&](std::pair<T, K> input) {
+					executeRecieve(input.first, input.second);
+					//return tbb::flow::continue_msg{};
+				}
+			};
+
+			std::function<void(T)> m_recieveFunc;
+			std::function<void(T, std::string)> m_namedRecieveFunc;
+
+			std::function<void(T, K)> m_recieveCtxFunc;
+			std::function<void(T, std::string, K)> m_namedRecieveCtxFunc;
+
+			bool m_sendName		= false;
+			bool m_sendUID		= false;
+			bool m_wantsContext = false;
+
+
+			void executeRecieve(T data, K context = nullptr) {
 				if (!PortBase::isEnabled())
 					return;
 
@@ -295,18 +319,6 @@ namespace act {
 						m_recieveFunc(data);
 				}
 			};
-
-		protected:
-			std::function<void(T)> m_recieveFunc;
-			std::function<void(T, std::string)> m_namedRecieveFunc;
-
-			std::function<void(T, K)> m_recieveCtxFunc;
-			std::function<void(T, std::string, K)> m_namedRecieveCtxFunc;
-
-			bool m_sendName		= false;
-			bool m_sendUID		= false;
-			bool m_wantsContext = false;
-
 		};
 		template <class T, class K = PortContextRef>
 		using InputPortRef = std::shared_ptr<InputPort<T, K>>;

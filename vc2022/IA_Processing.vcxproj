@@ -153,6 +153,7 @@
     <ClInclude Include="..\include\processing\FaceDetectionProcNode.hpp" />
     <ClInclude Include="..\include\processing\FaceEmotionProcNode.hpp" />
     <ClInclude Include="..\include\processing\FlowDetectionProcNode.hpp" />
+    <ClInclude Include="..\include\processing\FlowRuntime.hpp" />
     <ClInclude Include="..\include\processing\HandProcNode.hpp" />
     <ClInclude Include="..\include\processing\HeadProcNode.hpp" />
     <ClInclude Include="..\include\processing\IDBase.hpp" />

@@ -30,7 +30,7 @@
 #include "cinder/audio/ContextPortAudio.h"
 #include "cinder/audio/DeviceManagerPortAudio.h"
 
-#include "oneapi/tbb/flow_graph.h"
+#include "processing/FlowRuntime.hpp"
 #include "oneapi/tbb/tick_count.h"
 #include "oneapi/tbb/global_control.h"
 
@@ -187,6 +187,7 @@ void InACTually::init()
 void act::InACTually::onClose()
 {
 	AppState::set(AS_CLEANUP);
+	proc::FlowRuntime::wait();
 
 	for (auto&& mod : reg_modules)
 		mod->cleanUp();

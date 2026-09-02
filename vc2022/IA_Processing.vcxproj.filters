@@ -521,6 +521,9 @@
     <ClInclude Include="..\include\processing\ContainerProcNode.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\processing\FlowRuntime.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

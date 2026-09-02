@@ -34,7 +34,9 @@ act::proc::SpectrumProcNode::SpectrumProcNode() : ProcNodeBase("Spectrum") {
 	auto audioNodeIn = createAudioNodeInput(
 		"audioNode",
 		[&](audio::NodeRef audioNode) {
-		audioNode >> m_monitorSpectralNode;
+			ci::app::App::get()->dispatchAsync([this, audioNode]() {
+				audioNode >> m_monitorSpectralNode;
+			});
 		}
 	);
 

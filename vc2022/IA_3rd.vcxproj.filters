@@ -88,6 +88,9 @@
     <Filter Include="Source Files\libzmq">
       <UniqueIdentifier>{68f30a90-eaec-4cbd-be15-e59aa0b2cf69}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\oneTBB">
+      <UniqueIdentifier>{192a168a-1343-4c0b-a104-8ed6f34e3dce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\3rd\imnodes\imnodes.cpp">
@@ -1243,6 +1246,156 @@
     </ClInclude>
     <ClInclude Include="..\3rd\libzmq\src\zmtp_engine.hpp">
       <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\blocked_nd_range.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\blocked_range.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\blocked_range2d.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\blocked_range3d.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\cache_aligned_allocator.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\collaborative_call_once.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\combinable.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\concurrent_hash_map.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\concurrent_lru_cache.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\concurrent_map.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\concurrent_priority_queue.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\concurrent_queue.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\concurrent_set.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\concurrent_unordered_map.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\concurrent_unordered_set.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\concurrent_vector.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\enumerable_thread_specific.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\flow_graph.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\flow_graph_abstractions.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\global_control.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\info.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\memory_pool.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\mutex.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\null_mutex.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\null_rw_mutex.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\numa_allocation.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\parallel_for.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\parallel_for_each.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\parallel_invoke.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\parallel_pipeline.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\parallel_reduce.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\parallel_scan.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\parallel_sort.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\partitioner.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\profiling.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\queuing_mutex.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\queuing_rw_mutex.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\rw_mutex.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\scalable_allocator.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\spin_mutex.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\spin_rw_mutex.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\task.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\task_arena.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\task_group.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\task_scheduler_observer.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\tbbmalloc_proxy.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\tbb_allocator.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\tick_count.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb\version.h">
+      <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb.h">
+      <Filter>Source Files\oneTBB</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
