@@ -21,9 +21,6 @@
 #include "MatListener.hpp"
 
 
-using namespace ci;
-using namespace ci::app;
-
 namespace act {
 	namespace proc {
 
@@ -45,7 +42,7 @@ namespace act {
 		private:
 			bool							m_show;
 
-			audio::MonitorSpectralNodeRef	m_monitorSpectralNode;
+			ci::audio::MonitorSpectralNodeRef	m_monitorSpectralNode;
 			number							m_volume = 0;
 			numberList						m_spectrum;
 			number							m_centroid;

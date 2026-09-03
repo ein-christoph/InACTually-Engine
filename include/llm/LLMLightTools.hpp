@@ -18,9 +18,9 @@
 #include "llm/LLMToolManager.hpp"
 #include "RoomManagers.hpp"
 
+
 namespace act {
 	namespace llm {
-
 
 		class LLMLightTools {
 		public:

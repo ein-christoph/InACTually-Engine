@@ -23,14 +23,14 @@
 
 act::net::NetworkPublisherRef act::room::RoomNodeBase::m_publisher = nullptr;
 
-act::room::RoomNodeBase::RoomNodeBase(std::string name, ci::vec3 position, ci::vec3 rotation, float radius, act::UID replyUID)
+act::room::RoomNodeBase::RoomNodeBase(std::string name, glm::vec3 position, glm::vec3 rotation, float radius, act::UID replyUID)
 	: m_name(name), m_caption(name)
 {
-	/*m_positionInPort = act::proc::InputPort<vec3>::create(act::proc::PT_VEC3, "posIn", [&](ci::vec3 position) {
+	/*m_positionInPort = act::proc::InputPort<glm::vec3>::create(act::proc::PT_VEC3, "posIn", [&](glm::vec3 position) {
 		setPosition(position);
 		});
 
-	m_positionOutPort = act::proc::OutputPort<vec3>::create(act::proc::PT_VEC3, "posOut");
+	m_positionOutPort = act::proc::OutputPort<glm::vec3>::create(act::proc::PT_VEC3, "posOut");
 	*/
 	
 	//auto scoped = setReplyUID(replyUID);
@@ -66,7 +66,7 @@ void act::room::RoomNodeBase::drawSettings()
 	if (ImGui::DragFloat3("position", &m_position, 0.01f)) {
 		setPosition(m_position);
 	}
-	vec3 rot = glm::degrees(getRotation());
+	glm::vec3 rot = glm::degrees(getRotation());
 	if (ImGui::DragFloat3("rotation", &rot, 1.0f, -0.1f, 360.1f)) {
 		if (rot.x > 360.0f)
 			rot.x = 0.0f;
@@ -91,7 +91,7 @@ void act::room::RoomNodeBase::drawSettings()
 	drawSpecificSettings();
 }
 
-void act::room::RoomNodeBase::setPosition(ci::vec3 position, bool publish)
+void act::room::RoomNodeBase::setPosition(glm::vec3 position, bool publish)
 {
 	if (m_isFixed)
 		return;
@@ -113,7 +113,7 @@ void act::room::RoomNodeBase::setPosition(ci::vec3 position, bool publish)
 	//m_positionOutPort->send(position);
 }
 
-void act::room::RoomNodeBase::setRotation(ci::vec3 rotation, bool publish)
+void act::room::RoomNodeBase::setRotation(glm::vec3 rotation, bool publish)
 {
 	if (m_isFixed)
 		return;
@@ -126,12 +126,12 @@ void act::room::RoomNodeBase::setRotation(ci::vec3 rotation, bool publish)
 	if (m_isSmoothing) {
 		m_rotFlt->insertValue(rotation);
 		m_rotation = m_rotFlt->getValue();
-		m_orientFlt->insertValue(glm::normalize(ci::quat(m_rotation)));
+		m_orientFlt->insertValue(glm::normalize(glm::quat(m_rotation)));
 		m_orientation = glm::normalize(m_orientFlt->getValue());
 	}
 	else {
 		m_rotation = rotation;
-		m_orientation = glm::normalize(ci::quat(m_rotation));
+		m_orientation = glm::normalize(glm::quat(m_rotation));
 	}
 
 	updateTransform();
@@ -139,7 +139,7 @@ void act::room::RoomNodeBase::setRotation(ci::vec3 rotation, bool publish)
 	onOrientation("", publish);
 }
 
-void act::room::RoomNodeBase::setOrientation(ci::quat orientation, bool publish)
+void act::room::RoomNodeBase::setOrientation(glm::quat orientation, bool publish)
 {
 	if (m_isFixed)
 		return;
@@ -180,12 +180,12 @@ void act::room::RoomNodeBase::setTriMesh(ci::TriMeshRef triMesh)
 	m_bounds = m_triMesh->calcBoundingBox();
 }
 
-void act::room::RoomNodeBase::lookAt(ci::vec3 at)
+void act::room::RoomNodeBase::lookAt(glm::vec3 at)
 {
 	m_isLookingAt = true;
 	m_lookAt = at;
-	vec3 gaze = normalize(at - m_position);
-	setOrientation(glm::rotation(vec3(0.0f), gaze));
+	glm::vec3 gaze = normalize(at - m_position);
+	setOrientation(glm::rotation(glm::vec3(0.0f), gaze));
 }
 
 bool act::room::RoomNodeBase::isLookingAt()
@@ -200,9 +200,9 @@ void act::room::RoomNodeBase::isLookingAt(bool isLooking)
 		lookAt(m_lookAt);
 }
 
-bool act::room::RoomNodeBase::hit(ci::vec3 pos)
+bool act::room::RoomNodeBase::hit(glm::vec3 pos)
 {
-	if (ci::length(getPosition() - pos) < getRadius()) {
+	if (glm::length(getPosition() - pos) < getRadius()) {
 		m_isHovered = true;
 		return true;
 	}
@@ -228,13 +228,13 @@ bool act::room::RoomNodeBase::hitRay(ci::Ray ray)
 	float distance = 0.0f;
 	for (size_t i = 0; i < polycount; ++i) {
 		// Get a single triangle from the mesh.
-		ci::vec3 v0, v1, v2;
+		glm::vec3 v0, v1, v2;
 		m_triMesh->getTriangleVertices(i, &v0, &v1, &v2);
 
 		// Transform triangle to world space.
-		v0 = ci::vec3(m_transform * ci::vec4(v0, 1.0));
-		v1 = ci::vec3(m_transform * ci::vec4(v1, 1.0));
-		v2 = ci::vec3(m_transform * ci::vec4(v2, 1.0));
+		v0 = glm::vec3(m_transform * ci::vec4(v0, 1.0));
+		v1 = glm::vec3(m_transform * ci::vec4(v1, 1.0));
+		v2 = glm::vec3(m_transform * ci::vec4(v2, 1.0));
 
 		// Test to see if the ray intersects this triangle.
 		if (ray.calcTriangleIntersection(v0, v1, v2, &distance)) {
@@ -267,7 +267,7 @@ void act::room::RoomNodeBase::connectPositionPort(std::shared_ptr<RoomNodeBase> 
 	m_copyPositionUID = node->getUID();
 }
 
-void act::room::RoomNodeBase::disconnectPositionOutPort(act::proc::InputPortRef<vec3> inputPort)
+void act::room::RoomNodeBase::disconnectPositionOutPort(act::proc::InputPortRef<glm::vec3> inputPort)
 {
 	m_positionOutPort->disconnect(inputPort);
 }
@@ -289,7 +289,7 @@ void act::room::RoomNodeBase::onOrientation(act::UID replyUID, bool publish)
 }
 
 void act::room::RoomNodeBase::updateTransform() {
-	m_transform = ci::translate(getPosition()) * glm::toMat4(m_orientation) * ci::scale(ci::vec3(getRadius()));
+	m_transform = ci::translate(getPosition()) * glm::toMat4(m_orientation) * ci::scale(glm::vec3(getRadius()));
 }
 
 void act::room::RoomNodeBase::publishChanges()
@@ -345,11 +345,11 @@ void act::room::RoomNodeBase::fromJson(ci::Json json, act::UID replyUID)
 	if (json.contains("caption")) {
 		setCaption(json["caption"]);
 	}
-	ci::vec3 position = ci::vec3(0.0f);
+	glm::vec3 position = glm::vec3(0.0f);
 	if (util::setValueFromJson(json, "position", position)) {
 		setPosition(position, false);
 	}
-	ci::quat orientation = ci::quat(0.0f, 0.0f, 0.0f, 0.0f);
+	glm::quat orientation = glm::quat(0.0f, 0.0f, 0.0f, 0.0f);
 	if (util::setValueFromJson(json, "orientation", orientation)) {
 		setOrientation(orientation, false);
 	}
@@ -381,13 +381,13 @@ act::room::ScopedReplyUID act::room::RoomNodeBase::setReplyUID(UID replyUID, boo
 
 void act::room::RoomNodeBase::enableStatusColor()
 {
-	gl::color(ColorA(Color::white(), 0.6f));
+	ci::gl::color(ci::ColorA(ci::Color::white(), 0.6f));
 	if (getIsEmphasized())
-		gl::color(ColorA(Color::white(), 0.85f));
+		ci::gl::color(ci::ColorA(ci::Color::white(), 0.85f));
 	if (getIsUnfolded())
-		gl::color(util::Design::highlightColor(0.85f));
+		ci::gl::color(util::Design::highlightColor(0.85f));
 	if(!m_isConnected)
-		gl::color(util::Design::errorColor(0.85f));
+		ci::gl::color(util::Design::errorColor(0.85f));
 }
 
 bool act::room::RoomNodeBaseRegistry::add(const std::string name, nodeCreateFunc funcCreate)

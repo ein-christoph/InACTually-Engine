@@ -24,8 +24,6 @@
 
 #include "VideoRecorderProcNode.hpp"
 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace proc {
@@ -54,7 +52,7 @@ namespace act {
 			int				m_selectedKinect;
 			std::string		m_selectedKinectName;
 
-			ci::ivec2		m_captureSize;
+			glm::ivec2		m_captureSize;
 
 			bool			m_active = false;
 
@@ -79,7 +77,7 @@ namespace act {
 			ImageOutputPortRef m_kinectInfraRedOutPort;
 			ImageOutputPortRef m_kinectBIMOutPort;
 			ImageOutputPortRef m_kinectVisualizedBIMOutPort;
-			OutputPortRef<ci::vec2> m_kinectFOVPort;
+			OutputPortRef<glm::vec2> m_kinectFOVPort;
 
 			OutputPortRef<room::BodyRefList> m_kinectBodiesOutPort;
 

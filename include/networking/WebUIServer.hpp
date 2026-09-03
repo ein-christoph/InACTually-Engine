@@ -22,11 +22,10 @@
 #include "server_ws.hpp"
 #include "Connection.hpp"
 
-using namespace ci;
-
 
 namespace act {
 	namespace net {
+
 		using WsServer = SimpleWeb::SocketServer<SimpleWeb::WS>;
 		using WsServerRef = std::shared_ptr<WsServer>;
 

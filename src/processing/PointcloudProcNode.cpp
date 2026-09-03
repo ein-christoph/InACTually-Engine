@@ -23,7 +23,7 @@ act::room::Pointcloud globalPointcloud;
 
 
 act::proc::PointcloudProcNode::PointcloudProcNode() : ProcNodeBase("Pointcloud") {
-	m_drawSize = ivec2(600, 400);
+	m_drawSize = glm::ivec2(600, 400);
 
 	m_colorImageInPort = createImageInput("colorImage", [&](cv::UMat colorImage) {
 		m_colorImageCache = colorImage;
@@ -32,7 +32,7 @@ act::proc::PointcloudProcNode::PointcloudProcNode() : ProcNodeBase("Pointcloud")
 		m_depthImageCache = depthImage;
 		createPointcloud(m_depthImageCache, m_colorImageCache);
 	});
-	m_fovInPort = createVec2Input("FOV", [&](ci::vec2 fov) {
+	m_fovInPort = createVec2Input("FOV", [&](glm::vec2 fov) {
 		m_fov = fov;
 	});
 

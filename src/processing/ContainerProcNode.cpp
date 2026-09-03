@@ -20,7 +20,7 @@
 #include "ContainerProcNode.hpp"
 
 act::proc::ContainerProcNode::ContainerProcNode(int level, std::string name, std::function <void(ContainerProcNode*)> onFocusCallback):ProcNodeBase(name, act::proc::NT_CONTAINER) {
-	m_drawSize = ivec2(300, 500);
+	m_drawSize = glm::ivec2(300, 500);
 	
 	m_level = level;
 	m_isFocused = false;
@@ -502,7 +502,7 @@ void act::proc::ContainerProcNode::fromParams(ci::Json json) {
 	int panningX = stoi(panning.substr(0, panning.find(delimiter)));
 	int panningY = stoi(panning.erase(0, panning.find(delimiter) + delimiter.length()));
 	
-	ImNodes::EditorContextResetPanning(vec2(panningX, panningY));
+	ImNodes::EditorContextResetPanning(glm::vec2(panningX, panningY));
 
 	m_nodePositions.resize(0);
 
@@ -533,7 +533,7 @@ ci::Json act::proc::ContainerProcNode::toParams() {
 
 	ci::Json nodeConfiguration = ci::Json::object();
 
-	vec2 panning = ImNodes::EditorContextGetPanning();
+	glm::vec2 panning = ImNodes::EditorContextGetPanning();
 	std::string panningString = std::to_string(panning.x).append(";").append(std::to_string(panning.y));
 
 	nodeConfiguration["panning"] = panningString;

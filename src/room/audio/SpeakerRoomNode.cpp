@@ -22,8 +22,8 @@
 
 
 
-act::room::SpeakerRoomNode::SpeakerRoomNode(int channel, ci::vec3 position, float radius, std::string name = "speaker")
-	: AudioRoomNodeBase(name, position, ci::vec3(0.0f), radius), m_channel(channel)
+act::room::SpeakerRoomNode::SpeakerRoomNode(int channel, glm::vec3 position, float radius, std::string name = "speaker")
+	: AudioRoomNodeBase(name, position, glm::vec3(0.0f), radius), m_channel(channel)
 {
 	m_isFixed = false;
 
@@ -57,7 +57,7 @@ void act::room::SpeakerRoomNode::draw()
 		ci::gl::ScopedModelMatrix model;
 		ci::gl::multModelMatrix(m_transform);
 
-		//ci::gl::drawCube(getPosition(), ci::vec3(getRadius()) * ci::vec3(1.0f, 1.1f, 1.0f));
+		//ci::gl::drawCube(getPosition(), glm::vec3(getRadius()) * glm::vec3(1.0f, 1.1f, 1.0f));
 		m_mesh->draw();
 	}
 }
@@ -109,7 +109,7 @@ void act::room::SpeakerRoomNode::locate(bool isLocating)
 
 void act::room::SpeakerRoomNode::setNoiseVolume(float db, float rampTime) {
 	ci::app::timeline().apply(&m_noiseVolume, db, rampTime).updateFn([&]() {
-		m_noiseGain->setValue(audio::decibelToLinear(m_noiseVolume));
+		m_noiseGain->setValue(ci::audio::decibelToLinear(m_noiseVolume));
 	});
 }
 

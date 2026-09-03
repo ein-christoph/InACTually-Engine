@@ -15,7 +15,6 @@
 	Lars Engeln - mail@lars-engeln.de
 */
 
-
 #pragma once
 
 #include "IDBase.hpp"

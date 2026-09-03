@@ -19,12 +19,12 @@
 #include <ranges>
 
 act::proc::ClockProcNode::ClockProcNode() : ProcNodeBase("Clock") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 
 	m_timeUntil = 10.f;
 	m_value = 0.0f;
 
-	m_startedAt = app::getElapsedSeconds();
+	m_startedAt = ci::app::getElapsedSeconds();
 
 	createBoolInput("fire", [&](bool val) { if (val) start(); });
 	createBoolInput("reset", [&](bool val) { if (val) stop(); });
@@ -38,7 +38,7 @@ act::proc::ClockProcNode::~ClockProcNode() {
 
 void act::proc::ClockProcNode::update() {
 	if (m_hasStarted) {
-		m_elapsed = (app::getElapsedSeconds() - m_startedAt);
+		m_elapsed = (ci::app::getElapsedSeconds() - m_startedAt);
 		m_value = m_elapsed / m_timeUntil;
 	}
 	
@@ -96,7 +96,7 @@ void act::proc::ClockProcNode::start()
 	m_hasStarted = true;
 	m_bang = false;
 	m_value = 0.0f;
-	m_startedAt = app::getElapsedSeconds();
+	m_startedAt = ci::app::getElapsedSeconds();
 }
 
 void act::proc::ClockProcNode::stop()

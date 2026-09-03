@@ -42,10 +42,10 @@ act::proc::AudioPlayerProcNode::AudioPlayerProcNode() : ProcNodeBase("AudioPlaye
 	m_playEvent = false; // will be altered by front end
 	m_stopEvent = false; // will be altered by front end
 
-	m_drawSize	= ivec2(400, 150);
+	m_drawSize	= glm::ivec2(400, 150);
 	
 	auto trigger = createBoolInput("fire", [&](bool event) { this->onTrigger(event); });
-	auto gain = createNumberInput("gain", [&](float event) { m_gain->setValue(event); m_volume = audio::linearToDecibel(event); });
+	auto gain = createNumberInput("gain", [&](float event) { m_gain->setValue(event); m_volume = ci::audio::linearToDecibel(event); });
 	auto speed = createNumberInput("speed", [&](float event) { setPlaySpeed(event); });
 
 	
@@ -55,12 +55,12 @@ act::proc::AudioPlayerProcNode::AudioPlayerProcNode() : ProcNodeBase("AudioPlaye
 	// This output port is used to let the Frontend Observe, if the Player plays
 	m_isPlayingOut = createBoolOutput("isPlayingOut");
 	//-----------------------------------------------------------------------------
-	auto ctx = audio::Context::master();
+	auto ctx = ci::audio::Context::master();
 	//ctx->disable();
 
-	m_bufferPlayer	= ctx->makeNode(new audio::BufferPlayerNode());
-	m_gain			= ctx->makeNode(new audio::GainNode(audio::decibelToLinear(m_volume.value())));
-	m_router		= ctx->makeNode(new audio::ChannelRouterNode());
+	m_bufferPlayer	= ctx->makeNode(new ci::audio::BufferPlayerNode());
+	m_gain			= ctx->makeNode(new ci::audio::GainNode(ci::audio::decibelToLinear(m_volume.value())));
+	m_router		= ctx->makeNode(new ci::audio::ChannelRouterNode());
 	m_bufferPlayer >> m_gain;
 }
 
@@ -79,7 +79,7 @@ void act::proc::AudioPlayerProcNode::setup(act::room::RoomManagers roomMgrs) {
 
 void act::proc::AudioPlayerProcNode::init() {
 	loadSound(m_path);
-	m_gain->setValue(audio::decibelToLinear(m_volume));
+	m_gain->setValue(ci::audio::decibelToLinear(m_volume));
 }
 
 void act::proc::AudioPlayerProcNode::update() {
@@ -103,7 +103,7 @@ void act::proc::AudioPlayerProcNode::update() {
 	}
 	
 	if (m_normalized == true) {
-		audio::dsp::normalize(m_buffer->getData(), m_buffer->getSize());
+		ci::audio::dsp::normalize(m_buffer->getData(), m_buffer->getSize());
 	}
 	
 	if (m_bufferPlayer && m_playEvent) { // Event from Front End
@@ -149,7 +149,7 @@ void act::proc::AudioPlayerProcNode::draw() {
 	
 	ImGui::SetNextItemWidth(m_drawSize.x);
 	if (ImGui::SliderFloat("volume", &m_toVolume, 0.0f, 120.f)) {
-		//m_gain->setValue(audio::decibelToLinear(m_volume));
+		//m_gain->setValue(ci::audio::decibelToLinear(m_volume));
 		ramp(m_toVolume);
 		prvntDrag = true;
 	}
@@ -171,7 +171,7 @@ void act::proc::AudioPlayerProcNode::draw() {
 	ImGui::Checkbox("normalize", &m_normalized);
 	
 	if(m_waveformTex)
-		ImGui::Image(m_waveformTex, m_waveformTex->getSize(), vec2(0, 1), vec2(1, 0));
+		ImGui::Image(m_waveformTex, m_waveformTex->getSize(), glm::vec2(0, 1), glm::vec2(1, 0));
 
 	ImGui::SetNextItemWidth(m_drawSize.x);
 	ImGui::InputInt("count Trigger", &m_countFalseUpTo, 0, 20);
@@ -213,7 +213,7 @@ void act::proc::AudioPlayerProcNode::loadSound(std::string path) {
 		return; 
 
 	try {
-		m_sourceFile = ci::audio::load(loadFile(path), audio::Context::master()->getSampleRate());
+		m_sourceFile = ci::audio::load(ci::loadFile(path), ci::audio::Context::master()->getSampleRate());
 	}
 	catch (...) {
 		// it's not a sound
@@ -231,26 +231,26 @@ void act::proc::AudioPlayerProcNode::loadSound(std::string path) {
 	m_bufferPlayer->seek(0);
 
 	auto waveform = WaveformPlot();
-	waveform.load(m_buffer, Rectf(vec2(0, 0), m_drawSize));
+	waveform.load(m_buffer, ci::Rectf(glm::vec2(0, 0), m_drawSize));
 
-	gl::Fbo::Format format;
+	ci::gl::Fbo::Format format;
 	format.setSamples(4);
-	auto fbo = gl::Fbo::create(m_drawSize.x, m_drawSize.y, format);
+	auto fbo = ci::gl::Fbo::create(m_drawSize.x, m_drawSize.y, format);
 	{
-		gl::ScopedFramebuffer fbScp(fbo);
-		gl::ScopedViewport scpVp(ivec2(0), fbo->getSize());
+		ci::gl::ScopedFramebuffer fbScp(fbo);
+		ci::gl::ScopedViewport scpVp(glm::ivec2(0), fbo->getSize());
 
-		gl::ScopedMatrices scpMatrices;
-		gl::setMatricesWindow(fbo->getSize(), true);
+		ci::gl::ScopedMatrices scpMatrices;
+		ci::gl::setMatricesWindow(fbo->getSize(), true);
 
-		gl::clear(util::Design::backgroundColor());
+		ci::gl::clear(util::Design::backgroundColor());
 
 		waveform.draw();
 	}
 	m_waveformTex = fbo->getColorTexture();	
 	
 	if (m_isStretching) {
-		auto ctx = audio::Context::master();
+		auto ctx = ci::audio::Context::master();
 		m_stretch = ctx->makeNode(new aio::TimeStretchingNode(m_sourceFile, 120));
 	}
 
@@ -302,7 +302,7 @@ void act::proc::AudioPlayerProcNode::route()
 		m_bufferPlayer >> m_gain;
 	}
 
-	auto ctx = audio::Context::master();
+	auto ctx = ci::audio::Context::master();
 	int inputChannel = m_buffer->getNumChannels();
 	int outputChannel = ctx->getOutput()->getNumChannels();
 	
@@ -335,22 +335,22 @@ void act::proc::AudioPlayerProcNode::setPlaySpeed(float speed)
 void act::proc::AudioPlayerProcNode::ramp(float toVolume) {
 	ci::app::timeline().apply(&m_volume, toVolume, 2).updateFn([&]() {
 		m_toVolume = m_volume;
-		m_gain->setValue(audio::decibelToLinear(m_volume));
+		m_gain->setValue(ci::audio::decibelToLinear(m_volume));
 	});
 }
 
 void act::proc::AudioPlayerProcNode::fadeIn() {
 	m_volume = 0.0f;
-	m_gain->setValue(audio::decibelToLinear(m_volume));
-	ci::app::timeline().apply(&m_volume, m_toVolume, m_fadeTime, EaseInOutSine()).updateFn([&]() {
-		m_gain->setValue(audio::decibelToLinear(m_volume));
+	m_gain->setValue(ci::audio::decibelToLinear(m_volume));
+	ci::app::timeline().apply(&m_volume, m_toVolume, m_fadeTime, ci::EaseInOutSine()).updateFn([&]() {
+		m_gain->setValue(ci::audio::decibelToLinear(m_volume));
 	});
 }
 
 void act::proc::AudioPlayerProcNode::fadeOut() {
 	m_isFading = true;
-	ci::app::timeline().apply(&m_volume, 0.01f, m_fadeTime*10, EaseInOutSine()).updateFn([&]() {
-		m_gain->setValue(audio::decibelToLinear(m_volume));
+	ci::app::timeline().apply(&m_volume, 0.01f, m_fadeTime*10, ci::EaseInOutSine()).updateFn([&]() {
+		m_gain->setValue(ci::audio::decibelToLinear(m_volume));
 		});
 	ci::app::timeline().appendTo(&m_volume, 0.01f, 0.01f).finishFn([&]() {
 		if (m_isLooping)

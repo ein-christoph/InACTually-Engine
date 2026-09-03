@@ -19,7 +19,7 @@
 #include "object/ObjectRoomNode.hpp"
 
 act::room::ObjectRoomNode::ObjectRoomNode(int id, std::string name, act::UID replyUID)
-	: RoomNodeBase("object", vec3(0, 0, 0), vec3(0, 0, 0), 0.075f, replyUID), m_id(id)
+	: RoomNodeBase("object", glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 0.075f, replyUID), m_id(id)
 {
 
 	doSmoothing(true);
@@ -60,8 +60,8 @@ void act::room::ObjectRoomNode::draw()
 			ci::gl::ScopedColor color(ci::Color(1.0f, 1.0f, 1.0f));
 			ci::gl::rotate(glm::half_pi<float>(), 1.0f, 0.0f, 0.0f);
 			ci::gl::translate(0.0f, 0.0f, -0.001f);
-			Rectf drawRect(-5.0f * m_objectWidth, -5.0f * m_objectWidth, 5.0f * m_objectWidth, 5.0f * m_objectWidth);
-			gl::draw(m_objectTexture, drawRect);
+			ci::Rectf drawRect(-5.0f * m_objectWidth, -5.0f * m_objectWidth, 5.0f * m_objectWidth, 5.0f * m_objectWidth);
+			ci::gl::draw(m_objectTexture, drawRect);
 		}
 	}
 }
@@ -84,5 +84,5 @@ void act::room::ObjectRoomNode::fromParams(ci::Json json)
 void act::room::ObjectRoomNode::setObjectImage() {
 	
 
-	//m_objectTexture = gl::Texture::create(fromOcv(image));
+	//m_objectTexture = ci::gl::Texture::create(ci::fromOcv(image));
 }

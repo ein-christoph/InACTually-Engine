@@ -20,8 +20,6 @@
 #include "ProcNodeBase.hpp"
 #include "cinder/Perlin.h"
 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace proc {

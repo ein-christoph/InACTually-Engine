@@ -20,9 +20,6 @@
 #include "ProcNodeBase.hpp"
 #include "cinder/Rand.h"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace proc {
@@ -43,11 +40,11 @@ namespace act {
 
 		private:
 			OutputPortRef<float>	m_speedPort;
-			ci::vec3				m_lastPosition;
+			glm::vec3				m_lastPosition;
 
 			float					m_factor = 4.0f;
 
-			void onPosition(ci::vec3 position);
+			void onPosition(glm::vec3 position);
 
 		}; using SpeedProcNodeRef = std::shared_ptr<SpeedProcNode>;
 

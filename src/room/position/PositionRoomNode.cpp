@@ -19,16 +19,16 @@
 #include "position/PositionRoomNode.hpp"
 
 
-act::room::PositionRoomNode::PositionRoomNode(std::string name, ci::vec3 position, act::UID replyUID)
-	: RoomNodeBase("position", position, ci::vec3(0.0f), 0.2f, replyUID)
+act::room::PositionRoomNode::PositionRoomNode(std::string name, glm::vec3 position, act::UID replyUID)
+	: RoomNodeBase("position", position, glm::vec3(0.0f), 0.2f, replyUID)
 {
 
-	setPosition(vec3(0.0f, 0.0f, 0.0f));
-	setRotation(vec3(0.0f, 0.0f, 0.0f));
+	setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	setRotation(glm::vec3(0.0f, 0.0f, 0.0f));
 
-	addControlPoint(vec3(0));
-	m_position = vec3(0);
-	m_evaluatedPosition = vec3(0);
+	addControlPoint(glm::vec3(0));
+	m_position = glm::vec3(0);
+	m_evaluatedPosition = glm::vec3(0);
 
 	m_isHighlighted = false;
 	m_degree = 1;
@@ -53,47 +53,47 @@ void act::room::PositionRoomNode::update()
 
 void act::room::PositionRoomNode::draw()
 {
-	gl::ScopedColor color;
+	ci::gl::ScopedColor color;
 	enableStatusColor();
 
-	gl::pushMatrices();
-	gl::translate(m_position);
-	gl::rotate(m_rotation);
-	gl::drawSphere(ci::vec3(0.0f), 0.2f, 4);
+	ci::gl::pushMatrices();
+	ci::gl::translate(m_position);
+	ci::gl::rotate(m_rotation);
+	ci::gl::drawSphere(glm::vec3(0.0f), 0.2f, 4);
 
 	if (getIsEmphasized() || getIsUnfolded()) {
-		vec3 priorPt = vec3(0.0f);
+		glm::vec3 priorPt = glm::vec3(0.0f);
 		if (m_controlPoints.size() >= 1) {
 			priorPt = m_controlPoints[0];
 		}
-		gl::ScopedLineWidth(5.0f);
+		ci::gl::ScopedLineWidth(5.0f);
 		for (auto pt : m_controlPoints) {
-			gl::pushMatrices();
-			gl::translate(pt);
-			gl::drawSphere(ci::vec3(0.0f), 0.075f, 4);
-			gl::popMatrices();
+			ci::gl::pushMatrices();
+			ci::gl::translate(pt);
+			ci::gl::drawSphere(glm::vec3(0.0f), 0.075f, 4);
+			ci::gl::popMatrices();
 
-			gl::drawLine(priorPt, pt);
+			ci::gl::drawLine(priorPt, pt);
 			priorPt = pt;
 		}
 		if(m_points.size() != 0)
 			priorPt = m_points[0];
 		for (auto pt : m_points) {
-			gl::drawLine(priorPt, pt);
+			ci::gl::drawLine(priorPt, pt);
 			priorPt = pt;
 		}
 
 	}
 	else {
-		gl::drawLine(vec3(0.0f), m_evaluatedPosition);
+		ci::gl::drawLine(glm::vec3(0.0f), m_evaluatedPosition);
 	}
 
-	gl::pushMatrices();
-	gl::translate(m_evaluatedPosition);
-	gl::drawSphere(ci::vec3(0.0f), 0.06f, 16);
-	gl::popMatrices();
+	ci::gl::pushMatrices();
+	ci::gl::translate(m_evaluatedPosition);
+	ci::gl::drawSphere(glm::vec3(0.0f), 0.06f, 16);
+	ci::gl::popMatrices();
 
-	gl::popMatrices();
+	ci::gl::popMatrices();
 }
 
 void act::room::PositionRoomNode::drawSpecificSettings()
@@ -132,7 +132,7 @@ void act::room::PositionRoomNode::fromParams(ci::Json json)
 	updateSpline();
 }
 
-int act::room::PositionRoomNode::addControlPoint(ci::vec3 position)
+int act::room::PositionRoomNode::addControlPoint(glm::vec3 position)
 {
 	m_controlPoints.push_back(position);
 	setDegree(getDegree());
@@ -148,23 +148,23 @@ void act::room::PositionRoomNode::removeControlPoint(int index)
 	updateSpline();
 }
 
-ci::vec3 act::room::PositionRoomNode::getControlPoint(int index)
+glm::vec3 act::room::PositionRoomNode::getControlPoint(int index)
 {
 	if(index < m_controlPoints.size())
 		return m_controlPoints[index];
 
-	return ci::vec3(0.0f);
+	return glm::vec3(0.0f);
 }
 
-ci::vec3 act::room::PositionRoomNode::getLastControlPoint()
+glm::vec3 act::room::PositionRoomNode::getLastControlPoint()
 {
 	if (m_controlPoints.size() == 0)
-		return ci::vec3(0.0f);
+		return glm::vec3(0.0f);
 
 	return m_controlPoints[m_controlPoints.size() - 1];
 }
 
-void act::room::PositionRoomNode::setControlPoint(int index, vec3 position)
+void act::room::PositionRoomNode::setControlPoint(int index, glm::vec3 position)
 {
 	if (index >= m_controlPoints.size())
 		return;
@@ -173,7 +173,7 @@ void act::room::PositionRoomNode::setControlPoint(int index, vec3 position)
 	updateSpline();
 }
 
-int act::room::PositionRoomNode::getIndexOfControlPointAt(ci::vec3 position)
+int act::room::PositionRoomNode::getIndexOfControlPointAt(glm::vec3 position)
 {
 	for (int i = 0; i < m_controlPoints.size(); i++) {
 		if (distance2(position, m_controlPoints[i]) < 0.001f)
@@ -210,7 +210,7 @@ int act::room::PositionRoomNode::setDegree(int degree)
 	return m_degree;
 }
 
-ci::vec3 act::room::PositionRoomNode::evaluatePosition(float t)
+glm::vec3 act::room::PositionRoomNode::evaluatePosition(float t)
 {
 	if (m_controlPoints.size() <= 1)
 		return m_position;

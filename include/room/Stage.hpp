@@ -21,6 +21,7 @@
 #include "ModuleBase.hpp"
 #include "RoomManagers.hpp"
 
+
 namespace act {
 	namespace room {
 
@@ -39,9 +40,9 @@ namespace act {
 			void				addNode(RoomNodeBaseRef node);
 			RoomNodeBaseRef	getNodeByUID(act::UID uid);
 
-			bool				hit(ci::vec3 pos) override;
+			bool				hit(glm::vec3 pos) override;
 			bool				hitRay(ci::Ray ray) override;
-			RoomNodeBaseRef	getNodeAtPos(ci::vec3 pos);
+			RoomNodeBaseRef	getNodeAtPos(glm::vec3 pos);
 			RoomNodeBaseRef	getNodeOnRay(ci::Ray ray);
 
 			bool	removeNode(act::UID uid);
@@ -64,7 +65,7 @@ namespace act {
 
 			ci::gl::BatchRef				m_wireRoom;
 			ci::gl::BatchRef				m_wirePlane;
-			ci::vec3						m_size;
+			glm::vec3						m_size;
 		};
 		using StageRef = std::shared_ptr<Stage>;
 	}

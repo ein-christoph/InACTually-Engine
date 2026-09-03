@@ -21,9 +21,6 @@
 #include <mutex>
 #include <atomic>
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace proc {

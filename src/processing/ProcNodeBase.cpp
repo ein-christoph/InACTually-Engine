@@ -66,7 +66,7 @@ void act::proc::ProcNodeBase::endNodeDraw(bool doDrawInputPorts, bool doDrawOutp
 
 	drawPorts(m_drawSize.x, doDrawInputPorts, doDrawOutputPorts);
 
-	vec2 newPos = ImNodes::GetNodeGridSpacePos(m_id);
+	glm::vec2 newPos = ImNodes::GetNodeGridSpacePos(m_id);
 	if (newPos != m_position && m_isInitialized) {
 		m_position = newPos;
 		setPosition(m_position);

@@ -25,8 +25,8 @@ namespace act {
 	namespace util {
 
 		/**
-				* @brief constructs a ColorGradient for easy use
-				*/
+		* @brief constructs a ColorGradient for easy use
+		*/
 		class ColorGradient {
 		public:
 			ColorGradient() {
@@ -57,7 +57,7 @@ namespace act {
 				if (abs(position) == NAN)
 					return colors[0.0f];
 
-				ci::ColorA	lowerColor = colors[0.0f];
+				ci::ColorA	lowerci::Color = colors[0.0f];
 				ci::ColorA	higherColor;
 
 				float	lowerValue = 0.0f;
@@ -66,13 +66,13 @@ namespace act {
 				for (auto& kv : colors) {
 					if (kv.first > position) {
 						higherValue = kv.first;
-						higherColor = kv.second;
-						//higherColor = ci::rgbToHsv(higherColor);
+						higherci::Color = kv.second;
+						//higherci::Color = ci::rgbToHsv(higherColor);
 
 						break;
 					}
 					lowerValue = kv.first;
-					lowerColor = kv.second;
+					lowerci::Color = kv.second;
 				}
 
 				float alpha = (position - lowerValue) / (higherValue - lowerValue);
@@ -97,7 +97,7 @@ namespace act {
 
 				for (int c = 0; c < colorMap.rows; c++)
 				{
-					colorMap.row(c).setTo(toOcv(colorGradient->at((float)c / 255.0f)));
+					colorMap.row(c).setTo(ci::toOcv(colorGradient->at((float)c / 255.0f)));
 				}
 				cv::UMat uCM;
 				colorMap.copyTo(uCM);

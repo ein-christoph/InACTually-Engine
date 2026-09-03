@@ -33,7 +33,7 @@ act::room::CameraCalibrator::~CameraCalibrator()
 
 void act::room::CameraCalibrator::update()
 {
-	//m_camera->m_texture = gl::Texture::create(fromOcv(tmp), ci::gl::Texture::Format().loadTopDown());
+	//m_camera->m_texture = ci::gl::Texture::create(ci::fromOcv(tmp), ci::gl::Texture::Format().loadTopDown());
 	auto time = std::chrono::system_clock::now();
 	if (m_autoTakePicutes) {
 		int timeSinceLastPic = std::chrono::duration_cast<std::chrono::milliseconds>(time - m_lastPictureTaken).count();
@@ -94,7 +94,7 @@ void act::room::CameraCalibrator::update()
 				m_camera->m_calibImages.push_back(image.clone());
 				m_imagePoints.push_back(corners);
 
-				//m_calibTextures.push_back(gl::Texture::create(fromOcv(image), ci::gl::Texture::Format().loadTopDown()));
+				//m_calibTextures.push_back(ci::gl::Texture::create(ci::fromOcv(image), ci::gl::Texture::Format().loadTopDown()));
 				std::vector<cv::Point2i> rectCorners;
 				int maxY = 0;
 				int maxX = 0;
@@ -120,13 +120,13 @@ void act::room::CameraCalibrator::update()
 		else {
 			//cv::cvtColor(tmp, tmp, cv::COLOR_BGR2GRAY);
 			cv::putText(image, "no board found", cv::Point(50, image.rows / 2), cv::FONT_HERSHEY_DUPLEX, 2.0, CV_RGB(255, 255, 255), 5);
-			//m_calibTextures.push_back(gl::Texture::create(fromOcv(tmp), ci::gl::Texture::Format().loadTopDown()));
+			//m_calibTextures.push_back(ci::gl::Texture::create(ci::fromOcv(tmp), ci::gl::Texture::Format().loadTopDown()));
 			//drawChessboardCorners(tmp, board_sz, corners, found);
 		}
 
 		cv::addWeighted(m_overlay, 0.3, image, 0.7, 0, image);
 		cv::resize(image, image, cv::Size(m_displaySize.x, m_displaySize.y));
-		m_feedbackTexture = gl::Texture::create(fromOcv(image), ci::gl::Texture::Format().loadTopDown());
+		m_feedbackTexture = ci::gl::Texture::create(ci::fromOcv(image), ci::gl::Texture::Format().loadTopDown());
 
 		/*cv::UMat overlay = cv::UMat(m_camera->m_cvSize.height, m_camera->m_cvSize.width, CV_8UC3);
 		if (!m_camera->m_calibAreas.empty()) {
@@ -145,20 +145,20 @@ void act::room::CameraCalibrator::update()
 void act::room::CameraCalibrator::draw()
 {
 	if (m_feedbackTexture) {
-		gl::pushMatrices();
-		gl::rotate(toRadians(180.0f));
+		ci::gl::pushMatrices();
+		ci::gl::rotate(ci::toRadians(180.0f));
 		ImGui::Image(m_feedbackTexture, m_displaySize);
 
-		gl::pushMatrices();
+		ci::gl::pushMatrices();
 	}
 	if (m_camera->isCalibrated()) {
 		auto undist = m_camera->getUndistortedImage();
 		if (!undist.empty()) {
 			ImGui::SameLine();
-			gl::pushMatrices();
-			gl::rotate(toRadians(180.0f));
-			ImGui::Image(gl::Texture::create(fromOcv(undist)), m_displaySize);
-			gl::pushMatrices();
+			ci::gl::pushMatrices();
+			ci::gl::rotate(ci::toRadians(180.0f));
+			ImGui::Image(ci::gl::Texture::create(ci::fromOcv(undist)), m_displaySize);
+			ci::gl::pushMatrices();
 		}
 	}
 
@@ -189,12 +189,12 @@ void act::room::CameraCalibrator::draw()
 		}
 
 	/*for (int i = 0; i < m_calibTextures.size(); i++) {
-		gl::pushMatrices();
+		ci::gl::pushMatrices();
 		if (i % 5 != 0) {
 			ImGui::SameLine();
 		}
-		ImGui::Image(m_calibTextures[i], ivec2(240, 135));
-		gl::pushMatrices();
+		ImGui::Image(m_calibTextures[i], glm::ivec2(240, 135));
+		ci::gl::pushMatrices();
 	}*/
 }
 
@@ -208,7 +208,7 @@ void act::room::CameraCalibrator::setCamera(CameraDeviceRef camera)
 	
 	m_camera = camera;
 	for (int i = 0; i < m_camera->m_calibImages.size(); i++) {
-		m_calibTextures.push_back(gl::Texture::create(fromOcv(m_camera->m_calibImages[i]), ci::gl::Texture::Format().loadTopDown()));
+		m_calibTextures.push_back(ci::gl::Texture::create(ci::fromOcv(m_camera->m_calibImages[i]), ci::gl::Texture::Format().loadTopDown()));
 	}
 }
 

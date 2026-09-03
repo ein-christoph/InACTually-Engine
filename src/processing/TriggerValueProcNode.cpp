@@ -17,7 +17,7 @@
 #include "TriggerValueProcNode.hpp"
 
 act::proc::TriggerValueProcNode::TriggerValueProcNode() : ProcNodeBase("TriggerValue") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 	m_value = 0.0;
 
 	createBoolInput("fire", [&](bool val) {

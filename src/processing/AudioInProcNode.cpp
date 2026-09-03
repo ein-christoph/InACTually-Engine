@@ -36,17 +36,17 @@ act::proc::AudioInProcNode::AudioInProcNode() : ProcNodeBase("AudioIn") {
 
 	m_isPlaying = false;
 	
-	m_drawSize	= ivec2(500, 150);
+	m_drawSize	= glm::ivec2(500, 150);
 	
-	auto ctx = audio::Context::master();
+	auto ctx = ci::audio::Context::master();
 
-	m_bufferPlayer = ctx->makeNode(new audio::BufferPlayerNode());
+	m_bufferPlayer = ctx->makeNode(new ci::audio::BufferPlayerNode());
 	//m_bufferPlayer >> ctx->getOutput();
 
-	auto monitorFormat = audio::MonitorSpectralNode::Format().fftSize(4096).windowSize(2048);
-	m_spectralNode = ctx->makeNode(new audio::MonitorSpectralNode(monitorFormat));
+	auto monitorFormat = ci::audio::MonitorSpectralNode::Format().fftSize(4096).windowSize(2048);
+	m_spectralNode = ctx->makeNode(new ci::audio::MonitorSpectralNode(monitorFormat));
 
-	m_volumeNode = ctx->makeNode(new audio::MonitorNode(monitorFormat));
+	m_volumeNode = ctx->makeNode(new ci::audio::MonitorNode(monitorFormat));
 
 	m_bufferPlayer >> m_spectralNode;
 	m_bufferPlayer >> m_volumeNode;
@@ -129,7 +129,7 @@ void act::proc::AudioInProcNode::draw() {
 	ImGui::NewLine();
 
 	if(m_waveformTex)
-		ImGui::Image(m_waveformTex, m_waveformTex->getSize(), vec2(0, 1), vec2(1, 0));
+		ImGui::Image(m_waveformTex, m_waveformTex->getSize(), glm::vec2(0, 1), glm::vec2(1, 0));
 
 	ImGui::NewLine();
 	ImGui::PushItemWidth(0.6 * m_drawSize.x);
@@ -160,23 +160,23 @@ void act::proc::AudioInProcNode::onTrigger(bool event) {
 void act::proc::AudioInProcNode::loadSound(std::string path) {
 	if(path != "") {
 		try {
-			m_buffer = ci::audio::load(loadFile(path))->loadBuffer();
+			m_buffer = ci::audio::load(ci::loadFile(path))->loadBuffer();
 			m_bufferPlayer->setBuffer(m_buffer);
 
 			auto waveform = WaveformPlot();
-			waveform.load(m_buffer, Rectf(vec2(0, 0), m_drawSize));
+			waveform.load(m_buffer, ci::Rectf(glm::vec2(0, 0), m_drawSize));
 
-			gl::Fbo::Format format;
+			ci::gl::Fbo::Format format;
 			format.setSamples( 4 );
-			auto fbo = gl::Fbo::create(m_drawSize.x, m_drawSize.y, format);
+			auto fbo = ci::gl::Fbo::create(m_drawSize.x, m_drawSize.y, format);
 			{
-				gl::ScopedFramebuffer fbScp(fbo);
-				gl::ScopedViewport scpVp(ivec2(0), fbo->getSize());
+				ci::gl::ScopedFramebuffer fbScp(fbo);
+				ci::gl::ScopedViewport scpVp(glm::ivec2(0), fbo->getSize());
 
-				gl::ScopedMatrices scpMatrices;
-				gl::setMatricesWindow(fbo->getSize(), true);
+				ci::gl::ScopedMatrices scpMatrices;
+				ci::gl::setMatricesWindow(fbo->getSize(), true);
 
-				gl::clear(util::Design::backgroundColor());
+				ci::gl::clear(util::Design::backgroundColor());
 			
 				waveform.draw();
 			}
@@ -200,7 +200,7 @@ void act::proc::AudioInProcNode::calculateFeatures() {
 	
 	std::vector<float> lastSpectrum = m_spectrum;
 	m_spectrum = m_spectralNode->getMagSpectrum();
-	m_centroid = audio::dsp::spectralCentroid(m_spectrum.data(), m_spectrum.size(), audio::Context::master()->getSampleRate());
+	m_centroid = ci::audio::dsp::spectralCentroid(m_spectrum.data(), m_spectrum.size(), ci::audio::Context::master()->getSampleRate());
 	m_volume = m_volumeNode->getVolume();
 
 	int spectrumSize = m_spectrum.size();

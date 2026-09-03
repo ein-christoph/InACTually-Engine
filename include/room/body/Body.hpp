@@ -16,9 +16,12 @@
 */
 
 #pragma once
+
 #include "cinder/app/App.h"
+
 #include "BodyJoint.hpp"
 #include "UniqueIDBase.hpp"
+
 
 namespace act {
 	namespace room {

@@ -18,9 +18,6 @@
 #include "roompch.hpp"
 #include "RoomNodeBase.hpp"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace room {
@@ -28,7 +25,7 @@ namespace act {
 		class LidarRoomNodeBase : public RoomNodeBase
 		{
 		public:
-			LidarRoomNodeBase(const std::string& portName, ci::Json description, std::string name, ci::vec3 position, ci::vec3 rotation, float radius, act::UID replyUID);
+			LidarRoomNodeBase(const std::string& portName, ci::Json description, std::string name, glm::vec3 position, glm::vec3 rotation, float radius, act::UID replyUID);
 			virtual ~LidarRoomNodeBase();
 
 			virtual void setup()	override;
@@ -48,7 +45,7 @@ namespace act {
 			std::string				m_fixtureName;
 			float					m_maxDistance;
 
-			virtual std::vector<ci::vec2>& getData() = 0;
+			virtual std::vector<glm::vec2>& getData() = 0;
 
 		}; using LidarRoomNodeBaseRef = std::shared_ptr<LidarRoomNodeBase>;
 

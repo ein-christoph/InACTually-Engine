@@ -17,7 +17,7 @@
 #include "StringProcNode.hpp"
 
 act::proc::StringProcNode::StringProcNode() : ProcNodeBase("String") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 	m_text = "";
 
 	m_outPort = createTextOutput("out");

@@ -34,9 +34,9 @@ void act::mod::LLMModule::setup(act::room::RoomManagers roomMgrs, act::net::Netw
 	m_llmConnector->fetchAvailableModels();
 	m_llmConnector->setup(roomMgrs);
 
-	fs::path path = app::getAssetPath("recentLLM.json");
+	ci::fs::path path = ci::app::getAssetPath("recentLLM.json");
 	if (path.empty()) {
-		path = app::getAssetPath("").string() + "recentLLM.json";
+		path = ci::app::getAssetPath("").string() + "recentLLM.json";
 		ci::writeJson(path, "");
 		saveToFile(path);
 	}
@@ -44,7 +44,7 @@ void act::mod::LLMModule::setup(act::room::RoomManagers roomMgrs, act::net::Netw
 }
 
 void act::mod::LLMModule::cleanUp() {
-	saveToFile(app::getAssetPath("recentLLM.json"));
+	saveToFile(ci::app::getAssetPath("recentLLM.json"));
 }
 
 void act::mod::LLMModule::update() {
@@ -349,7 +349,7 @@ ci::Json act::mod::LLMModule::getFullDescription() {
 
 void act::mod::LLMModule::loadFromFile(std::filesystem::path path) {
 	try {
-		ci::Json description = ci::loadJson(loadFile(path));
+		ci::Json description = ci::loadJson(ci::loadFile(path));
 
 		util::setValueFromJson(description, "isActive", m_isActive);
 		if(description.contains("connector"))

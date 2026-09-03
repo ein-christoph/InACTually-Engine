@@ -16,7 +16,7 @@
 */
 
 #include "mixer/DistanceMixer.hpp"
-using namespace ci;
+
 
 act::aio::DistanceMixer::DistanceMixer()
 	: MixerBase()
@@ -69,7 +69,7 @@ void act::aio::DistanceMixer::clear()
 
 void act::aio::DistanceMixer::configure(std::vector<act::room::SpeakerRoomNodeRef> speakers, std::vector<act::room::SubwooferRoomNodeRef> subwoofers, std::vector<act::room::SoundRoomNodeRef> sounds)
 {
-	auto ctx = audio::Context::master();
+	auto ctx = ci::audio::Context::master();
 	if (!ctx->getOutput())
 		return;
 
@@ -92,17 +92,17 @@ void act::aio::DistanceMixer::configure(std::vector<act::room::SpeakerRoomNodeRe
 		sound->disconnectExternals();
 	}
 
-	m_channelRouterNode = ctx->makeNode(new audio::ChannelRouterNode(audio::Node::Format().channels(ctx->getOutput()->getNumChannels())));
+	m_channelRouterNode = ctx->makeNode(new ci::audio::ChannelRouterNode(ci::audio::Node::Format().channels(ctx->getOutput()->getNumChannels())));
 
 	for (auto&& subwoofer : subwoofers) {
 		if (subwoofer->getChannel() < ctx->getOutput()->getNumChannels()) {
-			subwoofer->getOut() >> m_channelRouterNode->route(0, subwoofer->getChannel()) >> audio::Context::master()->getOutput();
+			subwoofer->getOut() >> m_channelRouterNode->route(0, subwoofer->getChannel()) >> ci::audio::Context::master()->getOutput();
 		}
 	}
 	for (auto&& speaker : speakers) {
 		if (speaker->getChannel() < ctx->getOutput()->getNumChannels()) {
 			speaker->setupAudioNodes();
-			speaker->getOut() >> m_channelRouterNode->route(0, speaker->getChannel()) >> audio::Context::master()->getOutput();
+			speaker->getOut() >> m_channelRouterNode->route(0, speaker->getChannel()) >> ci::audio::Context::master()->getOutput();
 		}
 	}
 	connectSpeakersToSubwoofers(m_speakers, subwoofers);
@@ -117,7 +117,7 @@ void act::aio::DistanceMixer::configure(std::vector<act::room::SpeakerRoomNodeRe
 void act::aio::DistanceMixer::connectSound(act::room::SoundRoomNodeRef sound, std::vector<act::room::SpeakerRoomNodeRef> speakers, std::vector<act::room::SubwooferRoomNodeRef> subwoofers)
 {
 	m_mixMap[sound] = std::map<int, ci::audio::GainNodeRef>();
-	auto ctx = audio::Context::master();
+	auto ctx = ci::audio::Context::master();
 	for (auto&& speaker : speakers) {
 		if (speaker->getChannel() < ctx->getOutput()->getNumChannels()) {
 			auto gain = ci::audio::Context::master()->makeNode(new ci::audio::GainNode(0.0f));

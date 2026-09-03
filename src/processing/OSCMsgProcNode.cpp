@@ -114,7 +114,7 @@ act::proc::OSCMsgProcNode::OSCMsgProcNode() : ProcNodeBase("OSCMsg") {
 		json["uid"] = uid;
 		json["data"] = base64;
 
-		auto path = app::getAssetPath("").string() + "image.json";
+		auto path = ci::app::getAssetPath("").string() + "image.json";
 		ci::writeJson(path, json);
 	*/
 	});
@@ -133,7 +133,7 @@ act::proc::OSCMsgProcNode::OSCMsgProcNode() : ProcNodeBase("OSCMsg") {
 			osc.append(json.dump());
 			m_oscPort->send(osc);
 
-			auto path = app::getAssetPath("").string() + "bodies.json";
+			auto path = ci::app::getAssetPath("").string() + "bodies.json";
 			ci::writeJson(path, json);
 
 			i++;

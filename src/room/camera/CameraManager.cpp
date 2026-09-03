@@ -102,7 +102,7 @@ void act::room::CameraManager::update()
 	else m_currentCamera->update();
 
 	//if (m_currentCamera->m_capture)
-	//	m_currentCamera->m_captureSurface = m_currentCamera->m_capture->getSurface();
+	//	m_currentCamera->m_captureci::Surface = m_currentCamera->m_capture->getSurface();
 
 	if (m_doCalibrate) {
 		m_calibrator->update();

@@ -19,9 +19,6 @@
 
 #include "ProcNodeBase.hpp"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace proc {
@@ -41,8 +38,8 @@ namespace act {
 			void fromParams(ci::Json json) override;
 
 		private:
-			OutputPortRef<Color>	m_colorPort;
-			Color m_color;
+			OutputPortRef<ci::Color>	m_colorPort;
+			ci::Color m_color;
 
 			float m_hue;
 			float m_saturation;

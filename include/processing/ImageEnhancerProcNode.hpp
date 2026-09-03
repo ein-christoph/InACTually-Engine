@@ -19,10 +19,7 @@
 
 #include "ProcNodeBase.hpp"
 
-#include "opencv2/core/core_c.h"
-
-using namespace ci;
-using namespace ci::app;
+#include "opencv2/core.hpp"
 
 
 namespace act {

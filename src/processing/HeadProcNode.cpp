@@ -20,14 +20,14 @@
 
 
 act::proc::HeadProcNode::HeadProcNode() : ProcNodeBase("Head") {
-	m_drawSize = ivec2(250, 250);
+	m_drawSize = glm::ivec2(250, 250);
 
-	m_direction = vec3(1.0f, 0.0f, 0.0f);
-	m_horizontal = vec3(0.0f, 0.0f, 1.0f);
-	m_vertical = vec3(0.0f, 1.0f, 0.0f);
+	m_direction = glm::vec3(1.0f, 0.0f, 0.0f);
+	m_horizontal = glm::vec3(0.0f, 0.0f, 1.0f);
+	m_vertical = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	m_directionOutput = createVec3Output("direction");
-	//m_orientation = OutputPort<ci::quat>::create(PT_QUAT, "orientation");
+	//m_orientation = OutputPort<glm::quat>::create(PT_QUAT, "orientation");
 
 
 	auto skeleton = InputPort<std::tuple<uint32_t, k4abt_skeleton_t>>::create(PT_BODY, "Skeleton", [&](std::tuple<uint32_t, k4abt_skeleton_t> skeletonTuple) { onBody(std::get<1>(skeletonTuple)); });
@@ -68,7 +68,7 @@ void act::proc::HeadProcNode::draw() {
 void act::proc::HeadProcNode::onBody(k4abt_skeleton_t body)
 {
 	//auto kQ = body.joints[K4ABT_JOINT_HEAD].orientation;
-	//ci::quat q = ci::quat(kQ.wxyz.w, kQ.wxyz.x, kQ.wxyz.y, kQ.wxyz.z);
+	//glm::quat q = glm::quat(kQ.wxyz.w, kQ.wxyz.x, kQ.wxyz.y, kQ.wxyz.z);
 	//m_orientation->send(q);
 	
 	//auto left	= toVec(body.joints[K4ABT_JOINT_SHOULDER_LEFT].position.xyz);
@@ -105,7 +105,7 @@ ci::Json act::proc::HeadProcNode::toParams() {
 void act::proc::HeadProcNode::fromParams(ci::Json json) {
 }
 
-vec3 act::proc::HeadProcNode::toVec(k4a_float3_t::_xyz xyz)
+glm::vec3 act::proc::HeadProcNode::toVec(k4a_float3_t::_xyz xyz)
 {
-	return vec3(xyz.x, xyz.y, xyz.z);
+	return glm::vec3(xyz.x, xyz.y, xyz.z);
 }

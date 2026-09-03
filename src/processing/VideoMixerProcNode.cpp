@@ -18,7 +18,7 @@
 #include "cinder\Rand.h"
 
 act::proc::VideoMixerProcNode::VideoMixerProcNode() : ProcNodeBase("VideoMixer") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 
 	createNumberInput("value",			[&](number val) { m_mixValue = val; });
 

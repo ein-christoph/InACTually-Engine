@@ -25,15 +25,15 @@ namespace act {
 		class KeyRawListener : public ListenerBase<KeyRawListener>
 		{
 		public:
-			eventCall(keyRawDown, KeyEvent);
-			eventCall(keyRawUp, KeyEvent);
+			eventCall(keyRawDown, ci::app::KeyEvent);
+			eventCall(keyRawUp, ci::app::KeyEvent);
 		};
 
 		class KeyListener : public ListenerBase<KeyListener>
 		{
 		public:
-			eventCall(onKeyDown, KeyEvent);
-			eventCall(onKeyUp, KeyEvent);
+			eventCall(onKeyDown, ci::app::KeyEvent);
+			eventCall(onKeyUp, ci::app::KeyEvent);
 		};
 	}
 }

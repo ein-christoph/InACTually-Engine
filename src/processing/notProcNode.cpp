@@ -17,7 +17,7 @@
 #include "notProcNode.hpp"
 
 act::proc::notProcNode::notProcNode() : ProcNodeBase("not") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 	
 	m_notPort = createBoolOutput("not");
 

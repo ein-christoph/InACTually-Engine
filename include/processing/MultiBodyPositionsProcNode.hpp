@@ -21,10 +21,6 @@
 
 #include <chrono>
 
-using namespace std::chrono;
-
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace proc {
@@ -41,7 +37,7 @@ namespace act {
 			void update()			override;
 			void draw()				override;
 
-			vec3 onSkeleton(room::BodyRef event);
+			glm::vec3 onSkeleton(room::BodyRef event);
 			void onBodies(room::BodyRefList event);
 
 			ci::Json toParams() override;
@@ -58,11 +54,11 @@ namespace act {
 
 			int m_currentJoint;
 
-			OutputPortRef<vec3>	m_position1OutPort;
-			OutputPortRef<vec3>	m_position2OutPort;
-			OutputPortRef<vec3>	m_position3OutPort;
-			OutputPortRef<vec3>	m_position4OutPort;
-			std::vector<OutputPortRef<vec3>> m_positionPorts;
+			OutputPortRef<glm::vec3>	m_position1OutPort;
+			OutputPortRef<glm::vec3>	m_position2OutPort;
+			OutputPortRef<glm::vec3>	m_position3OutPort;
+			OutputPortRef<glm::vec3>	m_position4OutPort;
+			std::vector<OutputPortRef<glm::vec3>> m_positionPorts;
 
 			OutputPortRef<float>	m_distance1OutPort;
 			OutputPortRef<float>	m_distance2OutPort;

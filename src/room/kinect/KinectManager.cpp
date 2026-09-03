@@ -55,7 +55,7 @@ void act::room::KinectManager::update() {
 		m_isDummyOpenDialog = false;
 		std::vector<std::string> exts;
 		exts.push_back("json");
-		std::string path = ci::app::getOpenFilePath(app::getAssetPath("./../recordings/"), exts).string();
+		std::string path = ci::app::getOpenFilePath(ci::app::getAssetPath("./../recordings/"), exts).string();
 		addDummyDevice(path);
 	}	
 
@@ -91,7 +91,7 @@ void act::room::KinectManager::draw()
 
 			util::ColorGradient colorGrad;
 
-			colorGrad.add(ColorA(1, 1, 1, 1), 1.0f);
+			colorGrad.add(ci::ColorA(1, 1, 1, 1), 1.0f);
 
 			if (m_colorMapping.size() >= k_body) {
 				for (int i = 0; i < currBodies.size(); i++)
@@ -362,18 +362,18 @@ act::room::KinectDeviceRef act::room::KinectManager::getDeviceByName(std::string
 	return NULL;
 }
 
-vec3 act::room::KinectManager::getKinectPositionByUID(act::UID uid)
+glm::vec3 act::room::KinectManager::getKinectPositionByUID(act::UID uid)
 {
-	vec3 pos = vec3(0.0f);
+	glm::vec3 pos = glm::vec3(0.0f);
 	auto kinect = getNodeByUID(uid);
 	if (kinect)
 		pos = kinect->getPosition();
 	return pos;
 }
 
-vec3 act::room::KinectManager::getKinectOrientationByUID(act::UID uid)
+glm::vec3 act::room::KinectManager::getKinectOrientationByUID(act::UID uid)
 {
-	vec3 rot = vec3(0.0f);
+	glm::vec3 rot = glm::vec3(0.0f);
 	auto kinect = getNodeByUID(uid);
 	if (kinect)
 		rot = kinect->getRotation();
@@ -437,7 +437,7 @@ act::room::RoomNodeBaseRef act::room::KinectManager::addDevice(std::string devic
 */
 void act::room::KinectManager::addDummyDevice(std::string path)
 {
-	ci::Json data = ci::loadJson(loadFile(path));
+	ci::Json data = ci::loadJson(ci::loadFile(path));
 	std::string filename = "";
 
  	int namePos = path.rfind("\\");
@@ -458,13 +458,13 @@ void act::room::KinectManager::addDummyDevice(std::string path)
 	m_devices.push_back(device);
 	m_usedDeviceNames.push_back(device->getName());
 
-	vec3 pos = vec3(0.0f);
+	glm::vec3 pos = glm::vec3(0.0f);
 	if (data.contains("position")) {
 		pos.x = data["position"]["x"];
 		pos.y = data["position"]["y"];
 		pos.z = data["position"]["z"];
 	}
-	vec3 rot = vec3(0.0f);
+	glm::vec3 rot = glm::vec3(0.0f);
 	if (data.contains("rotation")) {
 		rot.x = data["rotation"]["x"];
 		rot.y = data["rotation"]["y"];
@@ -525,45 +525,45 @@ void act::room::KinectManager::drawBodySkeletons(std::map<uint32_t, std::pair<k4
 			for (int i = 0; i < 32; i++)
 			{
 				k4a_float3_t childJoint = skeleton.joints[i].position;
-				vec3 child = vec3(childJoint.xyz.x, childJoint.xyz.y, childJoint.xyz.z);
+				glm::vec3 child = glm::vec3(childJoint.xyz.x, childJoint.xyz.y, childJoint.xyz.z);
 				switch (skeleton.joints[i].confidence_level) {
 				case K4ABT_JOINT_CONFIDENCE_NONE:
-					gl::color(Color::gray(0.5f));
-					gl::lineWidth(2);
+					ci::gl::color(ci::Color::gray(0.5f));
+					ci::gl::lineWidth(2);
 
 					break;
 				case K4ABT_JOINT_CONFIDENCE_LOW:
-					gl::color(ColorA(color.r, color.g, color.b, 0.6f));
-					gl::lineWidth(4);
+					ci::gl::color(ci::ColorA(color.r, color.g, color.b, 0.6f));
+					ci::gl::lineWidth(4);
 					break;
 				default: // case K4ABT_JOINT_CONFIDENCE_MEDIUM:
 
 					break;
 				}
 
-				gl::drawCube(child, vec3(0.05f));
+				ci::gl::drawCube(child, glm::vec3(0.05f));
 
 				k4a_float3_t::_xyz parentJoint = skeleton.joints[jointParentLookUp[i]].position.xyz;
-				vec3 parent = vec3(parentJoint.x, parentJoint.y, parentJoint.z);
+				glm::vec3 parent = glm::vec3(parentJoint.x, parentJoint.y, parentJoint.z);
 
-				gl::drawLine(child, parent);
+				ci::gl::drawLine(child, parent);
 			}
 		}
 	}
-	gl::lineWidth(1);
+	ci::gl::lineWidth(1);
 }
 
-ColorA act::room::KinectManager::colorGenerator(int id, float alpha)
+ci::ColorA act::room::KinectManager::colorGenerator(int id, float alpha)
 {
 	float hOffset = fmod(id * COLOROFFSET, 1);
-	Color rgb = ci::hsvToRgb(vec3(hOffset, 1.0f, 0.5f));
+	ci::Color rgb = ci::hsvToRgb(glm::vec3(hOffset, 1.0f, 0.5f));
 
-	return ColorA(rgb.r, rgb.g, rgb.b, std::clamp(alpha, 0.0f, 1.0f));
+	return ci::ColorA(rgb.r, rgb.g, rgb.b, std::clamp(alpha, 0.0f, 1.0f));
 }*/
 
 act::room::PointcloudRoomNodeRef act::room::KinectManager::createPointcloudRoomNode()
 {
-	auto pointcloud = room::PointcloudRoomNode::create(vec3(0,0,0), 1.0f, "pointcloud");
+	auto pointcloud = room::PointcloudRoomNode::create(glm::vec3(0,0,0), 1.0f, "pointcloud");
 	m_nodes.push_back(pointcloud);
 	return pointcloud;
 }
@@ -614,8 +614,8 @@ void act::room::KinectManager::checkRedundantBodies(std::map<uint32_t, k4abt_ske
 							k4a_float3_t::_xyz s_pos = s_currSkeleton.joints[i].position.xyz;
 							k4a_float3_t::_xyz pos = currSkeleton.joints[i].position.xyz;
 
-							vec3 center = vec3(s_pos.x, s_pos.y, s_pos.z);
-							vec3 point = vec3(pos.x, pos.y, pos.z);
+							glm::vec3 center = glm::vec3(s_pos.x, s_pos.y, s_pos.z);
+							glm::vec3 point = glm::vec3(pos.x, pos.y, pos.z);
 
 							float distance = hypot(hypot(center.x - point.x, center.y - point.y), center.z - point.z);
 

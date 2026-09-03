@@ -17,7 +17,7 @@
 #include "BooleanProcNode.hpp"
 
 act::proc::BooleanProcNode::BooleanProcNode() : ProcNodeBase("Boolean") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 	m_boolean = true;
 
 	m_outPort = createBoolOutput("out");

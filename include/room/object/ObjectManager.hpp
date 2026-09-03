@@ -25,6 +25,7 @@
 
 #include "computing/ObjectDetector.hpp"
 
+
 namespace act {
 	namespace room {
 
@@ -56,11 +57,11 @@ namespace act {
 			
 			void processObjects();
 
-			ivec2 m_displaySize = ivec2(640, 360);
+			glm::ivec2 m_displaySize = glm::ivec2(640, 360);
 
 			std::map<act::UID, comp::ObjectDetectorRef> m_objectDetectors;
 
-			std::vector<gl::TextureRef> m_feedbackTextures;
+			std::vector<ci::gl::TextureRef> m_feedbackTextures;
 		};
 		using ObjectManagerRef = std::shared_ptr<ObjectManager>;
 	}

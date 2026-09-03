@@ -23,9 +23,7 @@
 
 using namespace std::chrono;
 
-using namespace ci;
-using namespace ci::app;
-
+ 
 namespace act {
 	namespace proc {
 
@@ -49,7 +47,7 @@ namespace act {
 		private:
 			std::tuple<uint32_t, k4abt_skeleton_t> Skeleton;
 
-			vec3 m_currentJointPosition;
+			glm::vec3 m_currentJointPosition;
 
 			const char* m_jointSelection[32] = {
 				"01 - PELVIS",
@@ -88,7 +86,7 @@ namespace act {
 
 			int m_currentJoint;
 
-			OutputPortRef<vec3>	m_positionOutPort;
+			OutputPortRef<glm::vec3>	m_positionOutPort;
 
 			static bool	m_registered;
 

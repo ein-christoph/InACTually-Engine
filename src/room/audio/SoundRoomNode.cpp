@@ -26,8 +26,8 @@
 #include "cinder/audio/Utilities.h"
 #include "cinder/audio/Param.h"
 
-act::room::SoundRoomNode::SoundRoomNode(ci::vec3 position, float radius, std::string name)
-	: AudioRoomNodeBase("sound", position, ci::vec3(0.0f), radius)
+act::room::SoundRoomNode::SoundRoomNode(glm::vec3 position, float radius, std::string name)
+	: AudioRoomNodeBase("sound", position, glm::vec3(0.0f), radius)
 {
 	setTriMesh(ci::TriMesh::create(ci::geom::Sphere()));
 	setCaption(name);

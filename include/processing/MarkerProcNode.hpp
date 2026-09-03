@@ -19,8 +19,6 @@
 
 #include "ProcNodeBase.hpp"
 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace proc {
@@ -44,8 +42,8 @@ namespace act {
 			act::room::MarkerManagerRef m_markerMgr;
 			int						m_selectedMarker = 0;
 
-			OutputPortRef<vec3>		m_markerPositionOutPort;
-			InputPortRef<vec3>		m_markerPositionInPort;
+			OutputPortRef<glm::vec3>		m_markerPositionOutPort;
+			InputPortRef<glm::vec3>		m_markerPositionInPort;
 
 			void attachMarker();
 		};

@@ -17,7 +17,7 @@
 #include "NumberProcNode.hpp"
 
 act::proc::NumberProcNode::NumberProcNode() : ProcNodeBase("Number") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 	m_number = 0.0f;
 
 	m_outPort = createNumberOutput("out");

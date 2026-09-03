@@ -78,7 +78,7 @@ namespace act {
 			int									m_selectedDevice;
 			int									m_prevSelectedDevice;
 
-			ivec2								m_displaySize = ivec2(640, 360);
+			glm::ivec2							m_displaySize = glm::ivec2(640, 360);
 
 			CameraCalibratorRef					m_calibrator;
 

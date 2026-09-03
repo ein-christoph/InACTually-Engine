@@ -17,8 +17,10 @@
 
 #pragma once
 
+
 namespace act {
 	namespace input {
+
 		class InputBase
 		{
 		public:

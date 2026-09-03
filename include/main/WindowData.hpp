@@ -29,9 +29,6 @@
 #include <functional>
 
 
-using namespace ci; 
-using namespace ci::app;
-
 namespace act {
 	
 	class WindowData : public UniqueIDBase {
@@ -40,12 +37,12 @@ namespace act {
 		WindowData() {};
 		~WindowData() {};
 
-		static app::WindowRef createWindow(std::string title,
-			const ci::ivec2& size = ci::ivec2(800, 600),
+		static ci::app::WindowRef createWindow(std::string title,
+			const glm::ivec2& size = glm::ivec2(800, 600),
 			bool fullScreen = false,
 			bool borderless = false) {
 
-			app::WindowRef window = ci::app::App::get()->createWindow(Window::Format().size(size));
+			ci::app::WindowRef window = ci::app::App::get()->createWindow(ci::app::Window::Format().size(size));
 			
 			window->setTitle(title);
 			window->setUserData(new WindowData());
@@ -62,13 +59,13 @@ namespace act {
 		};
 
 		virtual void draw() {
-			gl::clear(util::Design::backgroundColor());
-			gl::color(Color::white());
+			ci::gl::clear(util::Design::backgroundColor());
+			ci::gl::color(ci::Color::white());
 
 			if(!m_isInitialized) {
 				m_isInitialized = true;
 				
-				auto ctx = gl::context();
+				auto ctx = ci::gl::context();
 				if (ctx->getProjectionMatrixStack().size() == 0) {
 					ctx->getProjectionMatrixStack().push_back(glm::mat4(1.0f));
 				}
@@ -79,19 +76,19 @@ namespace act {
 					ctx->getViewMatrixStack().push_back(glm::mat4(1.0f));
 				}
 				
-				getWindow()->emitResize();
+				ci::app::getWindow()->emitResize();
 				return;
 			}
 
-			gl::pushMatrices();
+			ci::gl::pushMatrices();
 
 			if (m_drawable)
 				m_drawable->draw();
 
-			gl::popMatrices();
+			ci::gl::popMatrices();
 		};
 
-		virtual void fileDrop(FileDropEvent event) {};
+		virtual void fileDrop(ci::app::FileDropEvent event) {};
 		virtual void resize() const {};
 		
 		void setDrawable(DrawableBaseRef drawable) {

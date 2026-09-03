@@ -35,11 +35,11 @@ void act::mod::NetworkModule::setup(act::room::RoomManagers roomMgrs, act::net::
 	m_roomMgrs = roomMgrs;
 	m_networkMgr = networkMgr;
 
-	fs::path path = app::getAssetPath("recentNetwork.json");
+	ci::fs::path path = ci::app::getAssetPath("recentNetwork.json");
 	
 	if (path.empty()) {
-		path = app::getAssetPath("").string() + "recentNetwork.json";
-		writeJson(path,""); // touch
+		path = ci::app::getAssetPath("").string() + "recentNetwork.json";
+		ci::writeJson(path,""); // touch
 		saveToFile(path);
 	}
 
@@ -47,7 +47,7 @@ void act::mod::NetworkModule::setup(act::room::RoomManagers roomMgrs, act::net::
 }
 
 void act::mod::NetworkModule::cleanUp() {
-	saveToFile(app::getAssetPath("recentNetwork.json"));
+	saveToFile(ci::app::getAssetPath("recentNetwork.json"));
 }
 
 
@@ -81,7 +81,7 @@ void act::mod::NetworkModule::drawNetworkState() {
 }
 
 
-void act::mod::NetworkModule::saveToFile(fs::path path) {
+void act::mod::NetworkModule::saveToFile(ci::fs::path path) {
 	ci::writeJson(path, getFullDescription());
 }
 
@@ -95,9 +95,9 @@ ci::Json act::mod::NetworkModule::getFullDescription()
 	return description;
 }
 
-void act::mod::NetworkModule::loadFromFile(fs::path path) {
+void act::mod::NetworkModule::loadFromFile(ci::fs::path path) {
 
-	ci::Json description = ci::loadJson(loadFile(path));
+	ci::Json description = ci::loadJson(ci::loadFile(path));
 
 	util::setValueFromJson(description, "isActive", m_isActive);
 

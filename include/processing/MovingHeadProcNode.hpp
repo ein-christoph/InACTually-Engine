@@ -21,9 +21,6 @@
 #include "dmx/DMXManager.hpp"
 #include "dmx/MovingHeadRoomNode.hpp"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace proc {
@@ -43,7 +40,7 @@ namespace act {
 			void onDimmer(float dim);
 			void onZoom(float zoom);
 			void onColor(ci::Color color);
-			void onLookAt(vec3 lookAt);
+			void onLookAt(glm::vec3 lookAt);
 
 			ci::Json toParams() override;
 			void fromParams(ci::Json json) override;
@@ -51,8 +48,8 @@ namespace act {
 		private:
 			float	m_dim;
 			float	m_zoom;
-			ci::Anim<Color>	m_color;
-			vec3	m_lookAt;
+			ci::Anim<ci::Color>	m_color;
+			glm::vec3	m_lookAt;
 			bool	m_isLookingAt;
 			bool	m_isUpsideDown;
 

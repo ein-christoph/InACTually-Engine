@@ -17,7 +17,7 @@
 #include "MinProcNode.hpp"
 
 act::proc::MinProcNode::MinProcNode() : ProcNodeBase("Min") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 	m_secondary = 1.0f;
 
 	createNumberInput("primary", [&](number val) { m_minPort->send(std::min(val, m_secondary)); });

@@ -20,7 +20,7 @@
 
 act::proc::BodyTrackingProcNode::BodyTrackingProcNode() : ProcNodeBase("BodyTracking") {
 
-	m_drawSize = ivec2(336, 189);
+	m_drawSize = glm::ivec2(336, 189);
 
 	m_numberOfBodies = 0;
 

@@ -23,8 +23,6 @@
 
 using namespace std::chrono;
 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace proc {
@@ -49,7 +47,7 @@ namespace act {
 		private:
 			room::BodyRef Skeleton;
 
-			vec3 m_currentVec;
+			glm::vec3 m_currentVec;
 			bool m_doNormalize;
 
 			const char* m_jointSelection[14] = {
@@ -72,7 +70,7 @@ namespace act {
 			int m_fromJoint;
 			int m_toJoint;
 
-			OutputPortRef<vec3>	m_positionOutPort;
+			OutputPortRef<glm::vec3>	m_positionOutPort;
 
 			static bool	m_registered;
 

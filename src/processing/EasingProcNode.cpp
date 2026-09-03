@@ -20,7 +20,7 @@
 #include <ranges>
 
 act::proc::EasingProcNode::EasingProcNode() : ProcNodeBase("Easing") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 
 	createEasingsList();
 

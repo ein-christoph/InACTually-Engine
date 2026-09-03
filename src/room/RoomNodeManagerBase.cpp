@@ -66,7 +66,7 @@ act::room::RoomNodeBaseRef act::room::RoomNodeManagerBase::getNodeByUID(act::UID
 	return nullptr;
 }
 
-bool act::room::RoomNodeManagerBase::hit(ci::vec3 pos)
+bool act::room::RoomNodeManagerBase::hit(glm::vec3 pos)
 {
 	for (auto&& node : m_nodes) {
 		if (node->hit(pos)) 
@@ -84,7 +84,7 @@ bool act::room::RoomNodeManagerBase::hitRay(ci::Ray ray)
 	return false;
 }
 
-act::room::RoomNodeBaseRef act::room::RoomNodeManagerBase::getNodeAtPos(ci::vec3 pos)
+act::room::RoomNodeBaseRef act::room::RoomNodeManagerBase::getNodeAtPos(glm::vec3 pos)
 {
 	for (auto&& node : m_nodes) {
 		if (node->hit(pos))

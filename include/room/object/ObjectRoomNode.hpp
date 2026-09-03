@@ -19,8 +19,6 @@
 
 #include "RoomNodeBase.hpp"
 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace room {
@@ -45,7 +43,7 @@ namespace act {
 			int getID() { return m_id; }
 		
 		private:
-			gl::TextureRef m_objectTexture;
+			ci::gl::TextureRef m_objectTexture;
 			float	m_objectWidth = 0.5f;
 			bool	m_dynamic = true;
 			int		m_id = -1;

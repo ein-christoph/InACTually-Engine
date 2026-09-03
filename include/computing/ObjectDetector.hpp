@@ -31,6 +31,7 @@
 
 //#include "ByteTrack/BYTETracker.h"
 
+
 namespace act {
 	namespace comp {
 
@@ -94,7 +95,7 @@ namespace act {
 			//std::shared_ptr<byte_track::BYTETracker> m_tracker;
 			void								trackObjects(std::vector<ObjectCandidate>& candidates);
 
-			ivec2 m_displaySize = ivec2(640, 360);
+			glm::ivec2 m_displaySize = glm::ivec2(640, 360);
 
 			std::map<int, bool> m_validObjectIDs;
 			std::map<int, std::shared_ptr<ObjectOccurence>> m_newObjectOccurence;

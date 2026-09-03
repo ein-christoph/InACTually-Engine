@@ -21,8 +21,6 @@
 #include "camera/CameraManager.hpp"
 #include "cinder/qtime/QuickTimeGl.h"
 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace proc {
@@ -46,26 +44,26 @@ namespace act {
 			ci::Json toParams() override;
 			void fromParams(ci::Json json) override;
 
-			void loadVideo(fs::path path);
+			void loadVideo(ci::fs::path path);
 
 			void setIsLooping(bool isLooping)	{ m_isLooping = isLooping; };
 			void setIsResuming(bool isResuming) { m_isResuming = isResuming; };
 
 			bool fadeToVideoIndex(int index);
-			fs::path getCurrentPath();
+			ci::fs::path getCurrentPath();
 
 		private:
 			ci::SurfaceRef			m_videoSurface;
 			ci::gl::Texture2dRef	m_videoTexture;
 
-			ci::ivec2				m_videoSize;
+			glm::ivec2				m_videoSize;
 
 			ImageOutputPortRef		m_videoImageOutPort;
 			
 			int						m_currentVideoIndex;
-			std::vector<fs::path>	m_paths;
-			qtime::MovieGlRef		m_video;
-			qtime::MovieGlRef		m_videoFadeFrom;
+			std::vector<ci::fs::path>	m_paths;
+			ci::qtime::MovieGlRef		m_video;
+			ci::qtime::MovieGlRef		m_videoFadeFrom;
 
 			ci::Anim<float>			m_fadeAt;
 			bool					m_isFading;

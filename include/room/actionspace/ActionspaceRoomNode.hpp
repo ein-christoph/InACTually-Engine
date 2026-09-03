@@ -22,8 +22,6 @@
 #include "RoomNodeBase.hpp"
 #include "Bounding.hpp"
 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace room {
@@ -40,10 +38,10 @@ namespace act {
 		class ActionspaceRoomNode : public RoomNodeBase
 		{
 		public:
-			ActionspaceRoomNode(std::string name, ci::vec3 position = ci::vec3(0.0f, 0.0f, 0.0f), ci::vec3 rotation = ci::vec3(0.0f, 0.0f, 0.0f), float radius = 0.0f, act::UID replyUID = "");
+			ActionspaceRoomNode(std::string name, glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f), float radius = 0.0f, act::UID replyUID = "");
 			virtual ~ActionspaceRoomNode();
 
-			static std::shared_ptr<ActionspaceRoomNode> create(std::string name, ci::vec3 position = ci::vec3(0.0f, 1.0f, 0.0f), ci::vec3 rotation = ci::vec3(0.0f, 0.0f, 0.0f), float radius = 0.5f, act::UID replyUID = "") { return std::make_shared<ActionspaceRoomNode>(name, position, rotation, radius, replyUID); };
+			static std::shared_ptr<ActionspaceRoomNode> create(std::string name, glm::vec3 position = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f), float radius = 0.5f, act::UID replyUID = "") { return std::make_shared<ActionspaceRoomNode>(name, position, rotation, radius, replyUID); };
 
 			virtual void setup()	override;
 			virtual void update()	override;
@@ -55,8 +53,8 @@ namespace act {
 			virtual void fromParams(ci::Json json) override;
 
 		protected:
-			ASType	m_type = AST_SPHERE;
-			vec3	m_size = vec3(1.f, 1.f, 1.f);
+			ASType		m_type = AST_SPHERE;
+			glm::vec3	m_size = glm::vec3(1.f, 1.f, 1.f);
 			
 			BoundingRef m_bounding;
 

@@ -25,6 +25,7 @@
 #include <k4abt.hpp>
 #include "body/Body.hpp"
 
+
 namespace kh
 {
 	static cv::Mat k4a_get_mat(k4a::image src, bool deepCopy = true)
@@ -181,7 +182,7 @@ namespace kh
 				k4a_quaternion_t::_wxyz orientation = k4aJoint.orientation.wxyz;
 				int confidenceLevel = static_cast<std::underlying_type<k4abt_joint_confidence_level_t>::type>(k4aJoint.confidence_level);
 
-				currJoint->position = vec3(pos.x, pos.y, pos.z);
+				currJoint->position = glm::vec3(pos.x, pos.y, pos.z);
 				currJoint->orientation = getKinectTPoseOrientationInverse(currJoint) * glm::quat(orientation.w, orientation.x, orientation.y, orientation.z);
 				currJoint->confidenceLevel = static_cast<act::room::BodyJointConfidence>(confidenceLevel);
 

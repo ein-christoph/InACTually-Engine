@@ -20,13 +20,13 @@
 
 
 act::proc::HandProcNode::HandProcNode() : ProcNodeBase("Hand") {
-	m_drawSize = ivec2(250, 250);
+	m_drawSize = glm::ivec2(250, 250);
 
 	m_leftHandClosed = createBoolOutput("is left closed");
 	m_leftHandOpend = createBoolOutput("is left opened");
 	m_rightHandClosed = createBoolOutput("is right closed");
 	m_rightHandOpend = createBoolOutput("is right opened");
-	//m_orientation = OutputPort<ci::quat>::create(PT_QUAT, "orientation");
+	//m_orientation = OutputPort<glm::quat>::create(PT_QUAT, "orientation");
 
 	auto skeleton = InputPort<std::tuple<uint32_t, k4abt_skeleton_t>>::create(PT_BODY, "Skeleton", [&](std::tuple<uint32_t, k4abt_skeleton_t> skeletonTuple) { onBody(std::get<1>(skeletonTuple)); });
 	m_inputPorts.push_back(skeleton);
@@ -66,9 +66,9 @@ void act::proc::HandProcNode::onBody(k4abt_skeleton_t body)
 	auto rightWrist = body.joints[K4ABT_JOINT_WRIST_RIGHT].position.xyz;
 	auto leftHand	= body.joints[room::BJT_HAND_LEFT].position.xyz;
 
-	//m_distanceLeft	= ci::dot(vec3(leftTip.x, leftTip.y, leftTip.z) - vec3(leftHand.x, leftHand.y, leftHand.z), vec3(leftWrist.x, leftWrist.y, leftWrist.z) - vec3(leftHand.x, leftHand.y, leftHand.z));
-	m_distanceRight = ci::distance(vec3(rightTip.x, rightTip.y, rightTip.z), vec3(rightWrist.x, rightWrist.y, rightWrist.z));
-	m_distanceLeft = ci::distance(vec3(leftTip.x, leftTip.y, leftTip.z), vec3(leftWrist.x, leftWrist.y, leftWrist.z));
+	//m_distanceLeft	= ci::dot(glm::vec3(leftTip.x, leftTip.y, leftTip.z) - glm::vec3(leftHand.x, leftHand.y, leftHand.z), glm::vec3(leftWrist.x, leftWrist.y, leftWrist.z) - glm::vec3(leftHand.x, leftHand.y, leftHand.z));
+	m_distanceRight = ci::distance(glm::vec3(rightTip.x, rightTip.y, rightTip.z), glm::vec3(rightWrist.x, rightWrist.y, rightWrist.z));
+	m_distanceLeft = ci::distance(glm::vec3(leftTip.x, leftTip.y, leftTip.z), glm::vec3(leftWrist.x, leftWrist.y, leftWrist.z));
 	
 	if (m_distanceLeft < 0.2f) m_leftHandClosed->send(true);
 	else m_leftHandOpend->send(true);

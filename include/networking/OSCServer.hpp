@@ -18,8 +18,11 @@
 #pragma once
 
 #include "Osc.h"
+
+
 using Sender = ci::osc::SenderUdp;
 #define _SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING
+
 
 namespace act {
 	namespace net {

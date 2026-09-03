@@ -16,6 +16,7 @@
 */
 
 #pragma once
+
 #include "cinder/Vector.h"
 #include <cinder/Color.h>
 #include <glm/gtx/color_space.hpp>
@@ -24,8 +25,8 @@
 #define amber_r 1.0f
 #define amber_g 0.7647f
 
-// Data structure for color with 5 channels
 
+// Data structure for color with 5 channels
 struct RGBAWColor
 {
 	uint8_t r = 0;
@@ -36,13 +37,12 @@ struct RGBAWColor
 };
 
 // two static functions to calculate RGB(A)W color from RGB color by converting it into HSV and back with changed factors
-
 class RGBAWHelper
 {
 public:
 	static RGBAWColor RGBtoRGBAW(ci::Color original)
 	{
-		ci::vec3 hsv = rgbToHsv(original);				// detailed explanation of what is happening here:
+		glm::vec3 hsv = rgbToHsv(original);				// detailed explanation of what is happening here:
 														// used https://www.rapidtables.com/convert/color/hsv-to-rgb.html as reference
 		hsv.x = hsv.x * 360.0f;							// calculate hsv from rgb and multiply h*360 to get [H,S,V] = {0-360,0-1,0-1}
 		float c = hsv.z * hsv.y;						// 
@@ -99,7 +99,7 @@ public:
 
 	static RGBAWColor RGBtoRGBW(ci::Color original)
 	{
-		ci::vec3 hsv = rgbToHsv(original);				// calculation from hsv to rgb similar to RGBtoRGBAW(), but without weird amber corrections, see step 0 and 1
+		glm::vec3 hsv = rgbToHsv(original);				// calculation from hsv to rgb similar to RGBtoRGBAW(), but without weird amber corrections, see step 0 and 1
 		hsv.x = hsv.x * 360.0f;
 		float c = hsv.z * hsv.y;
 		float m = hsv.z * (1 - hsv.y);

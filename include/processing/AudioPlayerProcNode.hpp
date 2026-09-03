@@ -24,9 +24,6 @@
 
 #include "cinder/Timeline.h"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace proc {
@@ -65,7 +62,7 @@ namespace act {
 			ci::Anim<float>					m_volume;
 			float							m_toVolume;
 
-			OutputPortRef<audio::NodeRef>	m_audioOut;
+			OutputPortRef<ci::audio::NodeRef>	m_audioOut;
 			OutputPortRef<bool>				m_isPlayingOut;
 
 			bool							m_playEvent;
@@ -86,7 +83,7 @@ namespace act {
 			bool							m_normalized;
 			
 			WaveformPlot					m_waveform;
-			gl::Texture2dRef				m_waveformTex;
+			ci::gl::Texture2dRef				m_waveformTex;
 			float							m_playPosition;
 
 			int								m_falseCount;

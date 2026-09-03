@@ -20,10 +20,10 @@
 
 
 act::proc::BodiesFilterProcNode::BodiesFilterProcNode() : ProcNodeBase("BodiesFilter") {
-	m_drawSize = ivec2(250, 250);
+	m_drawSize = glm::ivec2(250, 250);
 
-	m_nearestToPosition = vec3(0.0f);
-	m_currentPosition = vec3(0.0f);
+	m_nearestToPosition = glm::vec3(0.0f);
+	m_currentPosition = glm::vec3(0.0f);
 	m_nearestToPositionDistance = 1000.0f;
 
 	m_isBody = false;
@@ -75,7 +75,7 @@ void act::proc::BodiesFilterProcNode::drawPickPosition()
 	for (int i = 0; i < m_bodies.size(); i++) {
 		ImGui::PushID(i);
 		auto joint = m_bodies[i]->joints[K4ABT_JOINT_SPINE_CHEST];
-		vec3 position = vec3(joint->position.x, joint->position.y, joint->position.z);
+		glm::vec3 position = glm::vec3(joint->position.x, joint->position.y, joint->position.z);
 		if (ImGui::Button("pick position"))
 			m_nearestToPosition = position;
 		ImGui::SameLine();
@@ -137,14 +137,14 @@ act::room::BodyRef act::proc::BodiesFilterProcNode::findNearestBody(room::BodyRe
 	for (auto&& b : bodies) {
 		m_currentPosition = b->joints[K4ABT_JOINT_SPINE_CHEST]->position;
 		
-		float d = ci::distance(vec2(m_currentPosition.x, m_currentPosition.z), vec2(m_nearestToPosition.x, m_nearestToPosition.z));
+		float d = ci::distance(glm::vec2(m_currentPosition.x, m_currentPosition.z), glm::vec2(m_nearestToPosition.x, m_nearestToPosition.z));
 		if (d < distance) {
 			distance = d;
 			body = b;
 			m_isBody = true;
 		}
 		else {
-			m_currentPosition = vec3(0.0f);
+			m_currentPosition = glm::vec3(0.0f);
 		}
 	}
 	return body;

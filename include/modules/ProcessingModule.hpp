@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "CinderOpenCV.h"
@@ -29,8 +28,6 @@
 #include "ProcNodeRegistry.hpp"
 #include "ContainerProcNode.hpp"
 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace mod {
@@ -86,8 +83,8 @@ namespace act {
 
 			void drawNodePool();
 			void drawCreateButton(std::string nodeName);
-			void loadFromFile(fs::path path);
-			void saveToFile(fs::path path);
+			void loadFromFile(ci::fs::path path);
+			void saveToFile(ci::fs::path path);
 			void connect(int from, int to);
 			std::pair<act::UID, std::string> getNodeUIDAndPortName(std::string str);
 		};

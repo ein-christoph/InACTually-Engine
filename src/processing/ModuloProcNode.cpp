@@ -17,7 +17,7 @@
 #include "ModuloProcNode.hpp"
 
 act::proc::ModuloProcNode::ModuloProcNode() : ProcNodeBase("Modulo") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 	m_secondary = 1.0f;
 
 	createNumberInput("primary", [&](number val) { m_remainderPort->send(fmodf(val,  m_secondary)); });

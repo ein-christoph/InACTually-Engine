@@ -58,9 +58,9 @@ void act::room::MarkerManager::update()
 	if (m_imgTexQueue.size() > 0)
 		m_textures.clear();
 	while (m_imgTexQueue.size() > 0) {
-		auto img = fromOcv(m_imgTexQueue.front());
+		auto img = ci::fromOcv(m_imgTexQueue.front());
 		if (img)
-			m_textures.push_back(gl::Texture::create(img, ci::gl::Texture::Format().loadTopDown()));
+			m_textures.push_back(ci::gl::Texture::create(img, ci::gl::Texture::Format().loadTopDown()));
 		m_imgTexQueue.pop();
 	}
 	*/
@@ -82,12 +82,12 @@ act::room::RoomNodeBaseRef act::room::MarkerManager::drawMenu() {
 
 	if (ImGui::Button("Create Marker")) {
 		auto node = MarkerRoomNode::create(1);
-		node->setPosition(ci::vec3(0.0f, 0.0f, 0.0f));
+		node->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 		m_nodes.push_back(node);
 	}
 
 	for (auto&& tex : m_feedbackTextures) {
-		ImGui::Image(tex, ci::vec2(tex->getSize()) * 0.3f);
+		ImGui::Image(tex, glm::vec2(tex->getSize()) * 0.3f);
 	}
 	
 	return nullptr;
@@ -116,7 +116,7 @@ void act::room::MarkerManager::fromJson(ci::Json json) {
 
 }
 
-act::proc::OutputPortRef<vec3> act::room::MarkerManager::getMarkerPort(int markerID)
+act::proc::OutputPortRef<glm::vec3> act::room::MarkerManager::getMarkerPort(int markerID)
 {
 	auto nodeIter = std::find_if(m_nodes.begin(), m_nodes.end(),
 		[markerID](RoomNodeBaseRef node) {
@@ -169,7 +169,7 @@ void act::room::MarkerManager::checkCameras()
 }
 
 void act::room::MarkerManager::processMarkers() {
-	std::vector<gl::TextureRef> feedbackTextures;
+	std::vector<ci::gl::TextureRef> feedbackTextures;
 
 	for (auto&& markerDetector : m_markerDetectors) {	
 		auto&& detector = markerDetector.second;
@@ -207,7 +207,7 @@ void act::room::MarkerManager::processMarkers() {
 				detector->setCameraInverseToMarker(candidate.rvec, candidate.tvec, marker->getPosition(), marker->getOrientation());
 			}
 			else if (marker->isDynamic()) {
-				ci::vec3 markerPosition = detector->transformPosition(candidate.tvec, detector->getCamera()->getPosition(), detector->getCamera()->getOrientation());
+				glm::vec3 markerPosition = detector->transformPosition(candidate.tvec, detector->getCamera()->getPosition(), detector->getCamera()->getOrientation());
 				glm::mat4 markerOrientierung = detector->transformRotation(candidate.tvec, candidate.rvec, detector->getCamera()->getPosition(), detector->getCamera()->getOrientation());
 
 				marker->setPosition(markerPosition);

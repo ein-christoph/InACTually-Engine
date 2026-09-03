@@ -18,7 +18,7 @@
 #include "TimeStretchingNode.hpp"
 #include "cinder/app/App.h"
 
-using namespace ci;
+
 using namespace std;
 
 #include "cinder/audio/audio.h"
@@ -32,8 +32,8 @@ void act::aio::TimeStretchingNode::initialize() {
 	m_speed = m_sampleRateAdjustment;
 	m_pitch = 1.0f;
 	// Allocate buffers for FFT and speed modulation
-	m_fftBuffer = new audio::Buffer(m_fftBufferSize, 1);
-	m_speedModulationBuffer = new audio::Buffer(static_cast<size_t>(m_fftBufferSize * (1.0f / m_minSpeed)), 1);
+	m_fftBuffer = new ci::audio::Buffer(m_fftBufferSize, 1);
+	m_speedModulationBuffer = new ci::audio::Buffer(static_cast<size_t>(m_fftBufferSize * (1.0f / m_minSpeed)), 1);
 	// Create ring buffer for audio output
 	m_ringBuffer = std::make_shared<ci::audio::dsp::RingBufferT<float>>(static_cast<size_t>(m_fftBufferSize * 2 / m_minSpeed));
 	// Start timestretching thread
@@ -68,7 +68,7 @@ double act::aio::TimeStretchingNode::setNewTrack(std::string assetName, double b
 		if (busy > 0)
 			std::cout << "this just here to prevent the compiler from optimizing the loop away";
 	}
-	m_sourceFile = audio::load(app::loadAsset(assetName));
+	m_sourceFile = ci::audio::load(ci::app::loadAsset(assetName));
 	if (bpm == -1) {
 		setNewSourceFile(m_sourceFile);
 	} else {
@@ -88,7 +88,7 @@ bool act::aio::TimeStretchingNode::getUsePitchCorrection() {
 // Empties the ring buffer by reading all available samples
 void act::aio::TimeStretchingNode::emptyRingBuffer() {
 	size_t obsoleteSamples = m_ringBuffer->getAvailableRead();
-	auto bufferDump = std::make_unique<audio::Buffer>(obsoleteSamples, 1);
+	auto bufferDump = std::make_unique<ci::audio::Buffer>(obsoleteSamples, 1);
 	m_ringBuffer->read(bufferDump->getChannel(0), obsoleteSamples);
 }
 

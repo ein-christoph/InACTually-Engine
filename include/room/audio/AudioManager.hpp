@@ -32,6 +32,7 @@
 #include "audio/SoundFileRoomNode.hpp"
 #include "audio/MicrophoneRoomNode.hpp"
 
+
 namespace act {
 	namespace room {
 
@@ -46,8 +47,8 @@ namespace act {
 			void	update() override;
 			// void	draw() override;
 
-			act::room::SoundRoomNodeRef createSound(vec3 position, float radius, std::string name);
-			act::room::SoundFileRoomNodeRef createSoundFile(vec3 position, std::filesystem::path path, float radius, std::string name, bool noTimestretch);
+			act::room::SoundRoomNodeRef createSound(glm::vec3 position, float radius, std::string name);
+			act::room::SoundFileRoomNodeRef createSoundFile(glm::vec3 position, std::filesystem::path path, float radius, std::string name, bool noTimestretch);
 			room::SpeakerRoomNodeRef	addSpeaker(int channel);
 			room::SubwooferRoomNodeRef	addSubwoofer(int channel);
 			room::MicrophoneRoomNodeRef	addMicrophone(int channel);
@@ -66,12 +67,12 @@ namespace act {
 			room::MicrophoneRoomNodeRef getMicrophoneByUID(UID uid);
 
 		private:
-			aio::AudioDeviceManagerRef	m_audioDeviceMgr;
-			int							m_samplerate;
+			aio::AudioDeviceManagerRef		m_audioDeviceMgr;
+			int								m_samplerate;
 
-			aio::MixerManagerRef		m_mixerMgr;
-			audio::ChannelRouterNodeRef m_inputRouter;
-			audio::InputDeviceNodeRef	m_inputDeviceNode;
+			aio::MixerManagerRef			m_mixerMgr;
+			ci::audio::ChannelRouterNodeRef m_inputRouter;
+			ci::audio::InputDeviceNodeRef	m_inputDeviceNode;
 
 			int											m_selectedInputChannel;
 			int											m_selectedOutputChannel;

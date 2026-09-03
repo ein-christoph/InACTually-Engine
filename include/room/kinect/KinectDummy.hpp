@@ -23,8 +23,9 @@
 #include "kinect/KinectDevice.hpp"
 #include "VideoPlayerProcNode.hpp"
 
-
 #include <k4arecord/playback.hpp>
+
+
 namespace act {
 	namespace room {
 

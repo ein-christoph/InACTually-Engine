@@ -22,23 +22,23 @@
 #include "CallbackDrawable.hpp"
 
 
-act::room::ProjectorRoomNode::ProjectorRoomNode(std::string name, ci::vec3 position, ci::vec3 rotation, float radius, act::UID replyUID)
+act::room::ProjectorRoomNode::ProjectorRoomNode(std::string name, glm::vec3 position, glm::vec3 rotation, float radius, act::UID replyUID)
 	: RoomNodeBase("projector", position, rotation, radius, replyUID)
 {	
-	setResolution(ci::ivec2(1920, 1080));
-	setFocalLengthPixel(ci::vec2(800, 800));
+	setResolution(glm::ivec2(1920, 1080));
+	setFocalLengthPixel(glm::vec2(800, 800));
 	setSkew(0);
-	setPrincipalPoint(ci::vec2(0,0));
+	setPrincipalPoint(glm::vec2(0,0));
 	setIsCalibrating(false);
 
 	updateCameraPersp();
 	calculateProjectionMatrix();
 
 	auto colorShader = ci::gl::getStockShader(ci::gl::ShaderDef().color());
-	m_wirePlane = ci::gl::Batch::create(ci::geom::WirePlane().size(ci::vec2(20)).subdivisions(ci::ivec2(100)), colorShader);
+	m_wirePlane = ci::gl::Batch::create(ci::geom::WirePlane().size(glm::vec2(20)).subdivisions(glm::ivec2(100)), colorShader);
 
 	m_imageInputPort = proc::InputPort<proc::image>::create(proc::PT_IMAGE, "image", [this](proc::image img) {
-		m_currentImageTex = ci::gl::Texture2d::create(fromOcv(img));
+		m_currentImageTex = ci::gl::Texture2d::create(ci::fromOcv(img));
 	});
 }
 
@@ -58,24 +58,24 @@ void act::room::ProjectorRoomNode::update()
 
 void act::room::ProjectorRoomNode::draw()
 {
-	gl::ScopedColor color;
+	ci::gl::ScopedColor color;
 	enableStatusColor(); 
 
-	gl::pushMatrices();
-	gl::translate(m_position);
-	gl::rotate(m_rotation);
-	gl::drawSphere(ci::Sphere(ci::vec3(0.0f), 0.05f));
-	gl::drawCube(ci::vec3(0.1f, 0.0f, 0.15f), ci::vec3(0.4f, 0.15f, 0.3f));
+	ci::gl::pushMatrices();
+	ci::gl::translate(m_position);
+	ci::gl::rotate(m_rotation);
+	ci::gl::drawSphere(ci::Sphere(glm::vec3(0.0f), 0.05f));
+	ci::gl::drawCube(glm::vec3(0.1f, 0.0f, 0.15f), glm::vec3(0.4f, 0.15f, 0.3f));
 
 	util::drawCoords();
 
 	if (getIsUnfolded())
-		gl::color(util::Design::highlightColor(0.85f));
+		ci::gl::color(util::Design::highlightColor(0.85f));
 	else
-		gl::color(ColorA(1.0f, 1.0f, 1.0f, 0.6f));
-	gl::scale(vec3(0.1, 0.1, 0.1));
-	gl::drawFrustum(m_cameraPersp);
-	gl::popMatrices();
+		ci::gl::color(ci::ColorA(1.0f, 1.0f, 1.0f, 0.6f));
+	ci::gl::scale(glm::vec3(0.1, 0.1, 0.1));
+	ci::gl::drawFrustum(m_cameraPersp);
+	ci::gl::popMatrices();
 }
 
 void act::room::ProjectorRoomNode::drawSpecificSettings()
@@ -128,7 +128,7 @@ void act::room::ProjectorRoomNode::drawSpecificSettings()
 		if (ImGui::InputInt("Total Points", &m_totalPoints)) {
 			if (m_totalPoints < 6) m_totalPoints = 6;
 		}
-		if (ImGui::InputInt("Total Rays", &m_totalCalibrationRays)) {
+		if (ImGui::InputInt("Total ci::Rays", &m_totalCalibrationRays)) {
 			if (m_totalCalibrationRays < 4) m_totalCalibrationRays = 4;
 			if (m_totalCalibrationRays > 10) m_totalCalibrationRays = 10;
 		}
@@ -222,12 +222,12 @@ ci::Json act::room::ProjectorRoomNode::toParams()
 
 void act::room::ProjectorRoomNode::fromParams(ci::Json json)
 {
-	ci::ivec2 resolution = ci::ivec2(0);
+	glm::ivec2 resolution = glm::ivec2(0);
 	if (util::setValueFromJson(json, "resolution", resolution)) {
 		setResolution(resolution, false);
 	}
 
-	ci::vec2 focalLengthPixel = ci::vec2(0.0f);
+	glm::vec2 focalLengthPixel = glm::vec2(0.0f);
 	if (util::setValueFromJson(json, "focalLengthPixel", focalLengthPixel)) {
 		setFocalLengthPixel(focalLengthPixel, false);
 	}
@@ -237,7 +237,7 @@ void act::room::ProjectorRoomNode::fromParams(ci::Json json)
 		setSkew(skew, false);
 	}
 
-	ci::vec2 principalPoint = ci::vec2(0.0f);
+	glm::vec2 principalPoint = glm::vec2(0.0f);
 	if (util::setValueFromJson(json, "principalPoint", principalPoint)) {
 		setPrincipalPoint(principalPoint, false);
 	}
@@ -254,7 +254,7 @@ void act::room::ProjectorRoomNode::fromParams(ci::Json json)
 	}
 
 	//correspondence from frontend (not serialized)
-	ci::vec3 objectPoint;
+	glm::vec3 objectPoint;
 	if (util::setValueFromJson(json, "objectPoint", objectPoint)) {
 		addCorrespondence(cv::Point3f(objectPoint.x, objectPoint.y, objectPoint.z));
 	}
@@ -311,7 +311,7 @@ void act::room::ProjectorRoomNode::fromParams(ci::Json json)
 	}
 }
 
-void act::room::ProjectorRoomNode::setResolution(ci::ivec2 resolution, bool publish)
+void act::room::ProjectorRoomNode::setResolution(glm::ivec2 resolution, bool publish)
 {
 	m_resolution = resolution;
 	if (publish)
@@ -329,7 +329,7 @@ void act::room::ProjectorRoomNode::setIsCalibrating(bool isCalibrating, bool pub
 	}
 }
 
-void act::room::ProjectorRoomNode::setFocalLengthPixel(ci::vec2 focalLengthPixel, bool publish, bool updateCam)
+void act::room::ProjectorRoomNode::setFocalLengthPixel(glm::vec2 focalLengthPixel, bool publish, bool updateCam)
 {
 	m_focalLenghtPixel = focalLengthPixel;
 	if (publish)
@@ -357,7 +357,7 @@ void act::room::ProjectorRoomNode::setSkew(float skew, bool publish, bool update
 	}
 }
 
-void act::room::ProjectorRoomNode::setPrincipalPoint(ci::vec2 principalPoint, bool publish, bool updateCam)
+void act::room::ProjectorRoomNode::setPrincipalPoint(glm::vec2 principalPoint, bool publish, bool updateCam)
 {
 	m_principalPoint = principalPoint;
 	if (publish)
@@ -378,7 +378,7 @@ bool act::room::ProjectorRoomNode::createWindow(bool onlyRecreate)
 	else if (onlyRecreate)
 		return false;
 	
-	m_window = WindowData::createWindow(getName(), ivec2(m_resolution.x, m_resolution.y));
+	m_window = WindowData::createWindow(getName(), glm::ivec2(m_resolution.x, m_resolution.y));
 	CallbackDrawableRef drawable = CallbackDrawable::create();
 	drawable->setDrawCallback(std::bind(&ProjectorRoomNode::drawProjection, this));
 	drawable->setUpdateCallback(std::bind(&ProjectorRoomNode::updateProjection, this));
@@ -395,7 +395,7 @@ bool act::room::ProjectorRoomNode::createWindow(bool onlyRecreate)
 		auto mousePos = evt.getPos();
 
 		auto dotPos = getDotFromIndex(m_currentDot);
-		auto error = ci::distance(vec2(mousePos), dotPos);
+		auto error = ci::distance(glm::vec2(mousePos), dotPos);
 
 		m_trueTotalError += error;
 		m_trueTotalSpuareError += error * error;
@@ -420,9 +420,9 @@ bool act::room::ProjectorRoomNode::createWindowOnDisplay(bool onlyRecreate)
 	if (!createWindow(onlyRecreate)) // create new window otherwise context will be wrong
 		return false;
 
-	FullScreenOptions fullScreenOptions;
-	if (m_DisplayNumber >= 0 && m_DisplayNumber < Display::getDisplays().size()) {
-		fullScreenOptions.display(Display::getDisplays()[m_DisplayNumber]);
+	ci::app::FullScreenOptions fullScreenOptions;
+	if (m_DisplayNumber >= 0 && m_DisplayNumber < ci::Display::getDisplays().size()) {
+		fullScreenOptions.display(ci::Display::getDisplays()[m_DisplayNumber]);
 		m_window->setFullScreen(true, fullScreenOptions);
 	}
 	else {
@@ -438,16 +438,16 @@ void act::room::ProjectorRoomNode::updateProjection()
 
 void act::room::ProjectorRoomNode::drawProjection()
 {	
-	gl::clear(ci::Color::black());
+	ci::gl::clear(ci::Color::black());
 	if (m_isCalibrating)
 	{
 		if (m_nextCorrespondence < m_totalPoints)
 		{
-			gl::ScopedMatrices();
-			gl::setMatricesWindow(getWindowSize());
+			ci::gl::ScopedMatrices();
+			ci::gl::setMatricesWindow(ci::app::getWindowSize());
 
 			int currentRay = getCurrentRay();
-			gl::translate(m_calibrationRayCoords[currentRay].x * m_resolution.x, m_calibrationRayCoords[currentRay].y * m_resolution.y);
+			ci::gl::translate(m_calibrationRayCoords[currentRay].x * m_resolution.x, m_calibrationRayCoords[currentRay].y * m_resolution.y);
 			drawCalibrationPoint();
 		}
 		else
@@ -462,30 +462,30 @@ void act::room::ProjectorRoomNode::drawProjection()
 	else
 	{
 		if (m_currentImageTex) {
-			gl::draw(m_currentImageTex);
+			ci::gl::draw(m_currentImageTex);
 		}
 
 		//normal rendering
 		if (m_showDebugGrid) {
-			gl::ScopedMatrices mat();
+			ci::gl::ScopedMatrices mat();
 			ci::gl::color(1.0f, 1, 1);
 
 			if (m_useCameraPersp)
-				gl::setMatrices(m_cameraPersp);
+				ci::gl::setMatrices(m_cameraPersp);
 			else
-				gl::setProjectionMatrix(m_glProjectionMatrix);
+				ci::gl::setProjectionMatrix(m_glProjectionMatrix);
 
 			calculateViewMatrix();
-			gl::setViewMatrix(m_glViewMatrix);
+			ci::gl::setViewMatrix(m_glViewMatrix);
 
-			gl::ScopedLineWidth lineWidth(3.0f);
+			ci::gl::ScopedLineWidth lineWidth(3.0f);
 			m_wirePlane->draw();
 
-			gl::ScopedLineWidth lineWidth2(5.0f);
-			gl::color(ci::Color(1.0f, 0.5f, 0.5f)); // red for X axis
-			gl::drawLine(ci::vec3(0.0f, 0.0f, 0.0f), ci::vec3(0.5f, 0.0f, 0.0f));
-			gl::color(ci::Color(0.5f, 0.9f, 1.0f)); // Blue for Z axis
-			gl::drawLine(ci::vec3(0.0f, 0.0f, 0.0f), ci::vec3(0.0f, 0.0f, 0.5f));
+			ci::gl::ScopedLineWidth lineWidth2(5.0f);
+			ci::gl::color(ci::Color(1.0f, 0.5f, 0.5f)); // red for X axis
+			ci::gl::drawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.0f, 0.0f));
+			ci::gl::color(ci::Color(0.5f, 0.9f, 1.0f)); // Blue for Z axis
+			ci::gl::drawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.5f));
 		}
 
 		if(m_showDebugGridCV )
@@ -496,62 +496,59 @@ void act::room::ProjectorRoomNode::drawProjection()
 
 	if (m_showWindowBorders)
 	{
-		gl::ScopedMatrices();
-		gl::setMatricesWindow(getWindowSize());
-		gl::color(ci::Color::white());
+		ci::gl::ScopedMatrices();
+		ci::gl::setMatricesWindow(ci::app::getWindowSize());
+		ci::gl::color(ci::Color::white());
 
-		gl::ScopedLineWidth lineWidth(5.0f);
+		ci::gl::ScopedLineWidth lineWidth(5.0f);
 		// Top edge
-		gl::drawLine(ci::vec2(0, 0), ci::vec2(m_resolution.x, 0));
+		ci::gl::drawLine(glm::vec2(0, 0), glm::vec2(m_resolution.x, 0));
 		// Right edge
-		gl::drawLine(ci::vec2(m_resolution.x, 0), ci::vec2(m_resolution.x, m_resolution.y));
+		ci::gl::drawLine(glm::vec2(m_resolution.x, 0), glm::vec2(m_resolution.x, m_resolution.y));
 		// Bottom edge
-		gl::drawLine(ci::vec2(m_resolution.x, m_resolution.y), ci::vec2(0, m_resolution.y));
+		ci::gl::drawLine(glm::vec2(m_resolution.x, m_resolution.y), glm::vec2(0, m_resolution.y));
 		// Left edge
-		gl::drawLine(ci::vec2(0, m_resolution.y), ci::vec2(0, 0));
+		ci::gl::drawLine(glm::vec2(0, m_resolution.y), glm::vec2(0, 0));
 	}
 
 }
 
 void act::room::ProjectorRoomNode::drawCalibrationPoint()
 {
-	gl::color(ci::Color::white());
+	ci::gl::color(ci::Color::white());
 	float radius = 2;
-	gl::drawSolidCircle(vec2(0), radius);
+	ci::gl::drawSolidCircle(glm::vec2(0), radius);
 
 	int numCircles = 25;
 
-	gl::ScopedLineWidth lineWidth(2.0f);
+	ci::gl::ScopedLineWidth lineWidth(2.0f);
 	for (int i = 2; i <= numCircles; i++)
 	{
-		gl::color(ci::Color::gray(1.0f - float(i) / float(numCircles)));
-		gl::drawStrokedCircle(vec2(), 10 * i * i /2);
-
+		ci::gl::color(ci::Color::gray(1.0f - float(i) / float(numCircles)));
+		ci::gl::drawStrokedCircle(glm::vec2(), 10 * i * i /2);
 	}
-
-
 }
 
 void act::room::ProjectorRoomNode::drawDotPattern()
 {
-	gl::ScopedMatrices mat();
-	gl::setMatricesWindow(getWindowSize());
+	ci::gl::ScopedMatrices mat();
+	ci::gl::setMatricesWindow(ci::app::getWindowSize());
 
 	float radius = 2;
 
 	//5 points in 2 rows
 	for (int i = 0; i < m_totalDots; i++)
 	{
-		gl::ScopedColor color(1, 1, 1);
+		ci::gl::ScopedColor color(1, 1, 1);
 
 		auto pos = getDotFromIndex(i);
 
 		if (i == m_currentDot)
 		{
-			gl::color(1, 0, 0);
+			ci::gl::color(1, 0, 0);
 		}
 
-		gl::drawSolidCircle(pos, radius);
+		ci::gl::drawSolidCircle(pos, radius);
 	}
 }
 
@@ -559,9 +556,9 @@ void act::room::ProjectorRoomNode::drawDotPattern()
 
 void act::room::ProjectorRoomNode::drawDotGroundGrid()
 {
-	gl::ScopedMatrices mat();
-	gl::setMatricesWindow(getWindowSize());
-	gl::ScopedColor color(1, 1, 1);
+	ci::gl::ScopedMatrices mat();
+	ci::gl::setMatricesWindow(ci::app::getWindowSize());
+	ci::gl::ScopedColor color(1, 1, 1);
 
 	float spacing = 0.20f; //in meters
 	float radius = 5;
@@ -579,7 +576,7 @@ void act::room::ProjectorRoomNode::drawDotGroundGrid()
 			double u = x.at<double>(0, 0) / x.at<double>(2, 0);
 			double v = x.at<double>(1, 0) / x.at<double>(2, 0);
 
-			gl::drawSolidCircle(vec2(u, v), radius);
+			ci::gl::drawSolidCircle(glm::vec2(u, v), radius);
 		}
 	}
 
@@ -592,11 +589,11 @@ void act::room::ProjectorRoomNode::drawDotGroundGrid()
 	double u = x.at<double>(0, 0) / x.at<double>(2, 0);
 	double v = x.at<double>(1, 0) / x.at<double>(2, 0);
 
-	gl::color(1, 0, 0);
-	gl::drawSolidCircle(vec2(u, v), radius);
+	ci::gl::color(1, 0, 0);
+	ci::gl::drawSolidCircle(glm::vec2(u, v), radius);
 }
 
-ci::vec2 act::room::ProjectorRoomNode::getDotFromIndex(int i)
+glm::vec2 act::room::ProjectorRoomNode::getDotFromIndex(int i)
 {
 	float spacing = 0.20f; //in meters
 
@@ -622,7 +619,7 @@ ci::vec2 act::room::ProjectorRoomNode::getDotFromIndex(int i)
 	double u = x.at<double>(0, 0) / x.at<double>(2, 0);
 	double v = x.at<double>(1, 0) / x.at<double>(2, 0);
 
-	return ci::vec2(u, v);
+	return glm::vec2(u, v);
 }
 
 
@@ -639,8 +636,8 @@ void act::room::ProjectorRoomNode::updateCameraPersp()
 	float shiftY = (m_principalPoint.y / m_resolution.y * 2.0f - 1.0f); //needs to be negated (twice) since y up
 	m_cameraPersp.setLensShift(shiftX, shiftY);
 
-	m_cameraPersp.setEyePoint(vec3(0.0f));
-	m_cameraPersp.lookAt(vec3(0.0f, 0.0f, -1.0f)); //along negative z (follows from calibration coordinate system convertion)
+	m_cameraPersp.setEyePoint(glm::vec3(0.0f));
+	m_cameraPersp.lookAt(glm::vec3(0.0f, 0.0f, -1.0f)); //along negative z (follows from calibration coordinate system convertion)
 }
 
 void act::room::ProjectorRoomNode::calculateViewMatrix()
@@ -835,9 +832,9 @@ void act::room::ProjectorRoomNode::calibrateDLT(const bool useTestPairs)
 
 	//set intrinsics
 	K /= K.at<double>(2, 2); //normalize
-	setFocalLengthPixel(ci::vec2(K.at<double>(0, 0), K.at<double>(1, 1)), true, false);
+	setFocalLengthPixel(glm::vec2(K.at<double>(0, 0), K.at<double>(1, 1)), true, false);
 	setSkew(K.at<double>(0, 1), true, false);
-	setPrincipalPoint(ci::vec2(K.at<double>(0, 2), K.at<double>(1, 2)), true, false);
+	setPrincipalPoint(glm::vec2(K.at<double>(0, 2), K.at<double>(1, 2)), true, false);
 
 	//set extrinsics
 	cv::Mat convertToGL = (cv::Mat_<double>(3, 3) <<
@@ -856,7 +853,7 @@ void act::room::ProjectorRoomNode::calibrateDLT(const bool useTestPairs)
 
 	t = t.rowRange(0, 3) / t.at<double>(3); //unhomogenize and cut W
 	//t = R * t; //transform to position in world coordinates... not necesarry is already in world coordinates
-	setPosition(ci::vec3(t.at<double>(0), t.at<double>(1), t.at<double>(2)));
+	setPosition(glm::vec3(t.at<double>(0), t.at<double>(1), t.at<double>(2)));
 
 	//calculate Matrices
 	updateCameraPersp();

@@ -24,9 +24,6 @@
 
 #include "cinder/Timeline.h"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace proc {
@@ -67,15 +64,15 @@ namespace act {
 			bool							m_isLooping;
 			bool							m_noTimestretch;
 
-			vec3							m_3DPosition;
-			void							set3DPosition(vec3 position);
+			glm::vec3							m_3DPosition;
+			void							set3DPosition(glm::vec3 position);
 			room::SoundFileRoomNodeRef		m_soundRoomNode;
 			OutputPortRef<ci::audio::BufferRef>	m_bufferPort;
 			
 			float							m_playSpeed;
 
 			WaveformPlot					m_waveform;
-			gl::Texture2dRef				m_waveformTex;
+			ci::gl::Texture2dRef				m_waveformTex;
 			float							m_playPosition;
 			OutputPortRef<float>			m_playPosPort;
 			float							m_length;

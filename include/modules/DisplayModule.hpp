@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "CinderOpenCV.h"
@@ -28,8 +27,6 @@
 
 #include "ContainerProcNode.hpp"
 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace mod {
@@ -56,8 +53,8 @@ namespace act {
 			act::room::RoomManagers	m_roomMgrs;
 			act::net::NetworkManagerRef m_networkMgr;
 
-			void loadFromFile(fs::path path);
-			void saveToFile(fs::path path);
+			void loadFromFile(ci::fs::path path);
+			void saveToFile(ci::fs::path path);
 
 		};
 

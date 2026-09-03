@@ -30,10 +30,10 @@ namespace act {
 
 		class HeadphoneRoomNode : public SpeakerRoomNode {
 		public:
-			HeadphoneRoomNode(int channelL, int channelR, ci::vec3 position, float radius);
+			HeadphoneRoomNode(int channelL, int channelR, glm::vec3 position, float radius);
 			~HeadphoneRoomNode();
 
-			static std::shared_ptr<HeadphoneRoomNode> create(int channelL, int channelR, ci::vec3 position, float radius) { return std::make_shared<HeadphoneRoomNode>(channelL, channelR, position, radius); };
+			static std::shared_ptr<HeadphoneRoomNode> create(int channelL, int channelR, glm::vec3 position, float radius) { return std::make_shared<HeadphoneRoomNode>(channelL, channelR, position, radius); };
 
 			virtual void		setup()		override;
 			virtual void		update()	override;
@@ -49,7 +49,7 @@ namespace act {
 
 			virtual void		setVolume(float volume, float rampDuration = 0.1f) override;
 
-			virtual bool		hit(ci::vec3 pos) override;
+			virtual bool		hit(glm::vec3 pos) override;
 			virtual bool		hitRay(ci::Ray ray) override; 
 
 			virtual	void		setIsHovered(bool hovered)   override;

@@ -17,9 +17,6 @@
 
 #include "ProcNodeBase.hpp"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace proc {
@@ -40,8 +37,8 @@ namespace act {
 			void fromParams(ci::Json json) override;
 
 		private:
-			OutputPortRef<vec2>	m_outPort;
-			ci::vec2 m_vector;
+			OutputPortRef<glm::vec2>	m_outPort;
+			glm::vec2 m_vector;
 
 		}; using Vector2ProcNodeRef = std::shared_ptr<Vector2ProcNode>;
 

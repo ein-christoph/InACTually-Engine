@@ -22,8 +22,10 @@
 #include "InputBase.hpp"
 #include "KeyRawListener.hpp"
 
+
 namespace act {
 	namespace input {
+
 		class KeyInput : public InputBase, KeyRawListener, KeyListener
 		{
 		public:
@@ -32,8 +34,8 @@ namespace act {
 
 			void update() override;
 
-			void keyRawDown(KeyEvent event) override;
-			void keyRawUp(KeyEvent event)   override;
+			void keyRawDown(ci::app::KeyEvent event) override;
+			void keyRawUp(ci::app::KeyEvent event)   override;
 		};
 	}
 }

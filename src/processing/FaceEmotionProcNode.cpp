@@ -56,16 +56,16 @@ void act::proc::FaceEmotionProcNode::draw() {
 	ImGui::Text("%f",m_currentEmotion.second);
 	
 	if (m_show && m_texture) {
-		gl::pushMatrices();
-		gl::rotate(toRadians(180.0f));
+		ci::gl::pushMatrices();
+		ci::gl::rotate(ci::toRadians(180.0f));
 
-		ci::vec2 texSize = Rectf(m_texture->getBounds()).getCenteredFit(ci::Rectf(ivec2(0, 0), m_drawSize), true).getSize();
+		glm::vec2 texSize = ci::Rectf(m_texture->getBounds()).getCenteredFit(ci::Rectf(glm::ivec2(0, 0), m_drawSize), true).getSize();
 
-		ImGui::Image(m_texture, texSize, vec2(1, 1), vec2(0, 0));
+		ImGui::Image(m_texture, texSize, glm::vec2(1, 1), glm::vec2(0, 0));
 
 		//ImGui::Indent(adaptSize(displaySize).x - displaySize.x);
 
-		gl::pushMatrices();
+		ci::gl::pushMatrices();
 	}
 	
 	endNodeDraw();
@@ -74,7 +74,7 @@ void act::proc::FaceEmotionProcNode::draw() {
 void act::proc::FaceEmotionProcNode::onMat(cv::UMat event) {
 	m_imagePort->send(event);
 	if (m_show) {
-		m_texture = gl::Texture2d::create(fromOcv(event));
+		m_texture = ci::gl::Texture2d::create(ci::fromOcv(event));
 	}
 
 	cv::Mat emotions = detectCurrentEmotions(event);
@@ -83,7 +83,7 @@ void act::proc::FaceEmotionProcNode::onMat(cv::UMat event) {
 	m_emotionPort->send(m_currentEmotion);
 }
 
-ci::ivec2 act::proc::FaceEmotionProcNode::adaptSize(ci::ivec2 size) {
+glm::ivec2 act::proc::FaceEmotionProcNode::adaptSize(glm::ivec2 size) {
 	return (size / 100 + 1) * 100;
 }
 

@@ -27,8 +27,8 @@
 #include "imgui/imgui.h"
 
 
-using namespace ci; 
-using namespace ci::app;
+ 
+
 using namespace std;
 
 using namespace act;
@@ -36,7 +36,7 @@ using namespace ia;
 
 InteractionHelper::InteractionHelper()
 {
-	m_mousePosNorm = vec2(0.0f);
+	m_mousePosNorm = glm::vec2(0.0f);
 	m_wheelIncrement = 0.0f;
 	m_isDragging = false;
 }
@@ -72,7 +72,7 @@ bool act::ia::InteractionHelper::evaluateMouse() {
 
 	// else
 	ci::app::MouseEvent evt = ci::app::MouseEvent();
-	evt.setPos(vec2(m_mousePos.x, m_mousePos.y));
+	evt.setPos(glm::vec2(m_mousePos.x, m_mousePos.y));
 	this->onMouseMove(evt);
 
 	return false;
@@ -95,8 +95,8 @@ bool act::ia::InteractionHelper::evaluateMouseButton(MouseButton btn)
 			break;
 	}
 
-	ci::app::MouseEvent evt = ci::app::MouseEvent(getWindow(), 0, m_mousePos.x, m_mousePos.y, modifier, m_wheelIncrement, modifier);
-	evt.setPos(ivec2(m_mousePos.x, m_mousePos.y));
+	ci::app::MouseEvent evt = ci::app::MouseEvent(ci::app::getWindow(), 0, m_mousePos.x, m_mousePos.y, modifier, m_wheelIncrement, modifier);
+	evt.setPos(glm::ivec2(m_mousePos.x, m_mousePos.y));
 	if (ImGui::IsMouseDown(btn)) {
 		if (ImGui::IsMouseDragging(btn) && m_isDragging) {
 			this->onMouseDrag(evt);
@@ -115,7 +115,7 @@ bool act::ia::InteractionHelper::evaluateMouseButton(MouseButton btn)
 	}
 	if (ImGui::GetIO().MouseWheel) {
 		m_wheelIncrement = ImGui::GetIO().MouseWheel;
-		evt = ci::app::MouseEvent(getWindow(), 0, m_mousePos.x, m_mousePos.y, modifier, m_wheelIncrement, modifier);
+		evt = ci::app::MouseEvent(ci::app::getWindow(), 0, m_mousePos.x, m_mousePos.y, modifier, m_wheelIncrement, modifier);
 		this->onMouseWheel(evt);
 		return true;
 	}

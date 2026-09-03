@@ -22,8 +22,6 @@
 
 #include "camera/CameraManager.hpp"
 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace proc {
@@ -52,7 +50,7 @@ namespace act {
 			ci::SurfaceRef					m_captureSurface;
 			ci::gl::Texture2dRef			m_captureTexture;
 
-			ci::ivec2						m_captureSize;
+			glm::ivec2						m_captureSize;
 
 			bool							m_show;
 

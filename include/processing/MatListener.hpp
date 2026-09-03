@@ -15,12 +15,13 @@
 	Lars Engeln - mail@lars-engeln.de
 */
 
-
 #pragma once
 
 #include "input/ListenerBase.hpp"
+
 #pragma warning( push )
 #pragma warning( disable : 4081)
+
 namespace act {
 	namespace proc {
 		class MatListener : public input::ListenerBase<MatListener>

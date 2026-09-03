@@ -20,9 +20,9 @@
 #include <memory>
 #include "cinder/Json.h"
 
+
 namespace act {
 	namespace net {
-
 
 		class ConnectionProvider { // ConnectionProvider
 		public:

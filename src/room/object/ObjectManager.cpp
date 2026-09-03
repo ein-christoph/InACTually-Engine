@@ -58,9 +58,9 @@ void act::room::ObjectManager::update()
 	if (m_imgTexQueue.size() > 0)
 		m_textures.clear();
 	while (m_imgTexQueue.size() > 0) {
-		auto img = fromOcv(m_imgTexQueue.front());
+		auto img = ci::fromOcv(m_imgTexQueue.front());
 		if (img)
-			m_textures.push_back(gl::Texture::create(img, ci::gl::Texture::Format().loadTopDown()));
+			m_textures.push_back(ci::gl::Texture::create(img, ci::gl::Texture::Format().loadTopDown()));
 		m_imgTexQueue.pop();
 	}
 	*/
@@ -72,12 +72,12 @@ act::room::RoomNodeBaseRef act::room::ObjectManager::drawMenu() {
 
 	if (ImGui::Button("Create Test-Object")) {
 		auto node = ObjectRoomNode::create(-1, "test object");
-		node->setPosition(ci::vec3(0.0f, 0.0f, 0.0f));
+		node->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 		m_nodes.push_back(node);
 	}
 
 	for (auto&& tex : m_feedbackTextures) { 
-		ImGui::Image(tex, ci::vec2(tex->getSize()) * 0.6f);
+		ImGui::Image(tex, glm::vec2(tex->getSize()) * 0.6f);
 	}
 
 	for (auto&& node : m_nodes) {
@@ -132,7 +132,7 @@ void act::room::ObjectManager::checkCameras()
 }
 
 void act::room::ObjectManager::processObjects() {
-	std::vector<gl::TextureRef> feedbackTextures;
+	std::vector<ci::gl::TextureRef> feedbackTextures;
 
 	for (auto&& objectDetector : m_objectDetectors) {	
 		auto&& detector = objectDetector.second;
@@ -170,7 +170,7 @@ void act::room::ObjectManager::processObjects() {
 				
 			}
 			else if (object->isDynamic()) {
-				//ci::vec3 objectPosition = detector->transformPosition(candidate.tvec, detector->getCamera()->getPosition(), detector->getCamera()->getOrientation());
+				//glm::vec3 objectPosition = detector->transformPosition(candidate.tvec, detector->getCamera()->getPosition(), detector->getCamera()->getOrientation());
 				//glm::mat4 objectOrientierung = detector->transformRotation(candidate.tvec, candidate.rvec, detector->getCamera()->getPosition(), detector->getCamera()->getOrientation());
 
 				//object->setPosition(objectPosition);

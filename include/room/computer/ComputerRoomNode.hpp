@@ -19,9 +19,6 @@
 
 #include "RoomNodeBase.hpp"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace room {
@@ -29,10 +26,10 @@ namespace act {
 		class ComputerRoomNode : public RoomNodeBase
 		{
 		public:
-			ComputerRoomNode(std::string name, ci::vec3 position, ci::vec3 rotation, act::UID replyUID = "");
+			ComputerRoomNode(std::string name, glm::vec3 position, glm::vec3 rotation, act::UID replyUID = "");
 			virtual ~ComputerRoomNode();
 
-			static std::shared_ptr<ComputerRoomNode> create(std::string name, ci::vec3 position = ci::vec3(0.0f, 1.0f, 0.0f), ci::vec3 rotation = ci::vec3(0.0f,0.0f,0.0f), act::UID replyUID = "") { return std::make_shared<ComputerRoomNode>(name, position, rotation, replyUID); };
+			static std::shared_ptr<ComputerRoomNode> create(std::string name, glm::vec3 position = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 rotation = glm::vec3(0.0f,0.0f,0.0f), act::UID replyUID = "") { return std::make_shared<ComputerRoomNode>(name, position, rotation, replyUID); };
 
 
 			virtual void setup()	override;

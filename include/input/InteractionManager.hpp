@@ -25,8 +25,10 @@
 
 //#include "canvas\canvas.hpp"
 
+
 namespace act {
 	namespace gui {
+
 		class GuiManager;
 	}
 	namespace wdgt {
@@ -48,17 +50,17 @@ namespace act {
 		class InteractionManager : public input::InputListeners, public input::MouseRawListener, public input::KeyRawListener, public input::TouchRawListener, public input::MouseListener, public input::KeyListener, public input::TouchListener
 		{
 		public:
-			InteractionManager(std::shared_ptr<act::gui::GuiManager> guiMgr, std::shared_ptr<act::wdgt::WidgetManager> wdgtMgr);
+			InteractionManager(std::shared_ptr<act::gui::GuiManager> m_guiMgr, std::shared_ptr<act::wdgt::WidgetManager> m_wdgtMgr);
 			~InteractionManager();
 
 			//void setCanvas(act::canvas::CanvasRef canvas);
 
-			void	pan(vec2 position);
-			void	zoom(float factor);
-			void	zoomAt(vec2 at, float factor);
+			void		pan(glm::vec2 position);
+			void		zoom(float factor);
+			void		zoomAt(glm::vec2 at, float factor);
 
-			vec2	getPan() { return panning; };
-			float	getZoom() { return zooming; };
+			glm::vec2	getPan() { return m_panning; };
+			float		getZoom() { return m_zooming; };
 
 			virtual input::MouseListener*		getMouseListener()		override;
 			virtual input::KeyListener*			getKeyListener()		override;
@@ -75,24 +77,24 @@ namespace act {
 			void touchesRawMoved(ci::app::TouchEvent event)				override;
 			void touchesRawEnded(ci::app::TouchEvent event)				override;
 
-			vec2 toObjectSpace(vec2 point);
-			vec2 toScreenSpace(vec2 point);
+			glm::vec2 toObjectSpace(glm::vec2 point);
+			glm::vec2 toScreenSpace(glm::vec2 point);
 
 		private:
 			//act::canvas::CanvasRef canvas;
-			std::shared_ptr<act::gui::GuiManager> guiMgr;
-			std::shared_ptr<act::wdgt::WidgetManager> wdgtMgr;
+			std::shared_ptr<act::gui::GuiManager>		m_guiMgr;
+			std::shared_ptr<act::wdgt::WidgetManager>	m_wdgtMgr;
 
-			vec2	panning;
-			float	zooming;
+			glm::vec2	m_panning;
+			float		m_zooming;
 
-			bool	isPanning;
-			ivec2	dragStartPosition;
-			ivec2	dragNewPosition;
-			ivec2	dragPreviousPosition;
-			bool	isInteracting;
-			ivec2	startInteractionPosition;
-			ivec2	lastInteractionPosition;
+			bool		m_isPanning;
+			glm::ivec2	m_dragStartPosition;
+			glm::ivec2	m_dragNewPosition;
+			glm::ivec2	m_dragPreviousPosition;
+			bool		m_isInteracting;
+			glm::ivec2	m_startInteractionPosition;
+			glm::ivec2	m_lastInteractionPosition;
 		};
 		typedef	std::shared_ptr<InteractionManager> InteractionMgrRef;
 	};

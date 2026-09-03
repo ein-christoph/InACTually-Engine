@@ -17,6 +17,7 @@
 
 #pragma once
 
+
 namespace act {
 	namespace input {
 

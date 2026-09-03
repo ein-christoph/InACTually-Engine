@@ -23,9 +23,6 @@
 
 #include "dmx/DMXPro.hpp"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace room {
@@ -33,10 +30,10 @@ namespace act {
 		class MovingHeadRoomNode : public RoomNodeBase, public DMXRoomNodeBase
 		{
 		public:
-			MovingHeadRoomNode(DMXProRef dmxInterface, ci::Json description, std::string name, int startAddress, ci::vec3 position, ci::vec3 rotation, float radius, act::UID replyUID = "");
+			MovingHeadRoomNode(DMXProRef dmxInterface, ci::Json description, std::string name, int startAddress, glm::vec3 position, glm::vec3 rotation, float radius, act::UID replyUID = "");
 			virtual ~MovingHeadRoomNode();
 
-			static std::shared_ptr<MovingHeadRoomNode> create(DMXProRef dmxInterface, ci::Json description, std::string name, int startAddress, ci::vec3 position = ci::vec3(0.0f, 1.0f, 0.0f), ci::vec3 rotation = ci::vec3(0.0f, 0.0f, 0.0f), float radius = 0.5f, act::UID replyUID = "") { return std::make_shared<MovingHeadRoomNode>(dmxInterface, description, name, startAddress, position, rotation, radius, replyUID); };
+			static std::shared_ptr<MovingHeadRoomNode> create(DMXProRef dmxInterface, ci::Json description, std::string name, int startAddress, glm::vec3 position = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f), float radius = 0.5f, act::UID replyUID = "") { return std::make_shared<MovingHeadRoomNode>(dmxInterface, description, name, startAddress, position, rotation, radius, replyUID); };
 
 			virtual void setup()	override;
 			virtual void update()	override;
@@ -49,7 +46,7 @@ namespace act {
 			virtual void fromParams(ci::Json json) override;
 
 			void setColor(ci::Color color, bool publish = true);
-			void lookAt(ci::vec3 at);
+			void lookAt(glm::vec3 at);
 
 			void setPan(float pan);
 			void setTilt(float tilt);
@@ -97,8 +94,8 @@ namespace act {
 
 			FilterBaseRef<glm::vec3>	m_lookAtFlt;
 
-			ci::quat					m_gaze;
-			ci::quat					m_previousGaze;
+			glm::quat					m_gaze;
+			glm::quat					m_previousGaze;
 
 			float						m_yaw;		// radians
 			float						m_pitch;	// radians

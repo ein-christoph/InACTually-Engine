@@ -16,7 +16,7 @@
 #include "roompch.hpp"
 #include "lidar/LDLidarRoomNode.hpp"
 
-act::room::LDLidarRoomNode::LDLidarRoomNode(const std::string& portName, ci::Json description, std::string name, ci::vec3 position, ci::vec3 rotation, float radius, act::UID replyUID)
+act::room::LDLidarRoomNode::LDLidarRoomNode(const std::string& portName, ci::Json description, std::string name, glm::vec3 position, glm::vec3 rotation, float radius, act::UID replyUID)
 	: LidarRoomNodeBase(portName, description, name, position, rotation, radius, replyUID)
 {
 	m_driver.RegisterGetTimestampFunctional([]() -> uint64_t {
@@ -50,7 +50,7 @@ void act::room::LDLidarRoomNode::update()
 	getData();
 }
 
-std::vector<ci::vec2>& act::room::LDLidarRoomNode::getData()
+std::vector<glm::vec2>& act::room::LDLidarRoomNode::getData()
 {
 	ldlidar::Points2D points;
 	auto status = m_driver.GetLaserScanData(points, 100);

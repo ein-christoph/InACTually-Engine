@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Fbo.h"
@@ -33,9 +32,6 @@
 
 #include "Stage.hpp"
 
-
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace mod {
@@ -86,9 +82,9 @@ namespace act {
 
 			ci::CameraPersp				m_camera;
 			ci::CameraUi				m_camUi;
-			ci::vec3					m_lookAt;
+			glm::vec3					m_lookAt;
 
-			ci::vec2					m_mousePos;
+			glm::vec2					m_mousePos;
 			room::RoomNodeBaseRef		m_node;
 
 			ci::Ray getMouseRay();
@@ -97,7 +93,7 @@ namespace act {
 			//int getNodeIndexByUID(act::UID uid);
 
 			ci::gl::FboRef			m_fbo;
-			ci::vec2				m_fboSize;
+			glm::vec2				m_fboSize;
 
 			bool					isRoomEditorHovered;
 
@@ -109,8 +105,8 @@ namespace act {
 			void drawCreateButton(std::string nodeName);
 			void handleResize();
 
-			void loadFromFile(fs::path path);
-			void saveToFile(fs::path path);
+			void loadFromFile(ci::fs::path path);
+			void saveToFile(ci::fs::path path);
 
 		private:
 			int m_selectedCopyPos = 0;

@@ -21,7 +21,7 @@
 
 #include "computing/DepthDetector.hpp"
 
-act::room::CameraRoomNode::CameraRoomNode(CameraDeviceRef camera, std::string name, ci::vec3 position, ci::vec3 rotation, float radius, act::UID replyUID)
+act::room::CameraRoomNode::CameraRoomNode(CameraDeviceRef camera, std::string name, glm::vec3 position, glm::vec3 rotation, float radius, act::UID replyUID)
 	: RoomNodeBase("camera", position, rotation, radius, replyUID)
 {
 	m_camera = camera;
@@ -32,29 +32,29 @@ act::room::CameraRoomNode::CameraRoomNode(CameraDeviceRef camera, std::string na
 	}
 	else {
 		m_name = deviceName;
-		m_captureSize = ivec2(1920, 1080);
+		m_captureSize = glm::ivec2(1920, 1080);
 	}*/
-	m_displaySize = ivec2(m_camera->getCaptureSize().x * 0.25, m_camera->getCaptureSize().y * 0.25);
+	m_displaySize = glm::ivec2(m_camera->getCaptureSize().x * 0.25, m_camera->getCaptureSize().y * 0.25);
 
 	m_cameraImagePort = proc::ImageOutputPort::create(act::proc::PT_IMAGE, "cameraImage");
 
 	m_cameraPersp = ci::CameraPersp(m_camera->getCaptureSize().x, m_camera->getCaptureSize().y, 70, 0.1f, 5.0f);
-	m_cameraPersp.setEyePoint(vec3(0.0f));
-	setPosition(vec3(0.0f, 0.0f, 0.0f));
-	setRotation(vec3(0.0f, 0.0f, 0.0f));
-	m_cameraPersp.lookAt(vec3(0.0f, 1.0f, 0.0f));
+	m_cameraPersp.setEyePoint(glm::vec3(0.0f));
+	setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	setRotation(glm::vec3(0.0f, 0.0f, 0.0f));
+	m_cameraPersp.lookAt(glm::vec3(0.0f, 1.0f, 0.0f));
 
 	if (!camera->isCalibrated()) {
 		ci::Json iniJson = ci::Json("{\"distCoeffs\":\"[0, 0, 0, 0, 0]\",\"intrinsic\":\"[16, 0, 9, 0, 16, 4, 0, 0, 1]\"}");
 		fromParams(iniJson);
 	}
 
-	m_pointcloudRoomNode = PointcloudRoomNode::create(vec3(0, 0, 0), 1, getName() + "_Pointcloud");
+	m_pointcloudRoomNode = PointcloudRoomNode::create(glm::vec3(0, 0, 0), 1, getName() + "_Pointcloud");
 }
 
 
 
-act::room::CameraRoomNode::CameraRoomNode(ci::Capture::DeviceRef deviceRef, std::string deviceName, std::string name, ci::vec3 position, ci::vec3 rotation, float radius, act::UID replyUID)
+act::room::CameraRoomNode::CameraRoomNode(ci::Capture::DeviceRef deviceRef, std::string deviceName, std::string name, glm::vec3 position, glm::vec3 rotation, float radius, act::UID replyUID)
 	: RoomNodeBase("camera", position, rotation, radius, replyUID)
 {
 	m_camera = CameraDevice::create(deviceRef);
@@ -63,17 +63,17 @@ act::room::CameraRoomNode::CameraRoomNode(ci::Capture::DeviceRef deviceRef, std:
 	m_cameraImagePort = proc::ImageOutputPort::create(act::proc::PT_IMAGE, "cameraImage");
 
 	m_cameraPersp = ci::CameraPersp(m_camera->getCaptureSize().x, m_camera->getCaptureSize().y, 70, 0.1f, 5.0f);
-	m_cameraPersp.setEyePoint(vec3(0.0f));
-	setPosition(vec3(0.0f, 0.0f, 0.0f));
-	setRotation(vec3(0.0f, 0.0f, 0.0f));
-	m_cameraPersp.lookAt(vec3(0.0f, 0.0f, 1.0f));
+	m_cameraPersp.setEyePoint(glm::vec3(0.0f));
+	setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	setRotation(glm::vec3(0.0f, 0.0f, 0.0f));
+	m_cameraPersp.lookAt(glm::vec3(0.0f, 0.0f, 1.0f));
 
 	if (!m_camera->isCalibrated()) {
 		ci::Json iniJson = ci::Json("{\"distCoeffs\":\"[0, 0, 0, 0, 0]\",\"intrinsic\":\"[16, 0, 9, 0, 16, 4, 0, 0, 1]\"}");
 		fromParams(iniJson);
 	}
 
-	m_pointcloudRoomNode = PointcloudRoomNode::create(vec3(0, 0, 0), 1, getName() + "_Pointcloud");
+	m_pointcloudRoomNode = PointcloudRoomNode::create(glm::vec3(0, 0, 0), 1, getName() + "_Pointcloud");
 }
 
 act::room::CameraRoomNode::~CameraRoomNode()
@@ -109,24 +109,25 @@ void act::room::CameraRoomNode::update()
 
 void act::room::CameraRoomNode::draw()
 {
-	gl::ScopedColor color;
+	ci::gl::ScopedColor color;
 	enableStatusColor(); 
 
-	gl::pushMatrices();
-	gl::translate(m_position);
-	gl::rotate(m_rotation);
-	gl::drawCube(ci::vec3(0.0f), ci::vec3(0.1f, 0.075f, 0.075f));
+	ci::gl::pushMatrices();
+	ci::gl::translate(m_position);
+	ci::gl::rotate(m_rotation);
+	ci::gl::drawCube(glm::vec3(0.0f), glm::vec3(0.1f, 0.075f, 0.075f));
 
 	m_pointcloudRoomNode->draw();
 	util::drawCoords();
 
 	if (getIsUnfolded())
-		gl::color(util::Design::highlightColor(0.85f));
+		ci::gl::color(util::Design::highlightColor(0.85f));
 	else
-		gl::color(ColorA(1.0f, 1.0f, 1.0f, 0.6f));
-	gl::scale(vec3(0.1, 0.1, 0.1));
-	gl::drawFrustum(m_cameraPersp);
-	gl::popMatrices();
+		ci::gl::color(ci::ColorA(1.0f, 1.0f, 1.0f, 0.6f));
+	ci::gl::scale(glm::vec3(0.1, 0.1, 0.1));
+	ci::gl::drawFrustum(m_cameraPersp);
+	
+	ci::gl::popMatrices();
 }
 
 void act::room::CameraRoomNode::drawSpecificSettings()
@@ -140,7 +141,7 @@ void act::room::CameraRoomNode::drawSpecificSettings()
 	ImGui::Checkbox("detect Depth", &m_isDetectingDepth);
 
 	if (m_depthTexture) {
-		ImGui::Image(m_depthTexture, vec2(m_depthTexture->getSize()) * 0.6f);
+		ImGui::Image(m_depthTexture, glm::vec2(m_depthTexture->getSize()) * 0.6f);
 	}
 }
 

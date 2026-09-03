@@ -22,20 +22,16 @@
 #include "body/Body.hpp"
 
 
-using namespace ci;
-using namespace ci::app;
-
-
 namespace act {
 	namespace room {
 
 		class BodyRoomNode : public RoomNodeBase, public std::enable_shared_from_this<BodyRoomNode>
 		{
 		public:
-			BodyRoomNode(std::string name, ci::vec3 position, ci::vec3 rotation, float radius, act::UID replyUID);
+			BodyRoomNode(std::string name, glm::vec3 position, glm::vec3 rotation, float radius, act::UID replyUID);
 			virtual ~BodyRoomNode();
 
-			static std::shared_ptr<BodyRoomNode> create(std::string name, ci::vec3 position = ci::vec3(0.0f, 1.0f, 0.0f), ci::vec3 rotation = ci::vec3(0.0f,0.0f,0.0f), float radius = 0.5f, act::UID replyUID = "") { return std::make_shared<BodyRoomNode>(name, position, rotation, radius, replyUID); };
+			static std::shared_ptr<BodyRoomNode> create(std::string name, glm::vec3 position = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 rotation = glm::vec3(0.0f,0.0f,0.0f), float radius = 0.5f, act::UID replyUID = "") { return std::make_shared<BodyRoomNode>(name, position, rotation, radius, replyUID); };
 			
 
 			virtual void setup()	override;

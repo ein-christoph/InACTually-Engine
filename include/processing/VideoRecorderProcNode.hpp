@@ -22,8 +22,6 @@
 
 #include "camera/CameraManager.hpp"
 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace proc {
@@ -41,7 +39,7 @@ namespace act {
 			void draw()				override;
 
 			ImageInputPortRef getVideoInPort() { return m_videoImageInPort; };
-			void saveVideo(std::string path, int fps = app::getFrameRate(), bool isColor = true);
+			void saveVideo(std::string path, int fps = ci::app::getFrameRate(), bool isColor = true);
 
 			void record();
 			void stop();
@@ -53,7 +51,7 @@ namespace act {
 			ci::SurfaceRef			m_videoSurface;
 			ci::gl::Texture2dRef	m_videoTexture;
 
-			ci::ivec2				m_videoSize;
+			glm::ivec2				m_videoSize;
 
 			ImageInputPortRef m_videoImageInPort;
 

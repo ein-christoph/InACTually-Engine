@@ -17,10 +17,10 @@
 
 #pragma once
 
-
 #include <memory>
 
 #include "RoomNodeBase.hpp"
+
 
 namespace act {
 	namespace room {
@@ -29,10 +29,10 @@ namespace act {
 
 		class PointcloudRoomNode : public RoomNodeBase {
 		public:
-			PointcloudRoomNode(ci::vec3 position, float radius, std::string name = "", act::UID replyUID = "");
+			PointcloudRoomNode(glm::vec3 position, float radius, std::string name = "", act::UID replyUID = "");
 			~PointcloudRoomNode();
 
-			static std::shared_ptr<PointcloudRoomNode> create(ci::vec3 position, float radius, std::string name = "", act::UID replyUID = "") { return std::make_shared<PointcloudRoomNode>(position, radius, name, replyUID); };
+			static std::shared_ptr<PointcloudRoomNode> create(glm::vec3 position, float radius, std::string name = "", act::UID replyUID = "") { return std::make_shared<PointcloudRoomNode>(position, radius, name, replyUID); };
 
 			std::string		getName() { return m_caption; };
 
@@ -51,7 +51,7 @@ namespace act {
 
 			void createPointCloud();
 			void updatePointCloud();
-			std::vector<vec3>		m_positions;
+			std::vector<glm::vec3>		m_positions;
 			std::vector<ci::Colorf> m_colors;
 			std::vector<float>		m_sizes;
 			ci::gl::BatchRef		m_geometry;

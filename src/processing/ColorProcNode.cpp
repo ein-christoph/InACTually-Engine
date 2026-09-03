@@ -20,7 +20,7 @@
 
 
 act::proc::ColorProcNode::ColorProcNode() : ProcNodeBase("Color") {
-	m_drawSize = ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 
 	init = true;
 

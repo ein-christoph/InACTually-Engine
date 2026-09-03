@@ -22,10 +22,6 @@
 #include <cinder/app/App.h>
 
 
-using namespace ci;
-using namespace ci::app;
-
-
 namespace act {
 
 	namespace room {
@@ -33,11 +29,11 @@ namespace act {
 		class ProjectorRoomNode : public RoomNodeBase, public std::enable_shared_from_this<ProjectorRoomNode>
 		{
 		public:
-			ProjectorRoomNode(std::string name, ci::vec3 position, ci::vec3 rotation, float radius, act::UID replyUID = "");
+			ProjectorRoomNode(std::string name, glm::vec3 position, glm::vec3 rotation, float radius, act::UID replyUID = "");
 
 			virtual ~ProjectorRoomNode();
 
-			static std::shared_ptr<ProjectorRoomNode> create(std::string name, ci::vec3 position = ci::vec3(0.0f, 1.0f, 0.0f), ci::vec3 rotation = ci::vec3(0.0f,0.0f,0.0f), float radius = 0.5f, act::UID replyUID = "") { return std::make_shared<ProjectorRoomNode>(name, position, rotation, radius, replyUID); };
+			static std::shared_ptr<ProjectorRoomNode> create(std::string name, glm::vec3 position = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 rotation = glm::vec3(0.0f,0.0f,0.0f), float radius = 0.5f, act::UID replyUID = "") { return std::make_shared<ProjectorRoomNode>(name, position, rotation, radius, replyUID); };
 
 			virtual void setup()	override;
 			virtual void update()	override;
@@ -48,20 +44,20 @@ namespace act {
 			virtual ci::Json toParams() override;
 			virtual void fromParams(ci::Json json) override;
 
-			void setResolution(ci::ivec2 resolution, bool publish = true);
-			ci::ivec2 getResolution() { return m_resolution; };
+			void setResolution(glm::ivec2 resolution, bool publish = true);
+			glm::ivec2 getResolution() { return m_resolution; };
 
 			void setIsCalibrating(bool isCalibrating, bool publish = true);
 			bool getIsCalibrating() { return m_isCalibrating; };
 
-			void setFocalLengthPixel(ci::vec2 focalLengthPixel, bool publish = true, bool updateCam = true);
-			ci::vec2 getFocalLengthPixel() { return m_focalLenghtPixel; };
+			void setFocalLengthPixel(glm::vec2 focalLengthPixel, bool publish = true, bool updateCam = true);
+			glm::vec2 getFocalLengthPixel() { return m_focalLenghtPixel; };
 
 			void setSkew(float skew, bool publish = true, bool updateCam = true);
 			float getSkew() { return m_skew; }
 
-			void setPrincipalPoint(ci::vec2 principalPoint, bool publish = true, bool updateCam = true);
-			ci::vec2 getPrincipalPoint() { return m_principalPoint; };
+			void setPrincipalPoint(glm::vec2 principalPoint, bool publish = true, bool updateCam = true);
+			glm::vec2 getPrincipalPoint() { return m_principalPoint; };
 
 			proc::InputPortRef<proc::image> getImageInputPort() { return m_imageInputPort; };
 			
@@ -90,10 +86,10 @@ namespace act {
 			bool					m_showWindowBorders = true;
 
 			//Intrinsics
-			ci::ivec2				m_resolution;
-			ci::vec2				m_focalLenghtPixel;
+			glm::ivec2				m_resolution;
+			glm::vec2				m_focalLenghtPixel;
 			float					m_skew;
-			ci::vec2				m_principalPoint;
+			glm::vec2				m_principalPoint;
 
 
 
@@ -151,7 +147,7 @@ namespace act {
 			void drawDotPattern();
 			void drawDotGroundGrid();
 
-			ci::vec2 getDotFromIndex(int i);
+			glm::vec2 getDotFromIndex(int i);
 
 			void updateCameraPersp();
 			void calculateViewMatrix();

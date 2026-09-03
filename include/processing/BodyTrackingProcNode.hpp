@@ -22,8 +22,6 @@
 #include "body/Body.hpp"
 #include "RoomNodeBase.hpp"
 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace proc {

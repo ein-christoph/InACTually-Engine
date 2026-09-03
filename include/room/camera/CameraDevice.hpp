@@ -21,8 +21,6 @@
 
 #include "cinder/Capture.h"
 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace room {
@@ -49,21 +47,21 @@ namespace act {
 			
 			std::vector<cv::UMat> m_calibImages;
 			std::vector<std::vector<cv::Point2i>> m_calibAreas;
-			gl::Texture2dRef m_textureUndist;
+			ci::gl::Texture2dRef m_textureUndist;
 
 			void setCalibration(cv::Mat intrinsic, cv::Mat distCoeffs);
 			bool isCalibrated() { return m_isCalibrated; }
 			cv::Mat getIntrinsic() { return m_intrinsic; }
 			cv::Mat getDistCoeffs() { return m_distCoeffs; }
 
-			ci::ivec2 getCaptureSize() { return m_captureSize; }
-			void setCaptureSize(ci::ivec2 size) { m_captureSize = size; m_cvSize = cv::Size(m_captureSize.x, m_captureSize.y); }
+			glm::ivec2 getCaptureSize() { return m_captureSize; }
+			void setCaptureSize(glm::ivec2 size) { m_captureSize = size; m_cvSize = cv::Size(m_captureSize.x, m_captureSize.y); }
 
 		private:
 			std::string				m_name;
 
 			ci::CaptureRef			m_capture;
-			ci::ivec2				m_captureSize = ci::ivec2(1280, 720);
+			glm::ivec2				m_captureSize = glm::ivec2(1280, 720);
 			cv::Size				m_cvSize = cv::Size(1280, 720);
 
 			bool	m_isCalibrated = false;

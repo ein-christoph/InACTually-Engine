@@ -26,8 +26,10 @@
 #include <optional>
 #include <string>
 
+
 namespace act {
 	namespace aio {
+
 		class Mixer2d : public MixerBase {
 		public:
 			Mixer2d();

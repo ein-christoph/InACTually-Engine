@@ -43,10 +43,10 @@ void act::mod::ProcessingModule::setup(act::room::RoomManagers roomMgrs, act::ne
 	m_roomMgrs = roomMgrs;
 	m_networkMgr = networkMgr;
 
-	fs::path path = app::getAssetPath("recentProcessing.json");
+	ci::fs::path path = ci::app::getAssetPath("recentProcessing.json");
 	
 	if (path.empty()) {
-		path = app::getAssetPath("").string() + "recentProcessing.json";
+		path = ci::app::getAssetPath("").string() + "recentProcessing.json";
 		ci::writeJson(path,""); // touch
 		saveToFile(path);
 	}
@@ -61,7 +61,7 @@ void act::mod::ProcessingModule::setup(act::room::RoomManagers roomMgrs, act::ne
 }
 
 void act::mod::ProcessingModule::cleanUp() {
-	saveToFile(app::getAssetPath("recentProcessing.json"));
+	saveToFile(ci::app::getAssetPath("recentProcessing.json"));
 }
 
 void act::mod::ProcessingModule::update() {
@@ -275,7 +275,7 @@ void act::mod::ProcessingModule::drawCreateButton(std::string nodeName) {
 	ImGui::PopID();
 };
 
-void act::mod::ProcessingModule::saveToFile(fs::path path) {
+void act::mod::ProcessingModule::saveToFile(ci::fs::path path) {
 	ci::writeJson(path, getFullDescription());
 }
 
@@ -340,9 +340,9 @@ void act::mod::ProcessingModule::deleteNodeByUID(act::UID uid) {
 }
 
 //TODO Refactor. put that stuff to container node from JSON
-void act::mod::ProcessingModule::loadFromFile(fs::path path) { 
+void act::mod::ProcessingModule::loadFromFile(ci::fs::path path) { 
 	
-	ci::Json description = ci::loadJson(loadFile(path));
+	ci::Json description = ci::loadJson(ci::loadFile(path));
 
 	util::setValueFromJson(description, "isActive", m_isActive);
 
@@ -378,9 +378,9 @@ void act::mod::ProcessingModule::loadFromFile(fs::path path) {
 			if(n["title"].is_string())
 				title = n["title"];
 
-			vec2 pos(0, 0);
+			glm::vec2 pos(0, 0);
 			if (n.contains("x_pos")) {
-				pos = vec2(n["x_pos"], n["y_pos"]);
+				pos = glm::vec2(n["x_pos"], n["y_pos"]);
 			}
 
 			auto node = m_nodeRegistry->create(name);

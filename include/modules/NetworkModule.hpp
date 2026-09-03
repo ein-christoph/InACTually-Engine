@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "CinderOpenCV.h"
@@ -26,9 +25,6 @@
 #include "NetworkManager.hpp"
 #include "ModuleBase.hpp"
 
-
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace mod {
@@ -56,8 +52,8 @@ namespace act {
 
 			void drawNetworkState();
 
-			void loadFromFile(fs::path path);
-			void saveToFile(fs::path path);
+			void loadFromFile(ci::fs::path path);
+			void saveToFile(ci::fs::path path);
 		};
 
 		using NetworkModuleRef = std::shared_ptr<NetworkModule>;

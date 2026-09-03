@@ -25,7 +25,7 @@
 
 act::proc::JsonMsgProcNode::JsonMsgProcNode() : ProcNodeBase("JsonMsg") {
 
-	m_drawSize = ivec2(100, 200);
+	m_drawSize = glm::ivec2(100, 200);
 
 	m_msgName = "value";  // TODO: maybe remove this, for not keeping JsonMsgNode in WebUIServer (ports will survive in connection-chain)
 

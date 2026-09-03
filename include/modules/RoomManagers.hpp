@@ -15,6 +15,7 @@
 */
 
 #pragma once
+
 #include "RoomNodeManagerBase.hpp"
 
 #include "position/PositionManager.hpp"
@@ -30,6 +31,7 @@
 #include "actionspace/ActionspaceManager.hpp"
 #include "projector/ProjectorManager.hpp"
 #include "lidar/LidarManager.hpp"
+
 
 namespace act {
 	namespace room {

@@ -18,7 +18,7 @@
 #include "cinder\Rand.h"
 
 act::proc::NumberSwitchProcNode::NumberSwitchProcNode() : ProcNodeBase("NumberSwitch") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 
 	createNumberInput("in", [&](number val) { switchNumber(val); });
 

@@ -17,9 +17,11 @@
 #include "procpch.hpp"
 #include "VideoPlayerProcNode.hpp"
 
+#include <opencv2/core/opengl.hpp>
+
 act::proc::VideoPlayerProcNode::VideoPlayerProcNode() : ProcNodeBase("VideoPlayer") {
-	m_videoSize = ivec2(1920, 1080);
-	m_drawSize = ivec2(m_videoSize.x * 0.25, m_videoSize.y * 0.25);
+	m_videoSize = glm::ivec2(1920, 1080);
+	m_drawSize = glm::ivec2(m_videoSize.x * 0.25, m_videoSize.y * 0.25);
 
 	m_isOpenDialog = false;
 	m_isAdding = false;
@@ -49,7 +51,7 @@ void act::proc::VideoPlayerProcNode::setup(act::room::RoomManagers roomMgrs) {
 void act::proc::VideoPlayerProcNode::update() {
 	if (m_isOpenDialog) {
 		m_isOpenDialog = false;
-		fs::path path = ci::app::getOpenFilePath().string();
+		ci::fs::path path = ci::app::getOpenFilePath().string();
 
 		if (path.empty())
 			return;
@@ -67,11 +69,21 @@ void act::proc::VideoPlayerProcNode::update() {
 	}
 
 	if (m_isPlaying && m_video && m_video->getTexture()) {
-		cv::UMat frame;
+		
 		auto frameTexture = m_video->getTexture();
-		auto src = frameTexture->createSource();
-		auto mat = toOcv(src).clone();
-		mat.copyTo(frame);
+		if (!frameTexture)
+			return;
+
+		GLuint texId = frameTexture->getId();
+		cv::UMat frame;
+		try {
+			cv::ogl::Texture2D glFrame(frameTexture->getHeight(), frameTexture->getWidth(), cv::ogl::Texture2D::RGBA, texId, false);
+			glFrame.copyTo(frame);
+		}
+		catch (const cv::Exception& e) {
+			CI_LOG_E("OpenCV OGL error: " << e.what());
+			return;
+		}
 
 		if (m_fadeAt.isComplete())
 			m_isFading = false;
@@ -79,7 +91,7 @@ void act::proc::VideoPlayerProcNode::update() {
 			cv::UMat fromFrame;
 			auto fromFrameTexture = m_videoFadeFrom->getTexture();
 			auto fromSrc = fromFrameTexture->createSource();
-			fromFrame = toOcv(fromSrc).getUMat(cv::ACCESS_FAST);
+			fromFrame = ci::toOcv(fromSrc).getUMat(cv::ACCESS_FAST);
 
 			cv::addWeighted(frame, m_fadeAt, fromFrame, 1.0f - m_fadeAt, 0.0f, frame);
 		}
@@ -129,10 +141,10 @@ void act::proc::VideoPlayerProcNode::draw() {
 		ImGui::Text(path.string().c_str());
 
 	if (m_videoTexture) {
-		gl::pushMatrices();
-		gl::rotate(toRadians(180.0f));
-		ImGui::Image(m_videoTexture, m_drawSize, vec2(1, 1), vec2(0, 0));
-		gl::pushMatrices();
+		ci::gl::pushMatrices();
+		ci::gl::rotate(ci::toRadians(180.0f));
+		ImGui::Image(m_videoTexture, m_drawSize, glm::vec2(1, 1), glm::vec2(0, 0));
+		ci::gl::pushMatrices();
 	}
 
 	endNodeDraw();
@@ -180,17 +192,17 @@ void act::proc::VideoPlayerProcNode::fromParams(ci::Json json) {
 	loadVideo(getCurrentPath());
 }
 
-void act::proc::VideoPlayerProcNode::loadVideo(fs::path path)
+void act::proc::VideoPlayerProcNode::loadVideo(ci::fs::path path)
 {
 	if (path.empty())
 		return;
 
-	fs::path p(path);
+	ci::fs::path p(path);
 	if (p.is_relative())
 		p = ci::app::getAssetPath(p);
 	try {
 		// load up the movie, set it to loop, and begin playing
-		m_video = qtime::MovieGl::create(p.string());
+		m_video = ci::qtime::MovieGl::create(p.string());
 		//mMovie->setLoop();
 		m_video->play();
 	}
@@ -215,18 +227,20 @@ bool act::proc::VideoPlayerProcNode::fadeToVideoIndex(int index)
 		return false;
 	}
 
-	m_video->seekToTime(m_videoFadeFrom->getCurrentTime());
+	ci::app::App::get()->dispatchAsync([this, index]() {
+		m_video->seekToTime(m_videoFadeFrom->getCurrentTime());
 
-	m_fadeAt = 0.0f;
-	ci::app::timeline().apply(&m_fadeAt, 1.0f, 3, ci::easeInOutSine);
-	m_isFading = true;
+		m_fadeAt = 0.0f;
+		ci::app::timeline().apply(&m_fadeAt, 1.0f, 3, ci::easeInOutSine);
+		m_isFading = true;
+	});
 
 	return true;
 }
 
-fs::path act::proc::VideoPlayerProcNode::getCurrentPath()
+ci::fs::path act::proc::VideoPlayerProcNode::getCurrentPath()
 {
 	if (m_currentVideoIndex >= m_paths.size())
-		return fs::path();
+		return ci::fs::path();
 	return m_paths[m_currentVideoIndex];
 }

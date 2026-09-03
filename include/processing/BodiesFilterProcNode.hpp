@@ -20,9 +20,6 @@
 #include "ProcNodeBase.hpp"
 
 
-using namespace ci;
-using namespace ci::app;
-
 namespace act {
 	namespace proc {
 
@@ -52,9 +49,9 @@ namespace act {
 			int m_currentBody = 0;
 
 			int m_numberOfBodies = 0;
-			vec3 m_nearestToPosition;
+			glm::vec3 m_nearestToPosition;
 			float m_nearestToPositionDistance;
-			vec3 m_currentPosition;
+			glm::vec3 m_currentPosition;
 
 			bool m_isBody;
 			k4abt_skeleton_t m_skeleton;

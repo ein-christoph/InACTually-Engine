@@ -81,7 +81,7 @@ void act::comp::ObjectDetector::initNetwork()
 		m_blobSize = cv::Size(640, 640); // should come out of cfgFile
 	}
 
-	m_network = cv::dnn::readNetFromDarknet(cfgFile, weightsFile);
+	m_network = cv::dnn::readNet(cfgFile, weightsFile);
 
 	//add this for cuda support
 	// 
@@ -259,7 +259,7 @@ void act::comp::ObjectDetector::processDetection(cv::UMat& frame, const std::vec
 void act::comp::ObjectDetector::drawBox(std::string className, float conf, int left, int top, int right, int bottom, cv::UMat& frame)
 {
 	//Draw a rectangle displaying the bounding box
-	rectangle(frame, cv::Point(left, top), cv::Point(right, bottom), toOcv(util::Design::primaryColor()), 3);
+	rectangle(frame, cv::Point(left, top), cv::Point(right, bottom), ci::toOcv(util::Design::primaryColor()), 3);
 
 	//Get the label for the class name and its confidence
 	std::string label = cv::format("%.2f", conf);

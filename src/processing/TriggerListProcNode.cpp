@@ -21,7 +21,7 @@
 
 
 act::proc::TriggerListProcNode::TriggerListProcNode() : ProcNodeBase("TriggerList") {
-	m_drawSize = ivec2(500, 200);
+	m_drawSize = glm::ivec2(500, 200);
 
 	init = true;
 

@@ -27,7 +27,6 @@
 
 #include "cinder/Json.h"
 
-using namespace ci;
 
 namespace act {
 	namespace util {
@@ -109,7 +108,7 @@ namespace act {
             return false;
         }
 
-        static bool setValueFromJson(ci::Json json, std::string key, vec2& value) {
+        static bool setValueFromJson(ci::Json json, std::string key, glm::vec2& value) {
             if (json.contains(key)) {
                 try {
                     auto vec = json[key];
@@ -123,7 +122,7 @@ namespace act {
             return false;
         }
 
-        static bool setValueFromJson(ci::Json json, std::string key, ivec2& value) {
+        static bool setValueFromJson(ci::Json json, std::string key, glm::ivec2& value) {
             if (json.contains(key)) {
                 try {
                     auto vec = json[key];
@@ -137,7 +136,7 @@ namespace act {
             return false;
         }
 
-        static bool setValueFromJson(ci::Json json, std::string key, vec3& value) {
+        static bool setValueFromJson(ci::Json json, std::string key, glm::vec3& value) {
             if (json.contains(key)) {
                 try {
                     auto vec = json[key];
@@ -151,7 +150,7 @@ namespace act {
             return false;
         }
 
-        static bool setValueFromJson(ci::Json json, std::string key, Color& value) {
+        static bool setValueFromJson(ci::Json json, std::string key, ci::Color& value) {
             if (json.contains(key)) {
                 try {
                     auto vec = json[key];
@@ -165,7 +164,7 @@ namespace act {
             return false;
         }
 
-        static bool setValueFromJson(ci::Json json, std::string key, quat& value) {
+        static bool setValueFromJson(ci::Json json, std::string key, glm::quat& value) {
             if (json.contains(key)) {
                 try {
                     auto vec = json[key];
@@ -180,14 +179,14 @@ namespace act {
         }
 	
 
-		static ci::Json valueToJson(ci::vec2 vec) {
+		static ci::Json valueToJson(glm::vec2 vec) {
 			ci::Json json = ci::Json::object();
 			json["x"] = vec.x;
 			json["y"] = vec.y;
 			return json;
 		}
 
-        static ci::Json valueToJson(ci::vec3 vec) {
+        static ci::Json valueToJson(glm::vec3 vec) {
             ci::Json json = ci::Json::object();
             json["x"] = vec.x;
             json["y"] = vec.y;
@@ -195,7 +194,7 @@ namespace act {
             return json;
         }
 		
-        static ci::Json valueToJson(ci::vec3 vec, int precision) {
+        static ci::Json valueToJson(glm::vec3 vec, int precision) {
 			ci::Json json = ci::Json::object();
             json["x"] = reduceFloat(vec.x, precision);
             json["y"] = reduceFloat(vec.y, precision);
@@ -211,7 +210,7 @@ namespace act {
             return json;
         }
 
-        static ci::Json valueToJson(ci::quat q, int precision) {
+        static ci::Json valueToJson(glm::quat q, int precision) {
             ci::Json json = ci::Json::object();
             json["x"] = reduceFloat(q.x, precision);
             json["y"] = reduceFloat(q.y, precision);
@@ -220,7 +219,7 @@ namespace act {
             return json;
         }
 
-        static ci::Json valueToJson(ci::quat q) {
+        static ci::Json valueToJson(glm::quat q) {
             ci::Json json = ci::Json::object();
             json["x"] = q.x;
             json["y"] = q.y;

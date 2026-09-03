@@ -17,7 +17,7 @@
 #include "TweenProcNode.hpp"
 
 act::proc::TweenProcNode::TweenProcNode() : ProcNodeBase("Tween") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 	m_append = false;
 	m_duration = 5;
 	m_selectedEasingIndex = 0;

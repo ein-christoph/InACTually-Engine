@@ -23,10 +23,12 @@
 
 #include "stddef.hpp"
 
+
 /**
 * @brief Listener (if overriden) or Observable (if not overriden)
 */
 #define eventCall(function, paramType) virtual void function(paramType event) { OMP_FOR for (auto l : listener) l->function(event);	};
+
 
 namespace act {
 	namespace input {

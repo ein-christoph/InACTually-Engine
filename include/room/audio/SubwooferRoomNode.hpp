@@ -19,15 +19,16 @@
 
 #include "audio/SpeakerRoomNode.hpp"
 
+
 namespace act {
 	namespace room {
 
 		class SubwooferRoomNode : public SpeakerRoomNode {
 		public:
-			SubwooferRoomNode(int channel, ci::vec3 position, float radius);
+			SubwooferRoomNode(int channel, glm::vec3 position, float radius);
 			~SubwooferRoomNode();
 
-			static std::shared_ptr<SubwooferRoomNode> create(int channel, ci::vec3 position, float radius) { return std::make_shared<SubwooferRoomNode>(channel, position, radius); };
+			static std::shared_ptr<SubwooferRoomNode> create(int channel, glm::vec3 position, float radius) { return std::make_shared<SubwooferRoomNode>(channel, position, radius); };
 
 			virtual void		draw()		override;
 

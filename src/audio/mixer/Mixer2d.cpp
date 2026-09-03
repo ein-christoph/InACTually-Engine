@@ -25,7 +25,7 @@
 #include "mixer/Mixer2d.hpp"
 #include "iostream"
 
-using namespace ci;
+
 
 act::aio::Mixer2d::Mixer2d()
 	: MixerBase()
@@ -45,7 +45,7 @@ void act::aio::Mixer2d::update()
 	updatePanningPairs();
 	for (auto&& pair : m_mixMap) {
 		auto&& sound = pair.first;
-		vec2 soundPos = { sound.get()->getPosition().x, sound.get()->getPosition().z };
+		glm::vec2 soundPos = { sound.get()->getPosition().x, sound.get()->getPosition().z };
 
 		float mixPan, mixCenterRim;
 		act::room::SpeakerRoomNodeRef pan1{};
@@ -63,7 +63,7 @@ void act::aio::Mixer2d::update()
 			currentPan = *activePan;
 		}
 		else {
-			ci::vec2 scaledSoundPos = m_centroid + (soundPos - m_centroid) * 0.5f * m_maxDistance / length(soundPos - m_centroid);
+			glm::vec2 scaledSoundPos = m_centroid + (soundPos - m_centroid) * 0.5f * m_maxDistance / length(soundPos - m_centroid);
 			activePan = std::find_if(begin(m_panningPairs), end(m_panningPairs),
 				[scaledSoundPos](const PanningPair& panPair) {
 					return panPair.collider.contains(scaledSoundPos);
@@ -82,9 +82,9 @@ void act::aio::Mixer2d::update()
 			m_lastPanningPair = currentPan;
 			pan1 = currentPan->speaker1;
 			pan2 = currentPan->speaker2;
-			vec2 speaker1Pos{ pan1.get()->getPosition().x, pan1.get()->getPosition().z };
-			vec2 speaker2Pos{ pan2.get()->getPosition().x, pan2.get()->getPosition().z };
-			vec2 panPos = calculateIntersection(speaker1Pos, speaker2Pos, m_centroid, soundPos);
+			glm::vec2 speaker1Pos{ pan1.get()->getPosition().x, pan1.get()->getPosition().z };
+			glm::vec2 speaker2Pos{ pan2.get()->getPosition().x, pan2.get()->getPosition().z };
+			glm::vec2 panPos = calculateIntersection(speaker1Pos, speaker2Pos, m_centroid, soundPos);
 			mixCenterRim = foundOutside  ? 1.0f : std::clamp(length(soundPos - m_centroid) / length(panPos - m_centroid), 0.0f, 1.0f);
 			mixPan = std::clamp(length(panPos - speaker1Pos) / length(speaker2Pos - speaker1Pos), 0.0f, 1.0f);
 		}
@@ -92,7 +92,7 @@ void act::aio::Mixer2d::update()
 			mixPan = 0.0f;
 			mixCenterRim = 0.0f;
 		}
-		if (ci::length(soundPos - m_centroid) < 0.0001f) {
+		if (glm::length(soundPos - m_centroid) < 0.0001f) {
 			mixPan = 0.0f;
 			mixCenterRim = 0.0f;
 		}
@@ -100,8 +100,8 @@ void act::aio::Mixer2d::update()
 
 		for (auto&& speaker : m_speakers) {
 			
-			vec2 speakerPos{ speaker->getPosition().x, speaker->getPosition().z };
-			float distance = length(speakerPos - m_centroid);
+			glm::vec2 speakerPos{ speaker->getPosition().x, speaker->getPosition().z };
+			float distance = glm::length(speakerPos - m_centroid);
 			float unitGain = calculateUnitGain(distance);
 			float gain{};
 			if (speaker == pan1) {
@@ -159,8 +159,8 @@ void act::aio::Mixer2d::configure(std::vector<act::room::SpeakerRoomNodeRef> spe
 	}
 
 
-	auto ctx = audio::Context::master();
-	m_channelRouterNode = ctx->makeNode(new audio::ChannelRouterNode(audio::Node::Format()
+	auto ctx = ci::audio::Context::master();
+	m_channelRouterNode = ctx->makeNode(new ci::audio::ChannelRouterNode(ci::audio::Node::Format()
 		.channels(ctx->getOutput()->getNumChannels())));
 
 	for (auto&& speaker : speakers) {
@@ -182,7 +182,7 @@ void act::aio::Mixer2d::connectSound(act::room::SoundRoomNodeRef sound
 	, std::vector<act::room::SubwooferRoomNodeRef> subwoofers)
 {
 	m_mixMap[sound] = std::map<act::UID, ci::audio::GainNodeRef>();
-	auto ctx = audio::Context::master();
+	auto ctx = ci::audio::Context::master();
 	for (auto&& speaker : speakers) {
 		if (speaker->getChannel() < ctx->getOutput()->getNumChannels()) {
 			auto gain = ci::audio::Context::master()->makeNode(new ci::audio::GainNode(0.0f));
@@ -211,12 +211,12 @@ void act::aio::Mixer2d::updatePanningPairs() {
 	for (int i{ 0 }; i < (convexHullIndices.size()); ++i) {
 		auto speaker1index{ convexHullIndices.at(i) };
 		auto speaker2index{ convexHullIndices.at((i + 1) % convexHullIndices.size()) };
-		// convert speaker positions to cinder vec2s
-		vec2 speakerPos1 = {
+		// convert speaker positions to cinder glm::vec2s
+		glm::vec2 speakerPos1 = {
 			speakerPositions.at(speaker1index)[0],
 			speakerPositions.at(speaker1index)[1],
 		};
-		vec2 speakerPos2 = {
+		glm::vec2 speakerPos2 = {
 			speakerPositions.at(speaker2index)[0],
 			speakerPositions.at(speaker2index)[1],
 		};
@@ -237,8 +237,8 @@ void act::aio::Mixer2d::updatePanningPairs() {
 void act::aio::Mixer2d::updateMaxDistance() {
 	m_maxDistance = 0.0f;
 	for (auto&& speaker : m_speakers) {
-		vec2 speakerPos { speaker->getPosition().x, speaker->getPosition().z };
-		float length = ci::length(speakerPos - m_centroid);
+		glm::vec2 speakerPos { speaker->getPosition().x, speaker->getPosition().z };
+		float length = glm::length(speakerPos - m_centroid);
 		if (length > m_maxDistance) {
 			m_maxDistance = length;
 		}
@@ -256,7 +256,7 @@ void act::aio::Mixer2d::updateCentroid() {
 	m_centroid = centroid;
 }
 
-glm::vec2 act::aio::Mixer2d::calculateIntersection(vec2 p1, vec2 p2, vec2 p3, vec2 p4) {
+glm::vec2 act::aio::Mixer2d::calculateIntersection(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, glm::vec2 p4) {
 	float determinant{ (p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x) };
 	float x{ ((p1.x * p2.y - p1.y * p2.x) * (p3.x - p4.x) - (p1.x - p2.x) * (p3.x * p4.y - p3.y * p4.x))
 			/ determinant };
@@ -265,12 +265,12 @@ glm::vec2 act::aio::Mixer2d::calculateIntersection(vec2 p1, vec2 p2, vec2 p3, ve
 	return { x, y };
 }
 
-float act::aio::Mixer2d::calculatePanningFactor(vec2 longVec, vec2 shortVec) 
+float act::aio::Mixer2d::calculatePanningFactor(glm::vec2 longVec, glm::vec2 shortVec) 
 {
 	return length(shortVec) / length(longVec);
 }
 
 float act::aio::Mixer2d::calculateUnitGain(float distance) 
 {
-	return audio::decibelToLinear(100 - 20 * log10f(m_maxDistance / distance));
+	return ci::audio::decibelToLinear(100 - 20 * log10f(m_maxDistance / distance));
 }

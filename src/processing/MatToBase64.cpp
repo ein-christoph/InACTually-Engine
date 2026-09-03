@@ -112,7 +112,7 @@ std::vector<BYTE> base64_decode(std::string const& encoded_string) {
 
 
 std::string surface8uToBase64(ci::Surface8u img, cv::String ext) {
-    cv::Mat input(toOcv(img));
+    cv::Mat input(ci::toOcv(img));
     return matToBase64(input, ext);
 }
 

@@ -21,7 +21,7 @@
 
 act::proc::BodyToSoundProcNode::BodyToSoundProcNode() : ProcNodeBase("BodyToSound") {
 
-	m_drawSize = ivec2(250, 250);
+	m_drawSize = glm::ivec2(250, 250);
 
 	auto body = InputPort<room::BodyRef>::create(PT_BODY, "Body", [&](room::BodyRef body) { this->onBody(body); });
 	m_inputPorts.push_back(body);
@@ -40,14 +40,14 @@ act::proc::BodyToSoundProcNode::BodyToSoundProcNode() : ProcNodeBase("BodyToSoun
 
 	ci::audio::Context* ctx = ci::audio::master();
 
-	m_osc		= ctx->makeNode(new audio::GenTriangleNode);
-	m_modFM		= ctx->makeNode(new audio::GenSineNode);
-	m_modAM		= ctx->makeNode(new audio::GenSineNode);
-	m_add		= ctx->makeNode(new audio::AddNode);
-	m_mul		= ctx->makeNode(new audio::MultiplyNode);
-	m_gain		= ctx->makeNode(new audio::GainNode);
-	m_gainFM	= ctx->makeNode(new audio::GainNode);
-	m_lowP		= ctx->makeNode(new audio::FilterLowPassNode);
+	m_osc		= ctx->makeNode(new ci::audio::GenTriangleNode);
+	m_modFM		= ctx->makeNode(new ci::audio::GenSineNode);
+	m_modAM		= ctx->makeNode(new ci::audio::GenSineNode);
+	m_add		= ctx->makeNode(new ci::audio::AddNode);
+	m_mul		= ctx->makeNode(new ci::audio::MultiplyNode);
+	m_gain		= ctx->makeNode(new ci::audio::GainNode);
+	m_gainFM	= ctx->makeNode(new ci::audio::GainNode);
+	m_lowP		= ctx->makeNode(new ci::audio::FilterLowPassNode);
 
 	//m_sine >> m_gain;
 
@@ -94,12 +94,12 @@ void act::proc::BodyToSoundProcNode::onBody(room::BodyRef body)
 	m_rightHandVelocity		= calcVelocity(m_oldBody->joints[room::BJT_HAND_RIGHT]->position, body->joints[room::BJT_HAND_RIGHT]->position);
 	m_leftHandDistance		= ci::distance(body->joints[room::BJT_HAND_LEFT]->position, body->joints[room::BJT_SPINE_CHEST]->position);
 	m_leftHandDistanceY		= ci::distance(body->joints[room::BJT_HAND_LEFT]->position.y, body->joints[room::BJT_SPINE_CHEST]->position.y);
-	m_leftHandDistanceXZ	= ci::distance2(vec2(body->joints[room::BJT_HAND_LEFT]->position.x, body->joints[room::BJT_HAND_LEFT]->position.z), vec2(body->joints[room::BJT_SPINE_CHEST]->position.x, body->joints[room::BJT_SPINE_CHEST]->position.z));
+	m_leftHandDistanceXZ	= ci::distance2(glm::vec2(body->joints[room::BJT_HAND_LEFT]->position.x, body->joints[room::BJT_HAND_LEFT]->position.z), glm::vec2(body->joints[room::BJT_SPINE_CHEST]->position.x, body->joints[room::BJT_SPINE_CHEST]->position.z));
 	m_rightHandDistance		= ci::distance(body->joints[room::BJT_HAND_RIGHT]->position, body->joints[room::BJT_SPINE_CHEST]->position);
 	m_rightHandDistanceY	= ci::distance(body->joints[room::BJT_HAND_RIGHT]->position.y, body->joints[room::BJT_SPINE_CHEST]->position.y);
-	m_rightHandDistanceXZ	= ci::distance2(vec2(body->joints[room::BJT_HAND_RIGHT]->position.x, body->joints[room::BJT_HAND_RIGHT]->position.z), vec2(body->joints[room::BJT_SPINE_CHEST]->position.x, body->joints[room::BJT_SPINE_CHEST]->position.z));
+	m_rightHandDistanceXZ	= ci::distance2(glm::vec2(body->joints[room::BJT_HAND_RIGHT]->position.x, body->joints[room::BJT_HAND_RIGHT]->position.z), glm::vec2(body->joints[room::BJT_SPINE_CHEST]->position.x, body->joints[room::BJT_SPINE_CHEST]->position.z));
 	m_handDistanceY			= ci::distance(body->joints[room::BJT_HAND_LEFT]->position.y, body->joints[room::BJT_HAND_RIGHT]->position.y);
-	m_handDistanceXZ		= ci::distance(vec2(body->joints[room::BJT_HAND_LEFT]->position.x, body->joints[room::BJT_HAND_LEFT]->position.z), vec2(body->joints[room::BJT_HAND_RIGHT]->position.x, body->joints[room::BJT_HAND_RIGHT]->position.z));
+	m_handDistanceXZ		= ci::distance(glm::vec2(body->joints[room::BJT_HAND_LEFT]->position.x, body->joints[room::BJT_HAND_LEFT]->position.z), glm::vec2(body->joints[room::BJT_HAND_RIGHT]->position.x, body->joints[room::BJT_HAND_RIGHT]->position.z));
 	
 	m_pelvisKneeDistanceY   = ci::distance(body->joints[room::BJT_PELVIS]->position.y, body->joints[room::BJT_KNEE_RIGHT]->position.y);
 
@@ -133,8 +133,8 @@ float act::proc::BodyToSoundProcNode::calcLocalMovement(room::BodyRef body) {
 	for (int i = 0; i < numJoints; i++){
 
 
-		vec3 currJointPos = body->joints[i]->position;
-		vec3 oldJointPos = m_oldBody->joints[i]->position;
+		glm::vec3 currJointPos = body->joints[i]->position;
+		glm::vec3 oldJointPos = m_oldBody->joints[i]->position;
 
 		distX = abs(currJointPos.x - oldJointPos.x);
 		distY = abs(currJointPos.y - oldJointPos.y);
@@ -158,8 +158,8 @@ float act::proc::BodyToSoundProcNode::calcGlobalMovement(room::BodyRef body) {
 	float totalDist = 0.0f;
 	float distX, distY, distZ;
 
-	vec3 currJointPos = body->joints[room::BJT_SPINE_CHEST]->position;
-	vec3 oldJointPos = m_oldBody->joints[room::BJT_SPINE_CHEST]->position;
+	glm::vec3 currJointPos = body->joints[room::BJT_SPINE_CHEST]->position;
+	glm::vec3 oldJointPos = m_oldBody->joints[room::BJT_SPINE_CHEST]->position;
 
 	distX = abs(currJointPos.x - oldJointPos.x);
 	distY = abs(currJointPos.y - oldJointPos.y);
@@ -182,7 +182,7 @@ float act::proc::BodyToSoundProcNode::calcHandDistance(room::BodyRef body)
 	return ci::distance2(left, right);
 }
 
-float act::proc::BodyToSoundProcNode::calcVelocity(vec3 last, vec3 current)
+float act::proc::BodyToSoundProcNode::calcVelocity(glm::vec3 last, glm::vec3 current)
 {
 	return ci::distance(last, current) * 10.f;
 }

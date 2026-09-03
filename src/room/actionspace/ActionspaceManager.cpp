@@ -45,7 +45,7 @@ act::room::RoomNodeBaseRef act::room::ActionspaceManager::drawMenu()
 	act::room::RoomNodeBaseRef node = nullptr;
 
 	if (ImGui::Button("add Device")) {
-		node = addActionspace("actionspace", vec3(0.0f, 0.1f, 0.0f));
+		node = addActionspace("actionspace", glm::vec3(0.0f, 0.1f, 0.0f));
 	}
 
 	return node;
@@ -75,7 +75,7 @@ void act::room::ActionspaceManager::fromJson(ci::Json json)
 			std::string name = "";
 			util::setValueFromJson(node, "name", name);
 
-			vec3 position = vec3(0.0f, 0.0f, 0.0f);
+			glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 			util::setValueFromJson(node, "position", position);
 
 			auto actionspaceNode = addActionspace(name, position);
@@ -92,7 +92,7 @@ void act::room::ActionspaceManager::refreshLists()
 
 }
 
-act::room::RoomNodeBaseRef act::room::ActionspaceManager::addActionspace(std::string name, vec3 position)
+act::room::RoomNodeBaseRef act::room::ActionspaceManager::addActionspace(std::string name, glm::vec3 position)
 {
 	auto node = act::room::ActionspaceRoomNode::create(name, position);
 	m_nodes.push_back(node);

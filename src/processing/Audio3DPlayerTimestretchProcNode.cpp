@@ -38,16 +38,16 @@ act::proc::Audio3DPlayerTimestretchProcNode::Audio3DPlayerTimestretchProcNode() 
 	m_falseCount		= 0;
 	m_countFalseUpTo	= 1;
 
-	m_3DPosition	= vec3(0.0f, 1.0f, 0.0f);
+	m_3DPosition	= glm::vec3(0.0f, 1.0f, 0.0f);
 
-	m_drawSize		= ivec2(400, 150);
+	m_drawSize		= glm::ivec2(400, 150);
 
 	addRPC("play", [&]() { return play(); });
 	addRPC("stop", [&]() { return stop(); });
 	
 	auto trigger	= createBoolInput(		"fire",		[&](bool event) { this->onTrigger(event); });
-	auto gain		= createNumberInput(	"gain",		[&](float event) { m_soundRoomNode->setVolume(audio::linearToDecibel(event)); });
-	auto position	= createVec3Input(		"position", [&](vec3 event) { set3DPosition(event); });
+	auto gain		= createNumberInput(	"gain",		[&](float event) { m_soundRoomNode->setVolume(ci::audio::linearToDecibel(event)); });
+	auto position	= createVec3Input(		"position", [&](glm::vec3 event) { set3DPosition(event); });
 	auto speed		= createNumberInput(	"speed",	[&](float event) { setPlaySpeed(event); });
 
 	m_playPosPort	= createNumberOutput("playing at");
@@ -55,7 +55,7 @@ act::proc::Audio3DPlayerTimestretchProcNode::Audio3DPlayerTimestretchProcNode() 
 
 	m_currentVolumePort = createNumberOutput("current volume");
 
-	auto ctx = audio::Context::master();
+	auto ctx = ci::audio::Context::master();
 	//ctx->disable();
 }
 
@@ -147,7 +147,7 @@ void act::proc::Audio3DPlayerTimestretchProcNode::draw() {
 	ImGui::SetNextItemWidth(m_drawSize.x);
 	m_toVolume = m_soundRoomNode->getVolume();
 	if (ImGui::SliderFloat("volume", &m_toVolume, 0.0f, 120.f)) {
-		//m_gain->setValue(audio::decibelToLinear(m_volume));
+		//m_gain->setValue(ci::audio::decibelToLinear(m_volume));
 		m_soundRoomNode->setVolume(m_toVolume);
 		m_volume = m_toVolume;
 		prvntDrag = true;
@@ -204,7 +204,7 @@ void act::proc::Audio3DPlayerTimestretchProcNode::draw() {
 
 
 	if (m_waveformTex && m_showWaveform)
-		ImGui::Image(m_waveformTex, m_waveformTex->getSize(), vec2(0, 1), vec2(1, 0));
+		ImGui::Image(m_waveformTex, m_waveformTex->getSize(), glm::vec2(0, 1), glm::vec2(1, 0));
 
 	ImGui::SetNextItemWidth(m_drawSize.x);
 	//ImGui::InputInt("count Trigger", &m_countFalseUpTo, 0, 20);
@@ -273,19 +273,19 @@ void act::proc::Audio3DPlayerTimestretchProcNode::loadSound(std::filesystem::pat
 
 			auto waveform = WaveformPlot();
 			auto buf = m_soundRoomNode->getBufferPlayer()->getBuffer();
-			waveform.load(buf, Rectf(vec2(0, 0), m_drawSize));
+			waveform.load(buf, ci::Rectf(glm::vec2(0, 0), m_drawSize));
 
-			gl::Fbo::Format format;
+			ci::gl::Fbo::Format format;
 			format.setSamples( 4 );
-			auto fbo = gl::Fbo::create(m_drawSize.x, m_drawSize.y, format);
+			auto fbo = ci::gl::Fbo::create(m_drawSize.x, m_drawSize.y, format);
 			{
-				gl::ScopedFramebuffer fbScp(fbo);
-				gl::ScopedViewport scpVp(ivec2(0), fbo->getSize());
+				ci::gl::ScopedFramebuffer fbScp(fbo);
+				ci::gl::ScopedViewport scpVp(glm::ivec2(0), fbo->getSize());
 
-				gl::ScopedMatrices scpMatrices;
-				gl::setMatricesWindow(fbo->getSize(), true);
+				ci::gl::ScopedMatrices scpMatrices;
+				ci::gl::setMatricesWindow(fbo->getSize(), true);
 
-				gl::clear(util::Design::backgroundColor());
+				ci::gl::clear(util::Design::backgroundColor());
 			
 				waveform.draw();
 			}
@@ -314,12 +314,12 @@ ci::Json act::proc::Audio3DPlayerTimestretchProcNode::toParams() {
 	json["fadeOutPosition"] = m_fadeOutPosition;
 	json["playPosition"]	= m_playPosition;
 	json["length"]			= m_length;
-	vec3 pos;
+	glm::vec3 pos;
 	if (m_soundRoomNode) {
 		pos = m_soundRoomNode->getPosition();
 	}
 	else {
-		pos = vec3(0.0, 0.0, 0.0);
+		pos = glm::vec3(0.0, 0.0, 0.0);
 	}
 	
 	json["x"] = pos[0];
@@ -347,15 +347,15 @@ void act::proc::Audio3DPlayerTimestretchProcNode::fromParams(ci::Json json) {
 
 	// check for position changes
 	if (util::setValueFromJson(json, "x", newX)) {
-		const vec3 newPosition = vec3(newX, m_3DPosition[1], m_3DPosition[2]);
+		const glm::vec3 newPosition = glm::vec3(newX, m_3DPosition[1], m_3DPosition[2]);
 		set3DPosition(newPosition);
 	};
 	if (util::setValueFromJson(json, "y", newY)) {
-		const vec3 newPosition = vec3(m_3DPosition[0], newY, m_3DPosition[2]);
+		const glm::vec3 newPosition = glm::vec3(m_3DPosition[0], newY, m_3DPosition[2]);
 		set3DPosition(newPosition);
 	};
 	if (util::setValueFromJson(json, "z", newZ)) {
-		const vec3 newPosition = vec3(m_3DPosition[0], m_3DPosition[1], newZ);
+		const glm::vec3 newPosition = glm::vec3(m_3DPosition[0], m_3DPosition[1], newZ);
 		set3DPosition(newPosition);
 	};
 
@@ -380,7 +380,7 @@ void act::proc::Audio3DPlayerTimestretchProcNode::fromParams(ci::Json json) {
 	util::setValueFromJson(json, "isCollapsed", m_isCollapsed);
 }
 
-void act::proc::Audio3DPlayerTimestretchProcNode::set3DPosition(vec3 position)
+void act::proc::Audio3DPlayerTimestretchProcNode::set3DPosition(glm::vec3 position)
 {
 	m_3DPosition = position;
 	if(m_soundRoomNode)

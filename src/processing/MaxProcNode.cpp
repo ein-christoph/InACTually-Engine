@@ -17,7 +17,7 @@
 #include "MaxProcNode.hpp"
 
 act::proc::MaxProcNode::MaxProcNode() : ProcNodeBase("Max") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 	m_secondary = 0.0f;
 
 	createNumberInput("primary", [&](number val) { m_maxPort->send(std::max(val, m_secondary)); });

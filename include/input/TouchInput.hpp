@@ -24,8 +24,10 @@
 
 #include <map>
  
+
 namespace act {
 	namespace input {
+
 		class TouchInput : public InputBase, TouchRawListener, TouchListener
 		{
 		public:
@@ -40,7 +42,7 @@ namespace act {
 			void touchesRawEnded(ci::app::TouchEvent event) override;
 
 		private: 
-			std::map<uint32_t, vec2> mActivePoints;
+			std::map<uint32_t, glm::vec2> mActivePoints;
 		};
 	}
 }

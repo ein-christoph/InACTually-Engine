@@ -19,7 +19,7 @@
 #include "actionspace/ActionspaceRoomNode.hpp"
 
 
-act::room::ActionspaceRoomNode::ActionspaceRoomNode(std::string name, ci::vec3 position, ci::vec3 rotation, float radius, act::UID replyUID)
+act::room::ActionspaceRoomNode::ActionspaceRoomNode(std::string name, glm::vec3 position, glm::vec3 rotation, float radius, act::UID replyUID)
 	: RoomNodeBase(name, position, rotation, radius, replyUID)
 {
 	m_bounding = BoundingSphere::create(position, radius);

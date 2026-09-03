@@ -24,8 +24,6 @@
 #include "cinder/audio/GainNode.h"
 #include "cinder/Timeline.h"
 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace room {
@@ -33,7 +31,7 @@ namespace act {
 		class AudioRoomNodeBase : public RoomNodeBase
 		{
 		public:
-			AudioRoomNodeBase(std::string name, ci::vec3 position = ci::vec3(0.0f, 0.0f, 0.0f), ci::vec3 rotation = ci::vec3(0.0f, 0.0f, 0.0f), float radius = 0.0f);
+			AudioRoomNodeBase(std::string name, glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f), float radius = 0.0f);
 			virtual ~AudioRoomNodeBase();
 
 			virtual void				setVolume(float volume, float rampDuration = 0.1f);

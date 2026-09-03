@@ -23,8 +23,10 @@
 
 #include "cinder/audio/audio.h"
 
+
 namespace act {
 	namespace aio {
+
 		class AudioDeviceListener : public act::input::ListenerBase<AudioDeviceListener>
 		{
 		public:

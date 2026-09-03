@@ -19,7 +19,7 @@
 #include "body/BodyRoomNode.hpp"
 
 
-act::room::BodyRoomNode::BodyRoomNode(std::string name, ci::vec3 position, ci::vec3 rotation, float radius, act::UID replyUID)
+act::room::BodyRoomNode::BodyRoomNode(std::string name, glm::vec3 position, glm::vec3 rotation, float radius, act::UID replyUID)
 	: RoomNodeBase("body", position, rotation, radius, replyUID)
 {
 	m_body = Body::create();
@@ -44,55 +44,55 @@ void act::room::BodyRoomNode::draw()
 {
 	//enableStatusColor(); 
 
-	gl::pushMatrices();
-	//gl::translate(m_position);
-	//gl::rotate(m_rotation);
-	gl::drawCube(ci::vec3(0.0f), ci::vec3(0.1f, 0.075f, 0.075f));
-	auto color = ColorA(0.9f, 0.9f, 0.9f, 0.85f);
+	ci::gl::pushMatrices();
+	//ci::gl::translate(m_position);
+	//ci::gl::rotate(m_rotation);
+	ci::gl::drawCube(glm::vec3(0.0f), glm::vec3(0.1f, 0.075f, 0.075f));
+	auto color = ci::ColorA(0.9f, 0.9f, 0.9f, 0.85f);
 	float sphereRadius = 0.075f;
 
 	for (auto&& joint : m_body->joints)
 	{
-		vec3 pos = joint->position;
+		glm::vec3 pos = joint->position;
 		switch (joint->confidenceLevel) {
 		case act::room::BJC_NONE:
-			gl::color(ColorA(color.r, color.g, color.b, 0.4f));
-			gl::lineWidth(2);
+			ci::gl::color(ci::ColorA(color.r, color.g, color.b, 0.4f));
+			ci::gl::lineWidth(2);
 			break;
 		case act::room::BJC_LOW:
-			gl::color(ColorA(color.r, color.g, color.b, 0.6f));
-			gl::lineWidth(4);
+			ci::gl::color(ci::ColorA(color.r, color.g, color.b, 0.6f));
+			ci::gl::lineWidth(4);
 			break;
 		case act::room::BJC_HIGH:
-			gl::color(color);
-			gl::lineWidth(4);
+			ci::gl::color(color);
+			ci::gl::lineWidth(4);
 			break;
 		default:
 			break;
 		}
 
 		if (joint->type == act::room::BJT_HEAD)
-			gl::drawSphere(pos, sphereRadius * 4.0f / 3.0f, 8);
+			ci::gl::drawSphere(pos, sphereRadius * 4.0f / 3.0f, 8);
 		else
-			gl::drawSphere(pos, sphereRadius, 8);
+			ci::gl::drawSphere(pos, sphereRadius, 8);
 
-		vec3 parent = m_body->joints[act::room::bodyJointParentLookUp[joint->type]]->position;
+		glm::vec3 parent = m_body->joints[act::room::bodyJointParentLookUp[joint->type]]->position;
 
-		gl::drawLine(pos, parent);
+		ci::gl::drawLine(pos, parent);
 
 		// drawVector only if debugging
 		/*
-		gl::pushMatrices();
-		gl::translate(pos);
-		gl::rotate(joint->orientation);
-		gl::drawCoordinateFrame(0.2f);
-		gl::popMatrices();
+		ci::gl::pushMatrices();
+		ci::gl::translate(pos);
+		ci::gl::rotate(joint->orientation);
+		ci::gl::drawCoordinateFrame(0.2f);
+		ci::gl::popMatrices();
 		*/
 	}
 
 	util::drawCoords();
 
-	gl::popMatrices();
+	ci::gl::popMatrices();
 }
 
 void act::room::BodyRoomNode::drawSpecificSettings()

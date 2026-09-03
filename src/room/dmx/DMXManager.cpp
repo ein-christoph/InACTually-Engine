@@ -194,16 +194,16 @@ void act::room::DMXManager::changeInterface(std::string interfaceName)
 
 void act::room::DMXManager::loadFixtures()
 {
-	fs::path path = app::getAssetPath("dmx/fixtures.json");
+	ci::fs::path path = ci::app::getAssetPath("dmx/fixtures.json");
 	if (path.empty()) {
-		path = app::getAssetPath("").string() + "dmx/fixtures.json";
-		writeJson(path, ""); // touch
+		path = ci::app::getAssetPath("").string() + "dmx/fixtures.json";
+		ci::writeJson(path, ""); // touch
 		saveFixtures();
 	}
 
 	m_fixtureDescriptions.clear();
 	m_fixtureNames.clear();
-	ci::Json fixtureDescriptions = ci::loadJson(loadFile(path));
+	ci::Json fixtureDescriptions = ci::loadJson(ci::loadFile(path));
 
 	int smallestID = INT_MAX;
 	for (auto&& desc : fixtureDescriptions["devices"]) {
@@ -215,8 +215,8 @@ void act::room::DMXManager::loadFixtures()
 }
 
 void act::room::DMXManager::saveDevicesToJson() {
-	fs::path path = app::getAssetPath("recentRoomSetup.json");
-	ci::Json wholeFile = ci::loadJson(loadFile(path));
+	ci::fs::path path = ci::app::getAssetPath("recentRoomSetup.json");
+	ci::Json wholeFile = ci::loadJson(ci::loadFile(path));
 	//save nodes
 	try {
 		wholeFile["dmxManager"]["devices"].clear();
@@ -237,10 +237,10 @@ void act::room::DMXManager::saveDevicesToJson() {
 
 void act::room::DMXManager::saveFixtures()
 {
-	fs::path path = app::getAssetPath("dmx/fixtures.json");
+	ci::fs::path path = ci::app::getAssetPath("dmx/fixtures.json");
 	if (path.empty()) {
-		path = app::getAssetPath("").string() + "dmx/fixtures.json";
-		writeJson(path, ""); // touch
+		path = ci::app::getAssetPath("").string() + "dmx/fixtures.json";
+		ci::writeJson(path, ""); // touch
 	}
 
 	ci::Json fixtureDescriptions = ci::Json("{\"devices\":[]");

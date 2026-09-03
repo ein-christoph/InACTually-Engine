@@ -45,37 +45,37 @@ void act::aio::Mixer3d::update()
 
 	for (auto&& pair : m_mixMap) {
 		auto&& sound = pair.first;
-		vec3 soundPos = sound.get()->getPosition();
-		vec3 scaledSoundPos = m_centroid + ci::normalize(soundPos - m_centroid) * 0.5f * m_minDistance;
+		glm::vec3 soundPos = sound.get()->getPosition();
+		glm::vec3 scaledSoundPos = m_centroid + ci::normalize(soundPos - m_centroid) * 0.5f * m_minDistance;
 
 		Collider collider = findCollider(scaledSoundPos);
 		// case of merged face
 		if (collider.mergedFace.has_value()) {
-			ci::vec3 speaker1Pos{ collider.speakers[0]->getPosition() };
-			ci::vec3 speaker2Pos{ collider.speakers[1]->getPosition() };
+			glm::vec3 speaker1Pos{ collider.speakers[0]->getPosition() };
+			glm::vec3 speaker2Pos{ collider.speakers[1]->getPosition() };
 			// point of intersection between ray from centroid through sound and outer face
-			ci::vec3 planeIntersection{ soundPos != m_centroid ? calculatePlaneIntersection(collider.normal,
+			glm::vec3 planeIntersection{ soundPos != m_centroid ? calculatePlaneIntersection(collider.normal,
 				speaker1Pos,soundPos) : m_centroid};
 			// tangent vector of the active panning face
-			ci::vec3 tangent { ci::normalize(speaker2Pos - speaker1Pos) };
+			glm::vec3 tangent { ci::normalize(speaker2Pos - speaker1Pos) };
 			// bitangent vector of the active panning face
-			ci::vec3 bitangent{ ci::cross(collider.normal, tangent) };
+			glm::vec3 bitangent{ ci::cross(collider.normal, tangent) };
 
 			// position of speaker 1 in tangent space
-			ci::vec2 speaker2D1{ ci::dot(speaker1Pos, tangent), ci::dot(speaker1Pos, bitangent) };
+			glm::vec2 speaker2D1{ ci::dot(speaker1Pos, tangent), ci::dot(speaker1Pos, bitangent) };
 			// position of speaker 2 in tangent space
-			ci::vec2 speaker2D2{ ci::dot(speaker2Pos, tangent), ci::dot(speaker2Pos, bitangent) };
+			glm::vec2 speaker2D2{ ci::dot(speaker2Pos, tangent), ci::dot(speaker2Pos, bitangent) };
 			// position of the face centroid in tangent space
-			ci::vec2 faceCentroid2D{ ci::dot(collider.mergedFace.value().planeCentroid, tangent),
+			glm::vec2 faceCentroid2D{ ci::dot(collider.mergedFace.value().planeCentroid, tangent),
 									 ci::dot(collider.mergedFace.value().planeCentroid, bitangent) };
 			// position of pleneIntersection in tangent space
-			ci::vec2 sound2D{ ci::dot(planeIntersection, tangent), ci::dot(planeIntersection, bitangent) };
+			glm::vec2 sound2D{ ci::dot(planeIntersection, tangent), ci::dot(planeIntersection, bitangent) };
 			// position of pan in tangent space
-			ci::vec2 pan2D{ calculateIntersection(speaker2D1, speaker2D2, faceCentroid2D, sound2D) };
+			glm::vec2 pan2D{ calculateIntersection(speaker2D1, speaker2D2, faceCentroid2D, sound2D) };
 
-			float mixPan{ faceCentroid2D != sound2D ? clamp(ci::length(pan2D - speaker2D1) / ci::length(speaker2D2 - speaker2D1)) : 0.0f};
-			float mixCenterRimFace{ faceCentroid2D != sound2D ? clamp(ci::length(sound2D - faceCentroid2D) / ci::length(pan2D - faceCentroid2D)) : 0.0f};
-			float mixCenterRimVolume{ planeIntersection != m_centroid ? clamp(ci::length(soundPos - m_centroid) / ci::length(planeIntersection - m_centroid)) : 0.0f};
+			float mixPan{ faceCentroid2D != sound2D ? clamp(glm::length(pan2D - speaker2D1) / glm::length(speaker2D2 - speaker2D1)) : 0.0f};
+			float mixCenterRimFace{ faceCentroid2D != sound2D ? clamp(glm::length(sound2D - faceCentroid2D) / glm::length(pan2D - faceCentroid2D)) : 0.0f};
+			float mixCenterRimVolume{ planeIntersection != m_centroid ? clamp(glm::length(soundPos - m_centroid) / glm::length(planeIntersection - m_centroid)) : 0.0f};
 
 			float numSpeakersInvFace = sqrt(1.0f / collider.mergedFace->speakers.size());
 
@@ -109,25 +109,25 @@ void act::aio::Mixer3d::update()
 
 		} // case of simple face
 		else if (collider.speakers.size() == 3) {
-			ci::vec3 speaker1Pos{ collider.speakers[0]->getPosition() };
-			ci::vec3 speaker2Pos{ collider.speakers[1]->getPosition() };
-			ci::vec3 speaker3Pos{ collider.speakers[2]->getPosition() };
+			glm::vec3 speaker1Pos{ collider.speakers[0]->getPosition() };
+			glm::vec3 speaker2Pos{ collider.speakers[1]->getPosition() };
+			glm::vec3 speaker3Pos{ collider.speakers[2]->getPosition() };
 			// point of intersection between ray from centroid through sound and outer face
-			ci::vec3 planeIntersection{ calculatePlaneIntersection(collider.normal,
+			glm::vec3 planeIntersection{ calculatePlaneIntersection(collider.normal,
 				speaker1Pos, soundPos) };
 			// tangent vector of the active panning face
-			ci::vec3 tangent{ ci::normalize(speaker2Pos - speaker1Pos) };
+			glm::vec3 tangent{ ci::normalize(speaker2Pos - speaker1Pos) };
 			// bitangent vector of the active panning face
-			ci::vec3 bitangent{ ci::cross(collider.normal, tangent) };
+			glm::vec3 bitangent{ ci::cross(collider.normal, tangent) };
 
 			// position of speaker 1 in tangent space
-			ci::vec2 speaker2D1{ ci::dot(speaker1Pos, tangent), ci::dot(speaker1Pos, bitangent) };
+			glm::vec2 speaker2D1{ ci::dot(speaker1Pos, tangent), ci::dot(speaker1Pos, bitangent) };
 			// position of speaker 2 in tangent space
-			ci::vec2 speaker2D2{ ci::dot(speaker2Pos, tangent), ci::dot(speaker2Pos, bitangent) };
+			glm::vec2 speaker2D2{ ci::dot(speaker2Pos, tangent), ci::dot(speaker2Pos, bitangent) };
 			// position of speaker 3 in tangent space
-			ci::vec2 speaker2D3{ ci::dot(speaker3Pos, tangent), ci::dot(speaker3Pos, bitangent) };
+			glm::vec2 speaker2D3{ ci::dot(speaker3Pos, tangent), ci::dot(speaker3Pos, bitangent) };
 			// position of planeIntersection in tangent space
-			ci::vec2 sound2D{ ci::dot(planeIntersection, tangent), ci::dot(planeIntersection, bitangent) };
+			glm::vec2 sound2D{ ci::dot(planeIntersection, tangent), ci::dot(planeIntersection, bitangent) };
 
 			cv::Mat mat = (cv::Mat_<float>(2, 2) <<
 				speaker2D1.x - speaker2D3.x, speaker2D2.x - speaker2D3.x,
@@ -143,7 +143,7 @@ void act::aio::Mixer3d::update()
 			float u1{ clamp(sol.at<float>(0)) };
 			float u2{ clamp(sol.at<float>(1)) };
 			float u3{ clamp(1.0f - u1 - u2) };
-			float mixCenterRimVolume{ clamp(ci::length(soundPos - m_centroid) / ci::length(planeIntersection - m_centroid)) };
+			float mixCenterRimVolume{ clamp(glm::length(soundPos - m_centroid) / glm::length(planeIntersection - m_centroid)) };
 
 			for (auto&& speaker : m_speakers) {
 				float distance = length(speaker->getPosition() - m_centroid);
@@ -214,8 +214,8 @@ void act::aio::Mixer3d::configure(std::vector<act::room::SpeakerRoomNodeRef> spe
 	}
 
 
-	auto ctx = audio::Context::master();
-	m_channelRouterNode = ctx->makeNode(new audio::ChannelRouterNode(audio::Node::Format()
+	auto ctx = ci::audio::Context::master();
+	m_channelRouterNode = ctx->makeNode(new ci::audio::ChannelRouterNode(ci::audio::Node::Format()
 		.channels(ctx->getOutput()->getNumChannels())));
 
 	for (auto&& speaker : speakers) {
@@ -240,7 +240,7 @@ void act::aio::Mixer3d::configure(std::vector<act::room::SpeakerRoomNodeRef> spe
 void act::aio::Mixer3d::connectSound(act::room::SoundRoomNodeRef sound, std::vector<act::room::SpeakerRoomNodeRef> speakers, std::vector<act::room::SubwooferRoomNodeRef> subwoofers)
 {
 	m_mixMap[sound] = std::map<act::UID, ci::audio::GainNodeRef>();
-	auto ctx = audio::Context::master();
+	auto ctx = ci::audio::Context::master();
 	for (auto&& speaker : speakers) {
 		if (speaker->getChannel() < ctx->getOutput()->getNumChannels()) {
 			auto gain = ci::audio::Context::master()->makeNode(new ci::audio::GainNode(0.0f));
@@ -259,7 +259,7 @@ void act::aio::Mixer3d::connectSound(act::room::SoundRoomNodeRef sound, std::vec
 	}
 }
 
-bool act::aio::Mixer3d::calculate_intersection_line_plane(ci::vec3 p0, ci::vec3 p1, ci::vec4 plane, ci::vec3& intersection, float epsilon)
+bool act::aio::Mixer3d::calculate_intersection_line_plane(glm::vec3 p0, glm::vec3 p1, ci::vec4 plane, glm::vec3& intersection, float epsilon)
 {
 	glm::vec3 normal { plane.x, plane.y, plane.z };
 	auto u = p1 - p0;
@@ -292,7 +292,7 @@ void act::aio::Mixer3d::updateColliders()
 	// calculate centroid
 	m_centroid = { 0.0f, 0.0f, 0.0f };
 	for (auto&& vert : vertices) {
-		ci::vec3 p = { vert.x, vert.y, vert.z };
+		glm::vec3 p = { vert.x, vert.y, vert.z };
 		m_centroid += p;
 	}
 	m_centroid /= float(vertices.size());
@@ -329,7 +329,7 @@ void act::aio::Mixer3d::updateColliders()
 	free(faces);
 
 	// Calculate normals
-	std::vector<ci::vec3> normals{};
+	std::vector<glm::vec3> normals{};
 	for (auto&& face : faceList) {
 		auto& [i0, i1, i2] = face;
 		auto v0 = vertices[i0];
@@ -338,7 +338,7 @@ void act::aio::Mixer3d::updateColliders()
 		glm::vec3 p0 = { v0.x, v0.y, v0.z };
 		glm::vec3 p1 = { v1.x, v1.y, v1.z };
 		glm::vec3 p2 = { v2.x, v2.y, v2.z };
-		ci::vec3 normal = ci::normalize(ci::cross(p1 - p0, p2 - p0));
+		glm::vec3 normal = ci::normalize(ci::cross(p1 - p0, p2 - p0));
 		if (ci::dot(normal, p0 - m_centroid) < 0.0f) {
 			normal = -normal;
 		}
@@ -348,7 +348,7 @@ void act::aio::Mixer3d::updateColliders()
 	// Calculate least distance to the convex hull
 	m_minDistance = std::numeric_limits<float>::max();
 	for (int i = 0; i < normals.size(); ++i) {
-		m_minDistance = std::min(m_minDistance, ci::length(ci::dot(normals[i], m_speakers[std::get<0>(faceList[i])]->getPosition() - m_centroid)));
+		m_minDistance = std::min(m_minDistance, glm::length(ci::dot(normals[i], m_speakers[std::get<0>(faceList[i])]->getPosition() - m_centroid)));
 	}
 
 	// Find faces to merge
@@ -380,7 +380,7 @@ void act::aio::Mixer3d::updateColliders()
 		// contains all indices of speakers belonging to a merged face
 		std::set<int> speakers;
 
-		ci::vec3 normal, tangent;
+		glm::vec3 normal, tangent;
 		for (auto face : currentMergedFace) {
 			auto [p0, p1, p2]  { faceList[face] };
 			auto vert0{ vertices[p0] };
@@ -392,24 +392,24 @@ void act::aio::Mixer3d::updateColliders()
 			speakers.insert(p1);
 			speakers.insert(p2);
 		}
-		ci::vec3 bitangent{ ci::cross(normal, tangent) };
+		glm::vec3 bitangent{ ci::cross(normal, tangent) };
 		// vector containing indices of speakers belonging to merged face
 		std::vector<int> speakerList(begin(speakers), end(speakers));
 
 		std::vector<cv::Vec2f> transformedPositions;
 		for (auto speakerIndex : speakers) {
 			auto pos = vertices[speakerIndex];
-			ci::vec3 position = { pos.x, pos.y, pos.z };
+			glm::vec3 position = { pos.x, pos.y, pos.z };
 			transformedPositions.push_back({ ci::dot(position,tangent), ci::dot(position, bitangent) });
 		}
 		std::vector<int> convexHullIndices;
 		cv::convexHull(transformedPositions, convexHullIndices);
 
-		ci::vec3 face_centroid = { 0.0f, 0.0f, 0.0f };
+		glm::vec3 face_centroid = { 0.0f, 0.0f, 0.0f };
 		// calculate centroid of mergedFace
 		for (auto speaker : speakers) {
 			auto vert = vertices[speaker];
-			face_centroid += ci::vec3{vert.x, vert.y, vert.z};
+			face_centroid += glm::vec3{vert.x, vert.y, vert.z};
 		}
 		face_centroid /= static_cast<float>(speakers.size());
 
@@ -453,10 +453,10 @@ void act::aio::Mixer3d::updateColliders()
 	std::cout << "okay";
 }
 
-act::aio::Mixer3d::Collider act::aio::Mixer3d::findCollider(ci::vec3 soundPos)
+act::aio::Mixer3d::Collider act::aio::Mixer3d::findCollider(glm::vec3 soundPos)
 {
 	for (auto&& collider : m_colliders) {
-		ci::vec3 p0, p1, p2, p3;
+		glm::vec3 p0, p1, p2, p3;
 		// case for colliders of merged faces
 		if (collider.mergedFace.has_value()) {
 			p0 = collider.speakers[0].get()->getPosition();
@@ -495,9 +495,9 @@ act::aio::Mixer3d::Collider act::aio::Mixer3d::findCollider(ci::vec3 soundPos)
 	return Collider{ {}, std::nullopt };
 }
 
-ci::vec3 act::aio::Mixer3d::calculatePlaneIntersection(const ci::vec3& normal, const ci::vec3& planePoint, const ci::vec3& soundPos)
+glm::vec3 act::aio::Mixer3d::calculatePlaneIntersection(const glm::vec3& normal, const glm::vec3& planePoint, const glm::vec3& soundPos)
 {
-	ci::vec3 l{ soundPos - m_centroid };
+	glm::vec3 l{ soundPos - m_centroid };
 	float d{ ci::dot(planePoint - m_centroid, normal)
 			/ ci::dot(l,normal) };
 	return m_centroid + d*l;
@@ -506,8 +506,8 @@ ci::vec3 act::aio::Mixer3d::calculatePlaneIntersection(const ci::vec3& normal, c
 void act::aio::Mixer3d::updateMaxDistance() {
 	m_maxDistance = 0.0f;
 	for (auto&& speaker : m_speakers) {
-		vec3 speakerPos{ speaker->getPosition().x, speaker->getPosition().y, speaker->getPosition().z };
-		float length = ci::length(speakerPos - m_centroid);
+		glm::vec3 speakerPos{ speaker->getPosition().x, speaker->getPosition().y, speaker->getPosition().z };
+		float length = glm::length(speakerPos - m_centroid);
 		if (length > m_maxDistance) {
 			m_maxDistance = length;
 		}
@@ -526,5 +526,5 @@ glm::vec2 act::aio::Mixer3d::calculateIntersection(glm::vec2 p1, glm::vec2 p2, g
 
 float act::aio::Mixer3d::calculateUnitGain(float distance)
 {
-	return audio::decibelToLinear(100 - 20 * log10f(m_maxDistance / distance));
+	return ci::audio::decibelToLinear(100 - 20 * log10f(m_maxDistance / distance));
 }

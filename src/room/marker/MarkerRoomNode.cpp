@@ -18,10 +18,10 @@
 #include "roompch.hpp"
 #include "marker/MarkerRoomNode.hpp"
 
-#include "opencv2/aruco.hpp"
+#include <opencv2/objdetect/aruco_detector.hpp>
 
 act::room::MarkerRoomNode::MarkerRoomNode(int id, act::UID replyUID)
-	: RoomNodeBase("marker"/*std::to_string(id)*/, vec3(0, 0, 0), vec3(0, 0, 0), 0.075f, replyUID)
+	: RoomNodeBase("marker"/*std::to_string(id)*/, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 0.075f, replyUID)
 {
 	m_id = id;
 	doSmoothing(true);
@@ -62,8 +62,8 @@ void act::room::MarkerRoomNode::draw()
 			ci::gl::ScopedColor color(ci::Color(1.0f, 1.0f, 1.0f));
 			ci::gl::rotate(glm::half_pi<float>(), 1.0f, 0.0f, 0.0f);
 			ci::gl::translate(0.0f, 0.0f, -0.001f);
-			Rectf drawRect(-5.0f * m_markerWidth, -5.0f * m_markerWidth, 5.0f *m_markerWidth, 5.0f *m_markerWidth);
-			gl::draw(m_markerTexture, drawRect);
+			ci::Rectf drawRect(-5.0f * m_markerWidth, -5.0f * m_markerWidth, 5.0f *m_markerWidth, 5.0f *m_markerWidth);
+			ci::gl::draw(m_markerTexture, drawRect);
 		}
 	}
 }
@@ -92,5 +92,5 @@ void act::room::MarkerRoomNode::setMarkerImage() {
 
 	cv::cvtColor(markerImage, markerImage, cv::COLOR_GRAY2BGR);
 
-	m_markerTexture = gl::Texture::create(fromOcv(markerImage));
+	m_markerTexture = ci::gl::Texture::create(ci::fromOcv(markerImage));
 }

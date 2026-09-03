@@ -19,28 +19,31 @@
 
 #include "ListenerBase.hpp"
 
+
 #pragma warning( push )
 #pragma warning( disable : 4081)
+
 namespace act {
 	namespace input {
+
 		class MouseRawListener : public ListenerBase<MouseRawListener>
 		{
 		public:
-			eventCall(mouseRawMove, cinder::app::MouseEvent);
-			eventCall(mouseRawDown, cinder::app::MouseEvent);
-			eventCall(mouseRawDrag, cinder::app::MouseEvent);
-			eventCall(mouseRawUp, cinder::app::MouseEvent);
-			eventCall(mouseRawWheel, cinder::app::MouseEvent);
+			eventCall(mouseRawMove, ci::app::MouseEvent);
+			eventCall(mouseRawDown, ci::app::MouseEvent);
+			eventCall(mouseRawDrag, ci::app::MouseEvent);
+			eventCall(mouseRawUp, ci::app::MouseEvent);
+			eventCall(mouseRawWheel, ci::app::MouseEvent);
 		};
 
 		class MouseListener : public ListenerBase<MouseListener>
 		{
 		public:
-			eventCall(onMouseMove, cinder::app::MouseEvent);
-			eventCall(onMouseDown, cinder::app::MouseEvent);
-			eventCall(onMouseDrag, cinder::app::MouseEvent);
-			eventCall(onMouseUp, cinder::app::MouseEvent);
-			eventCall(onMouseWheel, cinder::app::MouseEvent);
+			eventCall(onMouseMove, ci::app::MouseEvent);
+			eventCall(onMouseDown, ci::app::MouseEvent);
+			eventCall(onMouseDrag, ci::app::MouseEvent);
+			eventCall(onMouseUp, ci::app::MouseEvent);
+			eventCall(onMouseWheel, ci::app::MouseEvent);
 		};
 	}
 }

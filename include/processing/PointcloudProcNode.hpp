@@ -20,13 +20,10 @@
 #include "ProcNodeBase.hpp"
 #include "MatListener.hpp"
 
-using namespace ci;
-using namespace ci::app;
-
-
 #include <opencv2/opencv.hpp>
 
 #include "pointcloud/PointcloudRoomNode.hpp"
+
 
 namespace act {
 	namespace proc {
@@ -52,11 +49,11 @@ namespace act {
 			OutputPortRef<act::room::Pointcloud> m_pointcloudOutPort;
 			ImageInputPortRef  m_colorImageInPort;
 			ImageInputPortRef	m_depthImageInPort;
-			InputPortRef<ci::vec2>	m_fovInPort;
+			InputPortRef<glm::vec2>	m_fovInPort;
 
 			cv::UMat m_colorImageCache;
 			cv::UMat m_depthImageCache;
-			ci::vec2 m_fov;
+			glm::vec2 m_fov;
 			act::room::Pointcloud m_pointcloud = nullptr;
 
 			act::room::PointcloudRoomNodeRef m_pointcloudRoomNode;

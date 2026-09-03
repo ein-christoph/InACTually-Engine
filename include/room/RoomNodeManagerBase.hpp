@@ -19,6 +19,7 @@
 
 #include "RoomNodeBase.hpp"
 
+
 namespace act {
 	namespace room {
 
@@ -37,9 +38,9 @@ namespace act {
 			void				addNode(RoomNodeBaseRef node);
 			RoomNodeBaseRef	getNodeByUID(act::UID uid);
 
-			bool				hit(ci::vec3 pos)	override;
+			bool				hit(glm::vec3 pos)	override;
 			bool				hitRay(ci::Ray ray) override;
-			RoomNodeBaseRef	getNodeAtPos(ci::vec3 pos);
+			RoomNodeBaseRef	getNodeAtPos(glm::vec3 pos);
 			RoomNodeBaseRef	getNodeOnRay(ci::Ray ray);
 
 			bool	removeNode(act::UID uid);

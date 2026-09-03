@@ -16,7 +16,7 @@
 */
 
 #include "mixer/NearestMixer.hpp"
-using namespace ci;
+
 
 act::aio::NearestMixer::NearestMixer()
 	: MixerBase()
@@ -80,8 +80,8 @@ void act::aio::NearestMixer::configure(std::vector<act::room::SpeakerRoomNodeRef
 		sound->disconnectExternals();
 	}
 
-	auto ctx = audio::Context::master();
-	m_channelRouterNode = ctx->makeNode(new audio::ChannelRouterNode(audio::Node::Format().channels(ctx->getOutput()->getNumChannels())));
+	auto ctx = ci::audio::Context::master();
+	m_channelRouterNode = ctx->makeNode(new ci::audio::ChannelRouterNode(ci::audio::Node::Format().channels(ctx->getOutput()->getNumChannels())));
 
 	for (auto&& subwoofer : subwoofers) {
 		if (subwoofer->getChannel() < ctx->getOutput()->getNumChannels()) {
@@ -106,7 +106,7 @@ void act::aio::NearestMixer::configure(std::vector<act::room::SpeakerRoomNodeRef
 void act::aio::NearestMixer::connectSound(act::room::SoundRoomNodeRef sound, std::vector<act::room::SpeakerRoomNodeRef> speakers, std::vector<act::room::SubwooferRoomNodeRef> subwoofers)
 {
 	m_mixMap[sound] = std::map<act::UID, ci::audio::GainNodeRef>();
-	auto ctx = audio::Context::master();
+	auto ctx = ci::audio::Context::master();
 	for (auto&& speaker : speakers) {
 		if (speaker->getChannel() < ctx->getOutput()->getNumChannels()) {
 			auto gain = ci::audio::Context::master()->makeNode(new ci::audio::GainNode(0.0f));

@@ -21,9 +21,6 @@
 #include "ProcNodeBase.hpp"
 #include <opencv2/dnn/dnn.hpp>
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace proc {
@@ -43,7 +40,7 @@ namespace act {
 
 		private:
 			ci::gl::Texture2dRef												m_texture;
-			ci::ivec2															adaptSize(ci::ivec2 size);
+			glm::ivec2															adaptSize(glm::ivec2 size);
 			float																m_displayScale;
 
 			ImageOutputPortRef												m_imagePort;

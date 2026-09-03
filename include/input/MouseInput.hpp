@@ -23,8 +23,10 @@
 #include "ListenerBase.hpp"
 #include "MouseRawListener.hpp"
 
+
 namespace act {
 	namespace input {
+
 		class MouseInput : public InputBase, MouseRawListener, MouseListener
 		{
 		public:
@@ -34,11 +36,11 @@ namespace act {
 			void update() override;
 
 		protected:
-			void mouseRawUp(MouseEvent event)		override;
-			void mouseRawDown(MouseEvent event)		override;
-			void mouseRawWheel(MouseEvent event)	override;
-			void mouseRawMove(MouseEvent event)		override;
-			void mouseRawDrag(MouseEvent event)		override;
+			void mouseRawUp(ci::app::MouseEvent event)		override;
+			void mouseRawDown(ci::app::MouseEvent event)		override;
+			void mouseRawWheel(ci::app::MouseEvent event)	override;
+			void mouseRawMove(ci::app::MouseEvent event)		override;
+			void mouseRawDrag(ci::app::MouseEvent event)		override;
 		};
 	}
 }

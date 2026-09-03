@@ -17,8 +17,8 @@
 #include "Vector2ProcNode.hpp"
 
 act::proc::Vector2ProcNode::Vector2ProcNode() : ProcNodeBase("Vector2") {
-	m_drawSize = ci::ivec2(200, 200);
-	m_vector = ci::vec2(0);
+	m_drawSize = glm::ivec2(200, 200);
+	m_vector = glm::vec2(0);
 
 	m_outPort = createVec2Output("out");
 }

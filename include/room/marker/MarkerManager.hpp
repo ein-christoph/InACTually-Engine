@@ -25,6 +25,7 @@
 
 #include "computing/MarkerDetector.hpp"
 
+
 namespace act {
 	namespace room {
 
@@ -54,7 +55,7 @@ namespace act {
 
 			virtual ci::Json toJson();
 			virtual void fromJson(ci::Json json);
-			act::proc::OutputPortRef<ci::vec3> getMarkerPort(int markerID);
+			act::proc::OutputPortRef<glm::vec3> getMarkerPort(int markerID);
 
 			std::vector<int> getMarkerIDs() { return m_markerIDs; }
 			std::vector<std::string> getMarkerIDsAsStrings();
@@ -72,11 +73,11 @@ namespace act {
 			void processMarkers();
 			std::vector<int> m_markerIDs;
 
-			ivec2 m_displaySize = ivec2(640, 360);
+			glm::ivec2 m_displaySize = glm::ivec2(640, 360);
 
 			std::map<act::UID, comp::MarkerDetectorRef> m_markerDetectors;
 
-			std::vector<gl::TextureRef> m_feedbackTextures;
+			std::vector<ci::gl::TextureRef> m_feedbackTextures;
 		};
 		using MarkerManagerRef = std::shared_ptr<MarkerManager>;
 	}

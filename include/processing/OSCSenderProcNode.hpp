@@ -19,9 +19,6 @@
 #include "ProcNodeBase.hpp"
 #include "OSCServer.hpp"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace proc {

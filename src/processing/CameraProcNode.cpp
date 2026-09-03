@@ -20,8 +20,8 @@
 
 
 act::proc::CameraProcNode::CameraProcNode() : ProcNodeBase("Camera", NT_INPUT) {
-	m_captureSize = ivec2(1920, 1080);
-	m_drawSize = ivec2(m_captureSize.x * 0.25, m_captureSize.y * 0.25);
+	m_captureSize = glm::ivec2(1920, 1080);
+	m_drawSize = glm::ivec2(m_captureSize.x * 0.25, m_captureSize.y * 0.25);
 
 	m_show = false;
 	m_selectedCamera = 0;
@@ -31,7 +31,7 @@ act::proc::CameraProcNode::CameraProcNode() : ProcNodeBase("Camera", NT_INPUT) {
 			m_cameraImageOutPort->send(image); // , m_cameraRoomNode);
 
 		if (m_show) {
-			m_captureTexture = gl::Texture2d::create(fromOcv(image));
+			m_captureTexture = ci::gl::Texture2d::create(ci::fromOcv(image));
 		}
 	}, false);
 
@@ -80,10 +80,10 @@ void act::proc::CameraProcNode::draw() {
 	}
 
 	if (m_show && m_captureTexture) {
-		gl::pushMatrices();
-		gl::rotate(toRadians(180.0f));
-		ImGui::Image(m_captureTexture, m_drawSize, vec2(1, 1), vec2(0, 0));
-		gl::pushMatrices();
+		ci::gl::pushMatrices();
+		ci::gl::rotate(ci::toRadians(180.0f));
+		ImGui::Image(m_captureTexture, m_drawSize, glm::vec2(1, 1), glm::vec2(0, 0));
+		ci::gl::pushMatrices();
 	}
 
 	endNodeDraw();

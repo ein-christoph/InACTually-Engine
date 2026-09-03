@@ -20,7 +20,7 @@
 
 
 act::proc::KeyInProcNode::KeyInProcNode() : ProcNodeBase("KeyIn") {
-	m_drawSize = ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 
 	m_key = ImGuiKey_Space;
 	init = true;

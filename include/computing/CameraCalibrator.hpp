@@ -19,9 +19,6 @@
 
 #include "camera/CameraDevice.hpp"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace room {
@@ -60,27 +57,27 @@ namespace act {
 
 			
 
-			int m_minCalibImage = 5;
-			std::string m_autoTakePicturesBtnText = "Auto take images";
-			bool m_autoTakePicutes = false;
-			int m_autoTakePicutesCnt = 0;
-			std::chrono::system_clock::time_point m_lastPictureTaken;
+			int				m_minCalibImage = 5;
+			std::string		m_autoTakePicturesBtnText = "Auto take images";
+			bool			m_autoTakePicutes = false;
+			int				m_autoTakePicutesCnt = 0;
+			std::chrono::system_clock::time_point	m_lastPictureTaken;
 
-			int m_numCornersHor = 4;
-			int m_numCornersVer = 7;
-			float m_squareSize = 0.035f;
-			cv::Mat m_cvImage;
-			cv::Mat m_cvGrayImage;
-			bool m_takeImageForCalibration = false;
+			int				m_numCornersHor = 4;
+			int				m_numCornersVer = 7;
+			float			m_squareSize = 0.035f;
+			cv::Mat			m_cvImage;
+			cv::Mat			m_cvGrayImage;
+			bool			m_takeImageForCalibration = false;
 
-			std::vector<std::vector<cv::Point3f>> m_objectPoints;
-			std::vector<std::vector<cv::Point2f>> m_imagePoints;
+			std::vector<std::vector<cv::Point3f>>	m_objectPoints;
+			std::vector<std::vector<cv::Point2f>>	m_imagePoints;
 
-			ivec2					m_displaySize = ivec2(640, 360);
+			glm::ivec2								m_displaySize = glm::ivec2(640, 360);
 
-			std::vector<gl::TextureRef>  m_calibTextures;
-			cv::UMat m_overlay;
-			ci::gl::TextureRef m_feedbackTexture;
+			std::vector<ci::gl::TextureRef>			m_calibTextures;
+			cv::UMat								m_overlay;
+			ci::gl::TextureRef						m_feedbackTexture;
 
 		}; using CameraCalibratorRef = std::shared_ptr<CameraCalibrator>;
 		

@@ -19,7 +19,7 @@
 #include "cinder\Rand.h"
 
 act::proc::DistributorProcNode::DistributorProcNode() : ProcNodeBase("Distributor") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 
 	m_options.push_back("all");
 	m_options.push_back("round robin");

@@ -22,9 +22,6 @@
 
 #include "dmx/DMXPro.hpp"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace room {
@@ -32,10 +29,10 @@ namespace act {
 		class DimmerRoomNode : public RoomNodeBase, public DMXRoomNodeBase
 		{
 		public:
-			DimmerRoomNode(DMXProRef dmxInterface, ci::Json description, std::string name, int startAddress, ci::vec3 position, ci::vec3 rotation, float radius, act::UID replyUID = "");
+			DimmerRoomNode(DMXProRef dmxInterface, ci::Json description, std::string name, int startAddress, glm::vec3 position, glm::vec3 rotation, float radius, act::UID replyUID = "");
 			virtual ~DimmerRoomNode();
 
-			static std::shared_ptr<DimmerRoomNode> create(DMXProRef dmxInterface, ci::Json description, std::string name, int startAddress, ci::vec3 position = ci::vec3(0.0f, 0.0f, 0.0f), ci::vec3 rotation = ci::vec3(0.0f, 0.0f, 0.0f), float radius = 0.5f, act::UID replyUID = "") { return std::make_shared<DimmerRoomNode>(dmxInterface, description, name, startAddress, position, rotation, radius, replyUID); };
+			static std::shared_ptr<DimmerRoomNode> create(DMXProRef dmxInterface, ci::Json description, std::string name, int startAddress, glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f), float radius = 0.5f, act::UID replyUID = "") { return std::make_shared<DimmerRoomNode>(dmxInterface, description, name, startAddress, position, rotation, radius, replyUID); };
 
 			virtual void setup()	override;
 			virtual void update()	override;

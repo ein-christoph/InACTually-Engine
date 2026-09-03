@@ -30,23 +30,23 @@ MouseInput::~MouseInput()
 void MouseInput::update() {
 }
 
-void MouseInput::mouseRawMove(MouseEvent event) {
+void MouseInput::mouseRawMove(ci::app::MouseEvent event) {
 	onMouseMove(event);
 }
 
-void MouseInput::mouseRawUp(MouseEvent event) {
+void MouseInput::mouseRawUp(ci::app::MouseEvent event) {
 	onMouseUp(event);
 }
 
-void MouseInput::mouseRawDrag(MouseEvent event) {
+void MouseInput::mouseRawDrag(ci::app::MouseEvent event) {
 	onMouseDrag(event);
 }
 
-void MouseInput::mouseRawDown(MouseEvent event)
+void MouseInput::mouseRawDown(ci::app::MouseEvent event)
 {
 	onMouseDown(event);
 }
 
-void MouseInput::mouseRawWheel(MouseEvent event) {
+void MouseInput::mouseRawWheel(ci::app::MouseEvent event) {
 	onMouseWheel(event);
 }

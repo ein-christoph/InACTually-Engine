@@ -23,9 +23,9 @@
 #include <math.h>
 
 act::proc::NoiseProcNode::NoiseProcNode() : ProcNodeBase("Noise") {
-	m_drawSize = ivec2(100, 200);
-	m_perlin = Perlin();
-	m_random = Rand::randFloat(0.0f, 255.0f);
+	m_drawSize = glm::ivec2(100, 200);
+	m_perlin = ci::Perlin();
+	m_random = ci::Rand::randFloat(0.0f, 255.0f);
 
 	m_min = 0.0f;
 	m_max = 1.0f;

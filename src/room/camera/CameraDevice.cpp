@@ -27,7 +27,7 @@ act::room::CameraDevice::CameraDevice(ci::Capture::DeviceRef deviceReference) {
 	this->m_device = deviceReference;
 	try {
 		m_name = deviceReference->getName();
-		m_capture = Capture::create(m_captureSize.x, m_captureSize.y, m_device);
+		m_capture = ci::Capture::create(m_captureSize.x, m_captureSize.y, m_device);
 		m_captureSize = m_capture->getSize();
 		m_capture->start();
 	}
@@ -55,10 +55,10 @@ bool act::room::CameraDevice::update() {
 		return false;
 
 	if (m_capture && m_capture->checkNewFrame()) {
-		cv::UMat image = toOcv(*m_capture->getSurface()).getUMat(cv::ACCESS_FAST);
+		cv::UMat image = ci::toOcv(*m_capture->getSurface()).getUMat(cv::ACCESS_FAST);
 
 		if (m_flipped) cv::flip(image, image, 1);
-		//m_captureSurface = m_capture->getSurface();
+		//m_captureci::Surface = m_capture->getSurface();
 
 		image.copyTo(m_currentImage);
 		if (m_isCalibrated) {

@@ -23,9 +23,6 @@
 
 #include "cinder/Timeline.h"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace proc {
@@ -53,8 +50,8 @@ namespace act {
 			float								m_toVolume;
 			float								m_currentLoudness;
 
-			vec3								m_3DPosition;
-			void								set3DPosition(vec3 position);
+			glm::vec3								m_3DPosition;
+			void								set3DPosition(glm::vec3 position);
 			room::SoundRoomNodeRef				m_soundRoomNode;
 
 			OutputPortRef<ci::audio::NodeRef>	m_outPort;

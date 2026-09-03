@@ -19,6 +19,7 @@
 
 #include "RoomNodeManagerBase.hpp"
 
+
 namespace act {
 	namespace room {
 

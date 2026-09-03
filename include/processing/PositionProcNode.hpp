@@ -19,10 +19,7 @@
 
 #include "ProcNodeBase.hpp"
 #include "position/PositionRoomNode.hpp"
-
-using namespace ci;
-using namespace ci::app;
-
+ 
 
 namespace act {
 	namespace proc {
@@ -44,8 +41,8 @@ namespace act {
 
 		private:
 			InputPortRef<float>			m_tPort;
-			OutputPortRef<ci::vec3>		m_positionPort;
-			ci::vec3					m_pos;
+			OutputPortRef<glm::vec3>		m_positionPort;
+			glm::vec3					m_pos;
 			float						m_t;
 
 			room::PositionRoomNodeRef	m_positionRoomNode;

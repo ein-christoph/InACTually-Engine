@@ -18,7 +18,7 @@
 #include "cinder\Rand.h"
 
 act::proc::BooleanImpulsProcNode::BooleanImpulsProcNode() : ProcNodeBase("BooleanImpuls") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 	
 	m_output = createBoolOutput("impuls");
 	createBoolInput("continuos", [&](bool val) { 

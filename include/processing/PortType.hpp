@@ -15,10 +15,10 @@
 	Lars Engeln - mail@lars-engeln.de
 */
 
-
 #pragma once
 
 #include <vector>
+
 
 namespace act {
 	namespace proc {
@@ -46,9 +46,9 @@ namespace act {
 			PT_NUMBER,
 			PT_NUMBERLIST,	// std::vector<float>
 			PT_VEC2,
-			PT_VEC2LIST,	// std::vector<vec2>
+			PT_VEC2LIST,	// std::vector<glm::vec2>
 			PT_VEC3,
-			PT_VEC3LIST,	// std::vector<vec3>
+			PT_VEC3LIST,	// std::vector<glm::vec3>
 			PT_QUAT,
 			PT_COLOR,
 			PT_COLORLIST,	// std::vector<ci::Color>

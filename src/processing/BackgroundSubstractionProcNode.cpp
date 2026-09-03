@@ -19,7 +19,7 @@
 #include "BackgroundSubstractionProcNode.hpp"
 
 act::proc::BackgroundSubstractionProcNode::BackgroundSubstractionProcNode() : ProcNodeBase("BackgroundSubstraction") {
-	m_drawSize = ivec2(400, 300);
+	m_drawSize = glm::ivec2(400, 300);
 
 	valuesChanged = false;
 
@@ -47,12 +47,12 @@ void act::proc::BackgroundSubstractionProcNode::draw() {
 	beginNodeDraw();
 
 	if (m_texture_fgMask) {
-		gl::pushMatrices();
-		gl::rotate(toRadians(180.0f));
+		ci::gl::pushMatrices();
+		ci::gl::rotate(ci::toRadians(180.0f));
 
-		ImGui::Image(m_texture_fgMask, vec2(m_drawSize.x, m_drawSize.y), vec2(1, 1), vec2(0, 0));
+		ImGui::Image(m_texture_fgMask, glm::vec2(m_drawSize.x, m_drawSize.y), glm::vec2(1, 1), glm::vec2(0, 0));
 
-		gl::pushMatrices();
+		ci::gl::pushMatrices();
 	}
 
 	ImGui::PushItemWidth(300);
@@ -109,20 +109,20 @@ void act::proc::BackgroundSubstractionProcNode::onMat(cv::UMat event) {
 	event.copyTo(m_backgroundCutout, m_backgroundMask);
 
 	//m_bgModel->getBackgroundImage(backgroundImg);
-	//m_texture_bg = gl::Texture2d::create(fromOcv(backgroundImg));
+	//m_texture_bg = ci::gl::Texture2d::create(ci::fromOcv(backgroundImg));
 
 	m_bgCutoutPort->send(m_backgroundCutout);
 	m_fgCutoutPort->send(m_foregroundCutout);
 	m_fgMaskPort->send(m_foregroundMask);
 
 
-	m_texture_fgMask = gl::Texture2d::create(fromOcv(m_foregroundMask));
-	m_texture_bgCutout = gl::Texture2d::create(fromOcv(m_backgroundCutout));
-	m_texture_fgCutout = gl::Texture2d::create(fromOcv(m_foregroundCutout));
+	m_texture_fgMask = ci::gl::Texture2d::create(ci::fromOcv(m_foregroundMask));
+	m_texture_bgCutout = ci::gl::Texture2d::create(ci::fromOcv(m_backgroundCutout));
+	m_texture_fgCutout = ci::gl::Texture2d::create(ci::fromOcv(m_foregroundCutout));
 
 	float sizeFactor = 0.4;
 	if (m_texture_fgMask)
-		m_drawSize = ivec2(m_texture_fgMask->getWidth() * sizeFactor, m_texture_fgMask->getHeight() * sizeFactor);
+		m_drawSize = glm::ivec2(m_texture_fgMask->getWidth() * sizeFactor, m_texture_fgMask->getHeight() * sizeFactor);
 }
 
 ci::Json act::proc::BackgroundSubstractionProcNode::toParams() {

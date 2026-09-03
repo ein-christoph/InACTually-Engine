@@ -20,8 +20,8 @@
 #include <chrono>
 
 
-using namespace ci;
-using namespace ci::app;
+
+
 
 namespace act {
 

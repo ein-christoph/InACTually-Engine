@@ -26,15 +26,13 @@
 
 #include <functional>
 
-using namespace ci;
-using namespace ci::app;
 
 #define USE_UDP 1
 #if USE_UDP
-using Receiver = osc::ReceiverUdp;
+using Receiver = ci::osc::ReceiverUdp;
 using protocol = asio::ip::udp;
 #else
-using Receiver = osc::ReceiverTcp;
+using Receiver = ci::osc::ReceiverTcp;
 using protocol = asio::ip::tcp;
 #endif
 
@@ -59,7 +57,7 @@ namespace act {
 			static std::shared_ptr<OSCReciever> create(uint16_t localPort) { return std::make_shared<OSCReciever>(localPort); }
 
 
-			void setListener(std::string address, osc::ReceiverBase::ListenerFn callback) {
+			void setListener(std::string address, ci::osc::ReceiverBase::ListenerFn callback) {
 				m_receiver->setListener(address, callback);
 			}
 			void removeListener(std::string address) {
@@ -71,7 +69,7 @@ namespace act {
 					// Bind the receiver to the endpoint. This function may throw.
 					m_receiver->bind();
 				}
-					catch (const osc::Exception& ex) {
+					catch (const ci::osc::Exception& ex) {
 					CI_LOG_E("Error binding: " << ex.what() << " val: " << ex.value());
 				}
 				m_receiver->listen(

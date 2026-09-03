@@ -20,7 +20,7 @@
 
 
 act::proc::MultiBodyPositionsProcNode::MultiBodyPositionsProcNode() : ProcNodeBase("MultiBodyPositions") {
-	m_drawSize = ivec2(250, 250);
+	m_drawSize = glm::ivec2(250, 250);
 
 	for (int i = 0; i < 4; i++) {
 		{
@@ -87,7 +87,7 @@ void act::proc::MultiBodyPositionsProcNode::onBodies(room::BodyRefList event)
 	}
 }
 
-vec3 act::proc::MultiBodyPositionsProcNode::onSkeleton(room::BodyRef event) {
+glm::vec3 act::proc::MultiBodyPositionsProcNode::onSkeleton(room::BodyRef event) {
 	if (m_currentJoint == 2) { // hand
 		return event->joints[room::BJT_HAND_RIGHT]->position;
 	}
@@ -96,7 +96,7 @@ vec3 act::proc::MultiBodyPositionsProcNode::onSkeleton(room::BodyRef event) {
 	}
 	if (m_currentJoint == 1) { // floor
 		float y = std::min(event->joints[room::BJT_FOOT_LEFT]->position.y, event->joints[room::BJT_FOOT_RIGHT]->position.y);
-		vec3 pos = event->getPosition();
+		glm::vec3 pos = event->getPosition();
 		pos.y = y;
 		return pos;
 	}

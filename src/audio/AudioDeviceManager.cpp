@@ -26,14 +26,14 @@
 
 #include "cinder/CinderImGui.h"
 
-using namespace ci;
+
 
 act::aio::AudioDeviceManager::AudioDeviceManager()
 {
 	auto ctx = ci::audio::master();
-	auto outputDevice = audio::Device::getDefaultOutput();
-	outputDevice->updateFormat(audio::Device::Format().sampleRate(Settings::get().samplerate));
-	ctx->setOutput(ctx->createOutputDeviceNode(outputDevice, audio::Node::Format().channels(2)));
+	auto outputDevice = ci::audio::Device::getDefaultOutput();
+	outputDevice->updateFormat(ci::audio::Device::Format().sampleRate(Settings::get().samplerate));
+	ctx->setOutput(ctx->createOutputDeviceNode(outputDevice, ci::audio::Node::Format().channels(2)));
 }
 
 act::aio::AudioDeviceManager::~AudioDeviceManager()

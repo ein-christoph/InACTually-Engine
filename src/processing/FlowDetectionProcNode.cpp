@@ -49,13 +49,13 @@ void act::proc::FlowDetectionProcNode::draw() {
 	ImGui::Value("movement: ", m_movementValue, "%.3f");
 
 	if (m_texture && m_visualize) {
-		gl::pushMatrices();
-		gl::rotate(toRadians(180.0f));
+		ci::gl::pushMatrices();
+		ci::gl::rotate(ci::toRadians(180.0f));
 
-		ci::vec2 texSize = Rectf(m_texture->getBounds()).getCenteredFit(ci::Rectf(ivec2(0, 0), m_drawSize), true).getSize();
-		ImGui::Image(m_texture, texSize, vec2(1, 1), vec2(0, 0));
+		glm::vec2 texSize = ci::Rectf(m_texture->getBounds()).getCenteredFit(ci::Rectf(glm::ivec2(0, 0), m_drawSize), true).getSize();
+		ImGui::Image(m_texture, texSize, glm::vec2(1, 1), glm::vec2(0, 0));
 
-		gl::pushMatrices();
+		ci::gl::pushMatrices();
 	}
 
 	ImGui::SetNextItemWidth(500);
@@ -121,7 +121,7 @@ void act::proc::FlowDetectionProcNode::onMat(cv::UMat event) {
 
 		m_imagePort->send(bgr.getUMat(cv::ACCESS_FAST));
 		if (m_visualize) {
-			m_texture = gl::Texture2d::create(fromOcv(bgr));
+			m_texture = ci::gl::Texture2d::create(ci::fromOcv(bgr));
 		}
 	}
 }

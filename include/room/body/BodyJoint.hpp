@@ -16,9 +16,12 @@
 */
 
 #pragma once
+
 #include "cinder/app/App.h"
+
 #include <glm/glm.hpp>
 #include <map>
+
 
 namespace act {
 	namespace room {

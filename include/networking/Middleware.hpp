@@ -27,8 +27,6 @@
 #include "Connection.hpp"
 #include "Message.hpp"
 
-using namespace ci;
-
 
 namespace act {
 	namespace net {

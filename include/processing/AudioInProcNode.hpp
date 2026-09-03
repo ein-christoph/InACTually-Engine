@@ -24,9 +24,6 @@
 
 #include "cinder/Timeline.h"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace proc {
@@ -70,9 +67,9 @@ namespace act {
 
 
 			WaveformPlot						m_waveform;
-			gl::Texture2dRef					m_waveformTex;
+			ci::gl::Texture2dRef					m_waveformTex;
 
-			OutputPortRef<audio::NodeRef>		m_audioNodePort;
+			OutputPortRef<ci::audio::NodeRef>		m_audioNodePort;
 			
 			// OutputPortRef<float>				m_arousalPort;
 			// OutputPortRef<float>				m_speedPort;

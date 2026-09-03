@@ -20,13 +20,10 @@
 #include "ModuleBase.hpp"
 #include "ModuleRegistry.hpp"
 
-
 #include "zmq.hpp"
-
 #include <zmq_addon.hpp>
-#include "Connection.hpp"
 
-using namespace ci;
+#include "Connection.hpp"
 
 
 namespace act {

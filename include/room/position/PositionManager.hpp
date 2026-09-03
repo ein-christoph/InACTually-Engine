@@ -19,6 +19,7 @@
 
 #include "RoomNodeManagerBase.hpp"
 
+
 namespace act {
 	namespace room {
 
@@ -38,7 +39,7 @@ namespace act {
 			virtual ci::Json toJson() override;
 			virtual void fromJson(ci::Json json) override;
 
-			act::room::RoomNodeBaseRef addPosition(ci::vec3 position);
+			act::room::RoomNodeBaseRef addPosition(glm::vec3 position);
 
 		private:
 	

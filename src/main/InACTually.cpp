@@ -42,13 +42,13 @@ InACTually::InACTually(ci::app::App* app)
 	: m_app(app)
 {
 	AppState::set(AS_STARTUP);
-	getWindow()->setUserData(new WindowData());
-	m_mainWindowUID = getWindow()->getUserData<WindowData>()->getUID();
-	getWindow()->setBorderless();
-	getWindow()->setSize(ivec2(0, 0));
-	getWindow()->setTitle("InACTually");
+	ci::app::getWindow()->setUserData(new WindowData());
+	m_mainWindowUID = ci::app::getWindow()->getUserData<WindowData>()->getUID();
+	ci::app::getWindow()->setBorderless();
+	ci::app::getWindow()->setSize(glm::ivec2(0, 0));
+	ci::app::getWindow()->setTitle("InACTually");
 
-	getWindow()->getSignalClose().connect([&]() {
+	ci::app::getWindow()->getSignalClose().connect([&]() {
 		onClose();
 	});
 
@@ -60,11 +60,11 @@ InACTually::InACTually(ci::app::App* app)
 
 	}
 
-	ivec2 size = ivec2(400, 200);
-	getWindow()->setSize(size);
-	getWindow()->setPos((m_app->getDisplay()->getSize() / 2) - (size / 2));
+	glm::ivec2 size = glm::ivec2(400, 200);
+	ci::app::getWindow()->setSize(size);
+	ci::app::getWindow()->setPos((m_app->getDisplay()->getSize() / 2) - (size / 2));
 
-	m_splashScreenTex = gl::Texture::create(*Surface::create(loadImage(getAssetPath("design/splash.png"))));
+	m_splashScreenTex = ci::gl::Texture::create(*ci::Surface::create(ci::loadImage(ci::app::getAssetPath("design/splash.png"))));
 }
 
 InACTually::~InACTually()
@@ -99,14 +99,14 @@ void InACTually::init()
 
 
 
-	auto options = ImGui::Options().window(app::getWindow());
+	auto options = ImGui::Options().window(ci::app::getWindow());
 	//options(true);
 	Initialize(options);
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 	ImNodes::CreateContext();
-	//ImNodes::LoadCurrentEditorStateFromIniFile(app::getAssetPath("editor.ini").string().c_str());
+	//ImNodes::LoadCurrentEditorStateFromIniFile(ci::app::getAssetPath("editor.ini").string().c_str());
 
 	ImPlot::CreateContext();
 	//ImPlot::GetStyle().AntiAliasedLines = true;
@@ -150,12 +150,12 @@ void InACTually::init()
 		module->setup(m_roomMgrs, m_networkMgr);
 	}
 
-	//getWindow()->setSize(getDisplay()->getSize() - ivec2(0, 70));
-	//getWindow()->setPos(ivec2(0, 70));
+	//getWindow()->setSize(getDisplay()->getSize() - glm::ivec2(0, 70));
+	//getWindow()->setPos(glm::ivec2(0, 70));
 
-	ci::ivec2 size = Settings::get().debugGUISize;
+	glm::ivec2 size = Settings::get().debugGUISize;
 	if (size.x == 0 || size.y == 0) {
-		size = vec2(m_app->getDisplay()->getSize()) * 0.85f;
+		size = glm::vec2(m_app->getDisplay()->getSize()) * 0.85f;
 		Settings::get().debugGUISize = size;
 		Settings::save();
 	}
@@ -164,9 +164,9 @@ void InACTually::init()
 		size = Settings::get().guiSize;
 	}
 
-	getWindow()->setSize(size);
-	getWindow()->setPos((m_app->getDisplay()->getSize() / 2) - (size / 2));
-	getWindow()->setBorderless(false);
+	ci::app::getWindow()->setSize(size);
+	ci::app::getWindow()->setPos((m_app->getDisplay()->getSize() / 2) - (size / 2));
+	ci::app::getWindow()->setBorderless(false);
 
 	ci::app::setFullScreen(Settings::get().fullscreen);
 
@@ -194,7 +194,7 @@ void act::InACTually::onClose()
 
 	ImPlot::DestroyContext();
 
-	//ImNodes::SaveCurrentEditorStateToIniFile(app::getAssetPath("editor.ini").string().c_str());
+	//ImNodes::SaveCurrentEditorStateToIniFile(ci::app::getAssetPath("editor.ini").string().c_str());
 	ImNodes::DestroyContext();
 
 	for (auto&& mgr : m_roomMgrs.list)
@@ -210,7 +210,7 @@ void InACTually::update()
 	if (AppState::get() == AS_CLOSING || AppState::get() == AS_CLEANUP)
 		return;
 
-	auto windowData = getWindow()->getUserData<WindowData>();
+	auto windowData = ci::app::getWindow()->getUserData<WindowData>();
 	if (windowData->getUID() != m_mainWindowUID) {
 		windowData->update();
 		return;
@@ -247,33 +247,33 @@ void InACTually::draw()
 	if (AppState::get() == AS_CLOSING || AppState::get() == AS_CLEANUP)
 		return;
 
-	getWindow()->getRenderer()->makeCurrentContext(true);
+	ci::app::getWindow()->getRenderer()->makeCurrentContext(true);
 
 	if (AppState::get() == AS_INITIALISING || AppState::get() == AS_STARTUP) {
-		gl::clear(Color::gray(0.0f));
-		gl::color(Color::white());
-		Rectf destRect = Rectf(m_splashScreenTex->getBounds()).getCenteredFit(getWindowBounds(), true).scaledCentered(1.0f);
-		gl::draw(m_splashScreenTex, destRect);
+		ci::gl::clear(ci::Color::gray(0.0f));
+		ci::gl::color(ci::Color::white());
+		ci::Rectf destRect = ci::Rectf(m_splashScreenTex->getBounds()).getCenteredFit(ci::app::getWindowBounds(), true).scaledCentered(1.0f);
+		ci::gl::draw(m_splashScreenTex, destRect);
 
-		if (AppState::get() == AS_STARTUP && getElapsedFrames() > 2) {
+		if (AppState::get() == AS_STARTUP && ci::app::getElapsedFrames() > 2) {
 			AppState::set(AS_INITIALISING);
 			init();
 		}
 		return;
 	}
 
-	auto windowData = getWindow()->getUserData<WindowData>();
+	auto windowData = ci::app::getWindow()->getUserData<WindowData>();
 	if (windowData->getUID() != m_mainWindowUID) {
 		windowData->draw();
 		return;
 	}
 
-	gl::clear(util::Design::backgroundColor());
-	gl::color(Color::white());
-	gl::enableAlphaBlending();
+	ci::gl::clear(util::Design::backgroundColor());
+	ci::gl::color(ci::Color::white());
+	ci::gl::enableAlphaBlending();
 
-	gl::enableDepth();
-	gl::enable(GL_VERTEX_PROGRAM_POINT_SIZE);
+	ci::gl::enableDepth();
+	ci::gl::enable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
 	if (ImGui::IsKeyPressed(ImGuiKey_Space)) {
 		if (ci::app::getWindow()->getUserData<act::WindowData>()->isFullscreen()) {
@@ -290,13 +290,13 @@ void InACTually::draw()
 	}
 
 	if (windowData->isFullscreen() && windowData->getFullscreenTex()) {
-		gl::clear(Color::black());
-		Rectf destRect = Rectf(windowData->getFullscreenTex()->getBounds()).getCenteredFit(getWindowBounds(), true).scaledCentered(1.0f);
-		gl::draw(windowData->getFullscreenTex(), destRect);
+		ci::gl::clear(ci::Color::black());
+		ci::Rectf destRect = ci::Rectf(windowData->getFullscreenTex()->getBounds()).getCenteredFit(ci::app::getWindowBounds(), true).scaledCentered(1.0f);
+		ci::gl::draw(windowData->getFullscreenTex(), destRect);
 		return;
 	}
 
-	gl::pushMatrices();
+	ci::gl::pushMatrices();
 	ImGui::PushFont(m_font);
 
 	if (m_drawGUI) {
@@ -307,7 +307,7 @@ void InACTually::draw()
 	}
 
 	ImGui::PopFont();
-	gl::popMatrices();
+	ci::gl::popMatrices();
 }
 
 void act::InACTually::drawMinimalGUI()
@@ -333,7 +333,7 @@ void act::InACTually::drawMinimalGUI()
 	//ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 100);
 	std::stringstream fps;
 	fps << "fps: " << (int)m_app->getAverageFps();
-	ImGui::Text(fps.str().c_str(), vec2(10, 10));
+	ImGui::Text(fps.str().c_str(), glm::vec2(10, 10));
 
 	//ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 30);
 	m_networkMgr->drawStatusBar();
@@ -349,35 +349,35 @@ void act::InACTually::drawFullGUI()
 	ImGui::SetNextWindowViewport(viewport->ID);
 
 	if (AppState::get() == AS_FEATURETEST) {
-		gl::pushMatrices();
+		ci::gl::pushMatrices();
 		// test something
 
-		gl::popMatrices();
+		ci::gl::popMatrices();
 	}
 	else {
 
 		{
-			gl::pushMatrices();
+			ci::gl::pushMatrices();
 			for (auto module : reg_modules) {
 				if (module->getIsActive()) {
 					module->draw();
 				}
 			}
-			gl::popMatrices();
+			ci::gl::popMatrices();
 		}
 
-		gl::color(Color::white());
+		ci::gl::color(ci::Color::white());
 
 
 		if (m_drawDebug) {
-			gl::pushMatrices();
+			ci::gl::pushMatrices();
 			// getCurrentModule()->drawDebug();
 
-			gl::color(Color::white());
-			gl::drawLine(vec2(0, 0), vec2(50, 0));
-			gl::drawLine(vec2(0, 0), vec2(0, 50));
+			ci::gl::color(ci::Color::white());
+			ci::gl::drawLine(glm::vec2(0, 0), glm::vec2(50, 0));
+			ci::gl::drawLine(glm::vec2(0, 0), glm::vec2(0, 50));
 
-			gl::popMatrices();
+			ci::gl::popMatrices();
 		}
 
 
@@ -460,7 +460,7 @@ void act::InACTually::drawFullGUI()
 	//ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 100);
 	std::stringstream fps;
 	fps << "fps: " << (int)m_app->getAverageFps();
-	ImGui::Text(fps.str().c_str(), vec2(10, 10));
+	ImGui::Text(fps.str().c_str(), glm::vec2(10, 10));
 
 	//ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 30);
 	m_networkMgr->drawStatusBar();
@@ -468,7 +468,7 @@ void act::InACTually::drawFullGUI()
 	ImGui::EndMainMenuBar();
 
 	ImGui::SetNextWindowPos(ImVec2(.0f, act::Settings::get().fontSize + 12.0f), ImGuiCond_Always);
-	ImGui::SetNextWindowSize(ImVec2(getWindowWidth(), getWindowHeight() - (act::Settings::get().fontSize + 12.0f)), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(ci::app::getWindowWidth(), ci::app::getWindowHeight() - (act::Settings::get().fontSize + 12.0f)), ImGuiCond_Always);
 	ImGui::Begin("main", 0, ImGuiWindowFlags_NoCollapse |
 		ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus);
 	ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
@@ -492,24 +492,24 @@ void act::InACTually::drawShowGUIMenuEntry()
 		Settings::get().showDebugGUI = m_drawGUI;
 		Settings::save();
 
-		ci::ivec2 size = Settings::get().guiSize;
+		glm::ivec2 size = Settings::get().guiSize;
 		if (m_drawGUI) {
 			size = Settings::get().debugGUISize;
 		}
-		getWindow()->setSize(size);
-		getWindow()->setPos((m_app->getDisplay()->getSize() / 2) - (size / 2));
+		ci::app::getWindow()->setSize(size);
+		ci::app::getWindow()->setPos((m_app->getDisplay()->getSize() / 2) - (size / 2));
 	}
 	if (m_drawGUI) {
-		bool isFullscreen = app::isFullScreen();
+		bool isFullscreen = ci::app::isFullScreen();
 		if(ImGui::Checkbox("fullscreen", &isFullscreen)) {
 			Settings::get().fullscreen = isFullscreen;
 			Settings::save();
-			app::setFullScreen(isFullscreen);
+			ci::app::setFullScreen(isFullscreen);
 		}
 	}
 }
 
-void InACTually::fileDrop(FileDropEvent event)
+void InACTually::fileDrop(ci::app::FileDropEvent event)
 {
 	ci::fs::path				filePath = event.getFile(0);
 
@@ -517,7 +517,7 @@ void InACTually::fileDrop(FileDropEvent event)
 	ci::Channel32fRef			channel;
 
 	try {
-		source = audio::load(ci::loadFile(filePath), audio::Context::master()->getSampleRate());
+		source = ci::audio::load(ci::loadFile(filePath), ci::audio::Context::master()->getSampleRate());
 	}
 	catch (...) {
 		try {
@@ -537,7 +537,7 @@ void InACTually::fileDrop(FileDropEvent event)
 
 	// do something with the file
 
-	auto windowData = getWindow()->getUserData<WindowData>();
+	auto windowData = ci::app::getWindow()->getUserData<WindowData>();
 	if (windowData->getUID() != m_mainWindowUID) {
 		//windowData->fileDrop();
 		return;
@@ -548,7 +548,7 @@ void InACTually::resize() const
 {
 	if (AppState::get() == AS_RUNNING) {
 
-		auto windowData = getWindow()->getUserData<WindowData>();
+		auto windowData = ci::app::getWindow()->getUserData<WindowData>();
 		if (!windowData)
 			return;
 		if (windowData->getUID() != m_mainWindowUID) {
@@ -557,7 +557,7 @@ void InACTually::resize() const
 		}
 
 		if (m_drawGUI) {
-			Settings::get().debugGUISize = app::getWindowSize();
+			Settings::get().debugGUISize = ci::app::getWindowSize();
 			Settings::save();
 		}
 	}
@@ -572,14 +572,14 @@ void InACTually::initStyle()
 	config.OversampleH = config.OversampleV = 2;
 	config.PixelSnapH = true;
 
-	io.Fonts->AddFontFromFileTTF(app::getAssetPath("3rd//fonts//OpenSans-Medium.ttf").string().c_str(), config.SizePixels, &config);
+	io.Fonts->AddFontFromFileTTF(ci::app::getAssetPath("3rd//fonts//OpenSans-Medium.ttf").string().c_str(), config.SizePixels, &config);
 	
 	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 	ImFontConfig icons_config; 
 	icons_config.MergeMode = true; 
 	icons_config.PixelSnapH = true;
 	icons_config.GlyphMinAdvanceX = 22.0f;
-	m_font = io.Fonts->AddFontFromFileTTF(app::getAssetPath("3rd//fonts//fa-solid-900.ttf").string().c_str(), config.SizePixels-8, &icons_config, icons_ranges);
+	m_font = io.Fonts->AddFontFromFileTTF(ci::app::getAssetPath("3rd//fonts//fa-solid-900.ttf").string().c_str(), config.SizePixels-8, &icons_config, icons_ranges);
 
 	m_font->Scale = (float)act::Settings::get().fontSize / 30.0f;
 

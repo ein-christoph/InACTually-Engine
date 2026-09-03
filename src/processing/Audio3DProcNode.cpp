@@ -24,9 +24,9 @@
 
 act::proc::Audio3DProcNode::Audio3DProcNode() : ProcNodeBase("Audio3D", NT_OUTPUT) {
 
-	m_3DPosition = vec3(0.0f, 1.0f, 0.0f);
+	m_3DPosition = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	m_drawSize = ivec2(400, 150);
+	m_drawSize = glm::ivec2(400, 150);
 	
 	auto in = createAudioNodeInput("audio in", [&](ci::audio::NodeRef node) {
 		node >> m_soundRoomNode->getIn();
@@ -39,10 +39,10 @@ act::proc::Audio3DProcNode::Audio3DProcNode() : ProcNodeBase("Audio3D", NT_OUTPU
 	});
 
 	auto gain = createNumberInput("gain", [&](bool event) {
-		m_volume = audio::linearToDecibel(event);
+		m_volume = ci::audio::linearToDecibel(event);
 		m_soundRoomNode->setVolume(m_volume); 
 	});
-	auto position = createVec3Input("position", [&](vec3 event) { set3DPosition(event); });
+	auto position = createVec3Input("position", [&](glm::vec3 event) { set3DPosition(event); });
 
 
 	m_outPort = createAudioNodeOutput("audio out");
@@ -54,7 +54,7 @@ act::proc::Audio3DProcNode::Audio3DProcNode() : ProcNodeBase("Audio3D", NT_OUTPU
 	});
 
 
-	auto ctx = audio::Context::master();
+	auto ctx = ci::audio::Context::master();
 	//ctx->disable();
 }
 
@@ -82,7 +82,7 @@ void act::proc::Audio3DProcNode::draw() {
 
 	ImGui::SetNextItemWidth(m_drawSize.x);
 	if (ImGui::SliderFloat("volume", &m_toVolume, 0.0f, 120.f)) {
-		//m_gain->setValue(audio::decibelToLinear(m_volume));
+		//m_gain->setValue(ci::audio::decibelToLinear(m_volume));
 		m_soundRoomNode->setVolume(m_toVolume);
 		prvntDrag = true;
 	}
@@ -111,12 +111,12 @@ ci::Json act::proc::Audio3DProcNode::toParams() {
 	json["tovolume"]		= m_toVolume;
 	json["volume"]			= m_volume.value();
 
-	vec3 pos;
+	glm::vec3 pos;
 	if (m_soundRoomNode) {
 		pos = m_soundRoomNode->getPosition();
 	}
 	else {
-		pos = vec3(0.0, 0.0, 0.0);
+		pos = glm::vec3(0.0, 0.0, 0.0);
 	}
 	
 	json["position"] = util::valueToJson(pos);
@@ -125,7 +125,7 @@ ci::Json act::proc::Audio3DProcNode::toParams() {
 
 void act::proc::Audio3DProcNode::fromParams(ci::Json json) {
 
-	vec3 pos = m_3DPosition;
+	glm::vec3 pos = m_3DPosition;
 	if (util::setValueFromJson(json, "position", pos)) {
 		set3DPosition(pos);
 	};
@@ -142,7 +142,7 @@ void act::proc::Audio3DProcNode::fromParams(ci::Json json) {
 	util::setValueFromJson(json, "showVisual", m_showVisual);
 }
 
-void act::proc::Audio3DProcNode::set3DPosition(vec3 position)
+void act::proc::Audio3DProcNode::set3DPosition(glm::vec3 position)
 {
 	m_3DPosition = position;
 	if(m_soundRoomNode)

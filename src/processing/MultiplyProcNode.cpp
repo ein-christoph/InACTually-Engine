@@ -17,7 +17,7 @@
 #include "MultiplyProcNode.hpp"
 
 act::proc::MultiplyProcNode::MultiplyProcNode() : ProcNodeBase("Multiply") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 	m_secondary = 1.0f;
 
 	createNumberInput("primary", [&](number val) { m_productPort->send(val * m_secondary); });

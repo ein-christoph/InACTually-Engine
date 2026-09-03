@@ -64,7 +64,7 @@ void act::proc::ObjectDetectionProcNode::initNetwork() {
         return;
     }
     try {
-        m_network = cv::dnn::readNetFromDarknet(cfgFile, weightsFile);
+        m_network = cv::dnn::readNet(cfgFile, weightsFile);
     }
     catch (cv::Exception exc) {
         CI_LOG_EXCEPTION("ObjectDetection", exc);
@@ -97,7 +97,7 @@ void act::proc::ObjectDetectionProcNode::update() {
         cv::flip(m_processedFrame, out, 1);
 
         if (m_show) {
-            m_texture = gl::Texture2d::create(fromOcv(out));
+            m_texture = ci::gl::Texture2d::create(ci::fromOcv(out));
 		}
         m_detectionImagePort->send(out);
 
@@ -114,13 +114,13 @@ void act::proc::ObjectDetectionProcNode::draw() {
     
 
 	if (m_show && m_texture) {
-		gl::pushMatrices();
-		gl::rotate(toRadians(180.0f));
+		ci::gl::pushMatrices();
+		ci::gl::rotate(ci::toRadians(180.0f));
 
-        ci::vec2 texSize = Rectf(m_texture->getBounds()).getCenteredFit(ci::Rectf(ivec2(0, 0), m_drawSize), true).getSize();
-		ImGui::Image(m_texture, texSize, vec2(1, 1), vec2(0, 0));
+        glm::vec2 texSize = ci::Rectf(m_texture->getBounds()).getCenteredFit(ci::Rectf(glm::ivec2(0, 0), m_drawSize), true).getSize();
+		ImGui::Image(m_texture, texSize, glm::vec2(1, 1), glm::vec2(0, 0));
 
-		gl::pushMatrices();
+		ci::gl::pushMatrices();
 	}
     ImGui::SetNextItemWidth(m_drawSize.x);
     preventDrag(ImGui::SliderFloat("min confidence", &m_minConfidence, 0.01f, 1.0f));
@@ -251,7 +251,7 @@ std::vector<cv::Rect>  act::proc::ObjectDetectionProcNode::processDetection(cv::
 void act::proc::ObjectDetectionProcNode::drawBox(std::string className, float conf, int left, int top, int right, int bottom, cv::UMat& frame)
 {
     //Draw a rectangle displaying the bounding box
-    rectangle(frame, cv::Point(left, top), cv::Point(right, bottom), toOcv(util::Design::primaryColor()), 3);
+    rectangle(frame, cv::Point(left, top), cv::Point(right, bottom), ci::toOcv(util::Design::primaryColor()), 3);
 
     //Get the label for the class name and its confidence
     std::string label = cv::format("%.2f", conf);

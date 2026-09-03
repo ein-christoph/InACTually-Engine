@@ -19,7 +19,7 @@
 #include "OSCSenderProcNode.hpp"
 
 act::proc::OSCSenderProcNode::OSCSenderProcNode() : ProcNodeBase("OSCSender", NT_OUTPUT) {
-	m_drawSize = ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 
 	auto osc = InputPort<ci::osc::Message>::create(PT_OSC, "osc", [&](ci::osc::Message osc) { this->onOSC(osc); });
 	m_inputPorts.push_back(osc);

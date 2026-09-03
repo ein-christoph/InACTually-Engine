@@ -35,7 +35,6 @@
 #endif // IMGUI_DEFINE_MATH_OPERATORS
 #include "cinder/CinderImGui.h"
 
-
 #include "cinder/Json.h"
 
 #include <algorithm>
@@ -45,9 +44,6 @@
 
 #include "NetworkManager.hpp"
 
-
-using namespace ci; 
-using namespace ci::app;
 
 /**
 * @brief main namespace of act - everything from act is in this namespace
@@ -90,7 +86,7 @@ namespace act {
 		void drawMinimalGUI();
 		void drawFullGUI();
 		void drawShowGUIMenuEntry();
-		void fileDrop(FileDropEvent event);
+		void fileDrop(ci::app::FileDropEvent event);
 		void resize()  const;
 
 		/**

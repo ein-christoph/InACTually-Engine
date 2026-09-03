@@ -30,6 +30,7 @@
 #include <opencv2/aruco.hpp>
 #endif
 
+
 namespace act {
 	namespace comp {
 
@@ -63,7 +64,7 @@ namespace act {
 			
 			glm::vec3 transformPosition(cv::Vec3d tvec, glm::vec3 parentPosition, glm::quat parentOrientation);
 			glm::mat4 transformRotation(cv::Vec3d tvec, cv::Vec3d rvec, glm::vec3 parentPosition, glm::quat parentOrientation);
-			void setCameraInverseToMarker(cv::Vec3d rvec, cv::Vec3d tvec, ci::vec3 markerPosition, ci::quat markerOrientierung);
+			void setCameraInverseToMarker(cv::Vec3d rvec, cv::Vec3d tvec, glm::vec3 markerPosition, glm::quat markerOrientierung);
 
 			void setMarkerSize(float size) { m_markerSize = size; refreshObjPoints(); }
 
@@ -83,7 +84,7 @@ namespace act {
 			cv::aruco::DetectorParameters m_detectorParameters;
 			cv::aruco::ArucoDetector m_detector;
 
-			ivec2 m_displaySize = ivec2(640, 360);
+		 glm::ivec2 m_displaySize = glm::ivec2(640, 360);
 
 			std::map<int, bool> m_validMarkerIDs;
 			std::map<int, std::shared_ptr<MarkerOccurence>> m_newMarkerOccurence;

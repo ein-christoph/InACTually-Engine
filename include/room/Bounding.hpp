@@ -20,54 +20,55 @@
 #include "stddef.hpp"
 #include "cinder/gl/gl.h"
 
+
 namespace act {
 	namespace room {
 		
 		class BoundingBase {
 		public:
-			BoundingBase(ci::vec3 position, ci::quat orientation) {
+			BoundingBase(glm::vec3 position, glm::quat orientation) {
 				setPosition(position);
 				setOrientation(orientation);
 			}
 			~BoundingBase() {}
 
-			ci::vec3		getPosition()							{ return m_position; }
-			virtual void	setPosition(ci::vec3 position)			{ m_position = position; updateTransform(); };
-			ci::quat		getOrientation()						{ return m_orientation; }
-			virtual void	setOrientation(ci::quat orientation)	{ m_orientation = orientation; updateTransform(); };
+			glm::vec3		getPosition()							{ return m_position; }
+			virtual void	setPosition(glm::vec3 position)			{ m_position = position; updateTransform(); };
+			glm::quat		getOrientation()						{ return m_orientation; }
+			virtual void	setOrientation(glm::quat orientation)	{ m_orientation = orientation; updateTransform(); };
 
-			virtual bool	contains(ci::vec3 pt) = 0;
+			virtual bool	contains(glm::vec3 pt) = 0;
 			virtual bool	intersects(ci::Ray ray) = 0;
 			virtual void	draw() = 0;
 
 		protected:
-			ci::vec3		m_position;
-			ci::quat		m_orientation;
-			ci::vec3		m_scalation;
+			glm::vec3		m_position;
+			glm::quat		m_orientation;
+			glm::vec3		m_scalation;
 
 			ci::mat4		m_transform;
 			void updateTransform() {
-				m_transform = ci::translate(m_position) * glm::toMat4(m_orientation) * ci::scale(ci::vec3(1.0f));
+				m_transform = ci::translate(m_position) * glm::toMat4(m_orientation) * ci::scale(glm::vec3(1.0f));
 			}
 		}; using BoundingRef = std::shared_ptr<BoundingBase>;
 
 		class BoundingSphere : public BoundingBase {
 		public:
-			BoundingSphere(ci::vec3 position = vec3(0.0f, 0.0f, 0.0f), float radius = 1.0f)
-			: BoundingBase(position, ci::quat(1.0f, 0.0f, 0.0f, 1.0f)) {
+			BoundingSphere(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), float radius = 1.0f)
+			: BoundingBase(position, glm::quat(1.0f, 0.0f, 0.0f, 1.0f)) {
 				setRadius(radius);
 			};
 
-			static std::shared_ptr<BoundingSphere> create(ci::vec3 position = vec3(0.0f, 0.0f, 0.0f), float radius = 1.0f) { return std::make_shared<BoundingSphere>(position, radius); };
+			static std::shared_ptr<BoundingSphere> create(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), float radius = 1.0f) { return std::make_shared<BoundingSphere>(position, radius); };
 
 			float	getRadius() { return m_radius; }
 			void	setRadius(float radius) { m_radius = radius; m_radiusSq	= radius + radius; }
 
-			bool	contains(ci::vec3 pt) override {
+			bool	contains(glm::vec3 pt) override {
 						return glm::length(m_position - pt) <= m_radius;
 					}
 			bool	intersects(ci::Ray ray) override {
-						vec3 m = ray.getOrigin() - m_position;
+						glm::vec3 m = ray.getOrigin() - m_position;
 						float b = glm::dot(m, ray.getDirection());
 						float c = glm::dot(m, m) - m_radiusSq;
 
@@ -83,9 +84,9 @@ namespace act {
 						//float t = 0.0f;
 						// compute smallest t value of intersection
 						// t = -b - sqrt(discr);
-						// if t is negative, ray started inside sphere so clamp t to zero 
+						// if t is negative, ray started inside sphere so glm::clamp t to zero 
 						//if (t < 0.0f) t = 0.0f;
-						// vec3 intersection = ray.calcPosition(t);
+						// glm::vec3 intersection = ray.calcPosition(t);
 						return true;
 					};
 			void	draw() override {
@@ -98,30 +99,30 @@ namespace act {
 
 		class BoundingCylinder : public BoundingBase {
 		public:
-			BoundingCylinder(ci::vec3 position = vec3(0.0f, 0.0f, 0.0f), float radius = 1.0f)
-				: BoundingBase(position, ci::quat(1.0f, 0.0f, 0.0f, 1.0f)) {
+			BoundingCylinder(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), float radius = 1.0f)
+				: BoundingBase(position, glm::quat(1.0f, 0.0f, 0.0f, 1.0f)) {
 				setRadius(radius);
 				m_triMesh = ci::TriMesh::create(ci::geom::Cylinder());
 			};
 
-			static std::shared_ptr<BoundingCylinder> create(ci::vec3 position = vec3(0.0f, 0.0f, 0.0f), float radius = 1.0f) { return std::make_shared<BoundingCylinder>(position, radius); };
+			static std::shared_ptr<BoundingCylinder> create(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), float radius = 1.0f) { return std::make_shared<BoundingCylinder>(position, radius); };
 
 			float	getRadius() { return m_radius; }
 			void	setRadius(float radius) { m_radius = radius; m_radiusSq = radius + radius; }
 
-			bool	contains(ci::vec3 pt)	override {
+			bool	contains(glm::vec3 pt)	override {
 						return false;
 					}
 			bool	intersects(ci::Ray ray) override {
 						return false;
 					};
 			void	draw() override {
-						gl::pushMatrices();
-						gl::translate(m_position);
-						gl::multModelMatrix(glm::toMat4(m_orientation));
-						//gl::scale(m_scalation);
+						ci::gl::pushMatrices();
+						ci::gl::translate(m_position);
+						ci::gl::multModelMatrix(glm::toMat4(m_orientation));
+						//ci::gl::scale(m_scalation);
 						ci::gl::draw(*m_triMesh);
-						gl::popMatrices();
+						ci::gl::popMatrices();
 					};
 		private:
 			float	m_radius;
@@ -131,13 +132,13 @@ namespace act {
 
 		class BoundingMesh : public BoundingBase {
 		public:
-			BoundingMesh(ci::TriMeshRef triMesh = ci::TriMesh::create(ci::geom::Cube()), ci::vec3 position = vec3(0.0f, 0.0f, 0.0f))
-				: BoundingBase(position, ci::quat(1.0f, 0.0f, 0.0f, 1.0f)) {
+			BoundingMesh(ci::TriMeshRef triMesh = ci::TriMesh::create(ci::geom::Cube()), glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f))
+				: BoundingBase(position, glm::quat(1.0f, 0.0f, 0.0f, 1.0f)) {
 				setTriMesh(triMesh);
 				updateTransform();
 			};
 
-			static std::shared_ptr<BoundingMesh> create(ci::TriMeshRef triMesh = ci::TriMesh::create(ci::geom::Cube()), ci::vec3 position = vec3(0.0f, 0.0f, 0.0f)) { return std::make_shared<BoundingMesh>(triMesh, position); };
+			static std::shared_ptr<BoundingMesh> create(ci::TriMeshRef triMesh = ci::TriMesh::create(ci::geom::Cube()), glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f)) { return std::make_shared<BoundingMesh>(triMesh, position); };
 
 			ci::TriMeshRef	getTriMesh() { return m_triMesh; }
 			void			setTriMesh(ci::TriMeshRef triMesh) { 
@@ -145,11 +146,11 @@ namespace act {
 								m_bounds = m_triMesh->calcBoundingBox();
 							}
 
-			bool	contains(ci::vec3 pt)		override {
+			bool	contains(glm::vec3 pt)		override {
 						ci::AxisAlignedBox worldBoundsApprox = m_bounds.transformed(m_transform); // fast
 						if (!worldBoundsApprox.contains(pt))
 							return false;
-						vec3 point;
+						glm::vec3 point;
 						if (intersection(ci::Ray(m_position, pt - m_position), pt)) {
 							if (glm::length(point - m_position) > glm::length(pt - m_position))
 								return true;
@@ -162,7 +163,7 @@ namespace act {
 						if (!worldBoundsApprox.intersects(ray))
 							return false;
 
-						vec3 pt;
+						glm::vec3 pt;
 						// Did we have a hit?
 						if (intersection(ray, pt)) {
 							// Calculate the exact position of the hit.
@@ -174,7 +175,7 @@ namespace act {
 							return false;
 					};
 
-			bool	intersection(ci::Ray ray, vec3 &point) {
+			bool	intersection(ci::Ray ray, glm::vec3 &point) {
 						// Set initial distance to something far, far away.
 						float result = FLT_MAX;
 
@@ -184,13 +185,13 @@ namespace act {
 						float distance = 0.0f;
 						for (size_t i = 0; i < polycount; ++i) {
 							// Get a single triangle from the mesh.
-							ci::vec3 v0, v1, v2;
+							glm::vec3 v0, v1, v2;
 							m_triMesh->getTriangleVertices(i, &v0, &v1, &v2);
 
 							// Transform triangle to world space.
-							v0 = ci::vec3(m_transform * ci::vec4(v0, 1.0));
-							v1 = ci::vec3(m_transform * ci::vec4(v1, 1.0));
-							v2 = ci::vec3(m_transform * ci::vec4(v2, 1.0));
+							v0 = glm::vec3(m_transform * ci::vec4(v0, 1.0));
+							v1 = glm::vec3(m_transform * ci::vec4(v1, 1.0));
+							v2 = glm::vec3(m_transform * ci::vec4(v2, 1.0));
 
 							// Test to see if the ray intersects this triangle.
 							if (ray.calcTriangleIntersection(v0, v1, v2, &distance)) {
@@ -216,10 +217,10 @@ namespace act {
 					}
 
 			void	draw() override {
-						gl::pushMatrices();
-						gl::multModelMatrix(m_transform);
-						gl::draw(*m_triMesh);
-						gl::popMatrices();
+						ci::gl::pushMatrices();
+						ci::gl::multModelMatrix(m_transform);
+						ci::gl::draw(*m_triMesh);
+						ci::gl::popMatrices();
 					};
 		private:
 			ci::TriMeshRef		m_triMesh;

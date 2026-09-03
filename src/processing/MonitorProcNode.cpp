@@ -20,7 +20,7 @@
 #include "WindowData.hpp"
 
 act::proc::MonitorProcNode::MonitorProcNode() : ProcNodeBase("Monitor") {
-	m_drawSize = ivec2(400, 300);
+	m_drawSize = glm::ivec2(400, 300);
 	m_show = true;
 	m_display = false;
 	m_displayScale = 0.8f;
@@ -80,13 +80,13 @@ void act::proc::MonitorProcNode::draw() {
 	}
 	
 	if (m_show && m_texture) {
-		gl::pushMatrices();
-		//gl::rotate(toRadians(180.0f));
+		ci::gl::pushMatrices();
+		//ci::gl::rotate(ci::toRadians(180.0f));
 		
-		ImGui::Image(m_texture, m_drawSize, vec2(1, 1), vec2(0, 0));
+		ImGui::Image(m_texture, m_drawSize, glm::vec2(1, 1), glm::vec2(0, 0));
 		ImGui::Indent(adaptSize(m_drawSize).x - m_drawSize.x);
 
-		gl::pushMatrices();
+		ci::gl::pushMatrices();
 	}
 
 	endNodeDraw();
@@ -95,11 +95,11 @@ void act::proc::MonitorProcNode::draw() {
 void act::proc::MonitorProcNode::onMat(cv::UMat event) {
 	m_imagePort->send(event);
 
-	auto frame = fromOcv(event);
+	auto frame = ci::fromOcv(event);
 	ci::app::App::get()->dispatchAsync([this, frame, event]() {
 		if (m_show || m_display || m_fullscreen) {
-			m_texture = gl::Texture2d::create(frame);
-			m_drawSize = ivec2(m_texture->getWidth(), m_texture->getHeight());
+			m_texture = ci::gl::Texture2d::create(frame);
+			m_drawSize = glm::ivec2(m_texture->getWidth(), m_texture->getHeight());
 
 			auto windowData = ci::app::getWindow()->getUserData<act::WindowData>();
 
@@ -112,7 +112,7 @@ void act::proc::MonitorProcNode::onMat(cv::UMat event) {
 	});
 }
 
-ci::ivec2 act::proc::MonitorProcNode::adaptSize(ci::ivec2 size) {
+glm::ivec2 act::proc::MonitorProcNode::adaptSize(glm::ivec2 size) {
 	return (size / 100 + 1) * 100;
 }
 

@@ -19,9 +19,9 @@
 #include "PathMovementProcNode.hpp"
 
 act::proc::PathMovementProcNode::PathMovementProcNode() : ProcNodeBase("PathMovement") {
-	m_drawSize = ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 
-	m_position = vec3(0.0f, 0.0f, 0.0f);
+	m_position = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	auto tIn = createNumberInput("position on path", [&](float t) { evaluate(t); });
 

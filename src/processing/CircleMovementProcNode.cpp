@@ -19,16 +19,16 @@
 #include "CircleMovementProcNode.hpp"
 
 act::proc::CircleMovementProcNode::CircleMovementProcNode() : ProcNodeBase("CircleMovement") { 
-	m_drawSize = ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 
-	m_position = vec3(0.0f, 0.0f, 0.0f);
+	m_position = glm::vec3(0.0f, 0.0f, 0.0f);
 	m_angle = 0.0f;
 	m_speed = 0.1f;
 	m_radius = 1.0f;
 
 	m_positionPort = createVec3Output("position");
 
-	createVec3Input("center", [&](vec3 center) { m_position = center; });
+	createVec3Input("center", [&](glm::vec3 center) { m_position = center; });
 	createNumberInput("radius", [&](number radius) { m_radius = radius; });
 	createNumberInput("speed", [&](number speed) { m_speed = speed; });
 
@@ -39,7 +39,7 @@ act::proc::CircleMovementProcNode::~CircleMovementProcNode() {
 
 void act::proc::CircleMovementProcNode::update() {
 	m_angle += m_speed * 0.1f;
-	vec3 vec = vec3(cosf(m_angle), 0.0f, sinf(m_angle)) * m_radius;
+	glm::vec3 vec = glm::vec3(cosf(m_angle), 0.0f, sinf(m_angle)) * m_radius;
 
 	m_positionPort->send(m_position + vec);
 }

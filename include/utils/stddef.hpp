@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #ifdef _WIN32
 	#ifndef WIN32_LEAN_AND_MEAN
 		#define WIN32_LEAN_AND_MEAN
@@ -51,9 +50,6 @@
 #include "./../3rd/IconFontCppHeaders/IconsFontAwesome5.h"
 
 
-using namespace ci;
-using namespace ci::app;
-
 // use ppl.h instead
 #define OMP_FOR __pragma("omp parallel for")
 #define OMP_FOR_TC(threadCount) __pragma("omp parallel for num_threads("+threadCount+")")
@@ -67,6 +63,7 @@ using namespace ci::app;
 
 #define CREATE(className, base) static std::shared_ptr<base> create() { return std::make_shared<className>(); }; \
 static std::shared_ptr<className> cast(std::shared_ptr<base> baseRef) { return std::dynamic_pointer_cast<className>(baseRef); };
+
 
 namespace act {
 
@@ -108,10 +105,10 @@ namespace act {
 	*/
 	struct SettingsParameter {
 		int			windowSize		= 2048;				/**< FFT input size */
-		int			samplerate		= 48000;			/**< samples per second */ // audio::master()->getSampleRate();
+		int			samplerate		= 48000;			/**< samples per second */ // ci::audio::master()->getSampleRate();
 		int			fontSize		= 24;				/**< general size of the font */
-		ci::ivec2	debugGUISize	= ivec2(0, 0);		/**< window size if debug-GUI will be shown */
-		ci::ivec2	guiSize			= ivec2(600, 400);	/**< window size if performace-GUI will be shown */
+		glm::ivec2	debugGUISize	= glm::ivec2(0, 0);		/**< window size if debug-GUI will be shown */
+		glm::ivec2	guiSize			= glm::ivec2(600, 400);	/**< window size if performace-GUI will be shown */
 		bool		showDebugGUI	= false;			/**< show debug-GUI */
 		bool		fullscreen		= false;			/**< start in fullscreen */	
 	};
@@ -142,14 +139,14 @@ namespace act {
 
 	private:
 		Settings() {
-			fs::path path = app::getAssetPath("settings.json");
+			ci::fs::path path = ci::app::getAssetPath("settings.json");
 			if (path.empty()) {
-				path = app::getAssetPath("").string() + "settings.json";
+				path = ci::app::getAssetPath("").string() + "settings.json";
 				ci::writeJson(path, ""); // touch
 				write();
 			}
 			
-			cinder::Json json = ci::loadJson(loadFile(path));
+			cinder::Json json = ci::loadJson(ci::loadFile(path));
 			util::setValueFromJson(json, "windowSize",		m_settingsParams.windowSize);
 			util::setValueFromJson(json, "samplerate",		m_settingsParams.samplerate);
 			util::setValueFromJson(json, "fontSize",		m_settingsParams.fontSize);
@@ -168,7 +165,7 @@ namespace act {
 			json["guiSize"]			= m_settingsParams.guiSize;
 			json["showGUI"]			= m_settingsParams.showDebugGUI;
 			json["fullscreen"]		= m_settingsParams.fullscreen;
-			ci::writeJson(getAssetPath("settings.json"), json);
+			ci::writeJson(ci::app::getAssetPath("settings.json"), json);
 		}
 	};
 
@@ -189,15 +186,15 @@ namespace act {
 			b = glm::normalize(b);
 
 			float cosTheta = glm::dot(a, b);
-			vec3 rotationAxis;
+			glm::vec3 rotationAxis;
 
 			if (cosTheta < -1 + 0.001f) {
 				// special case when vectors in opposite directions:
 				// there is no "ideal" rotation axis
 				// So guess one; any will do as long as it's perpendicular to start
-				rotationAxis = glm::cross(vec3(0.0f, 0.0f, 1.0f), a);
+				rotationAxis = glm::cross(glm::vec3(0.0f, 0.0f, 1.0f), a);
 				if (glm::length2(rotationAxis) < 0.01) // bad luck, they were parallel, try again!
-					rotationAxis = glm::cross(vec3(1.0f, 0.0f, 0.0f), a);
+					rotationAxis = glm::cross(glm::vec3(1.0f, 0.0f, 0.0f), a);
 
 				rotationAxis = normalize(rotationAxis);
 				return glm::angleAxis(glm::radians(180.0f), rotationAxis);
@@ -218,7 +215,7 @@ namespace act {
 		}
 
 		/**
-		* @brief clamps a value between a min and max value
+		* @brief glm::clamps a value between a min and max value
 		* @param min min-value
 		* @param max max-value
 		*/
@@ -275,7 +272,7 @@ namespace act {
 		* @param alpha the near to 1.0f, the less is the punishment
 		* @return output
 		*/
-		template< typename T > // float, vec3, vec4
+		template< typename T > // float, glm::vec3, vec4
 		T lowPassF(T input, T& output, float alpha = STD_LOWPASS) {
 			if (output == T(0.0f)) return input;
 
@@ -298,8 +295,8 @@ namespace act {
 			double elapsedTime = timer.getSeconds() - begin;
 			std::stringstream strstr;
 			strstr << "Time elapsed: " << elapsedTime << "s";
-			log::Metadata meta;
-			meta.mLevel = log::LEVEL_INFO;
+			ci::log::Metadata meta;
+			meta.mLevel = ci::log::LEVEL_INFO;
 			ci::log::LoggerConsole().write(meta, strstr.str());
 			return elapsedTime;
 		}
@@ -365,7 +362,7 @@ namespace act {
 
 				for (int c = 0; c < colorMap.rows; c++)
 				{
-					colorMap.row(c).setTo(toOcv(colorGradient.at((float)c / 255.0f)));
+					colorMap.row(c).setTo(ci::toOcv(colorGradient.at((float)c / 255.0f)));
 				}
 				return colorMap;
 			}
@@ -378,12 +375,12 @@ namespace act {
 			std::map<float, ci::ColorA> colors;
 		};
 
-		inline ci::Rectf fitRoi(ci::Rectf roi, cv::UMat dst) //  roi.canonicalize(); oOcv(Area(roi))
+		inline ci::Rectf fitRoi(ci::Rectf roi, cv::UMat dst) //  roi.canonicalize(); oOcv(ci::Area(roi))
 		{
 			cv::Rect dstRect = cv::Rect(0, 0, dst.cols, dst.rows);
-			return fromOcv(toOcv(Area(roi)) & dstRect);
+			return ci::fromOcv(ci::toOcv(ci::Area(roi)) & dstRect);
 		}
-		inline cv::Rect fitRoi(cv::Rect roi, cv::UMat dst) //  roi.canonicalize(); oOcv(Area(roi))
+		inline cv::Rect fitRoi(cv::Rect roi, cv::UMat dst) //  roi.canonicalize(); oOcv(ci::Area(roi))
 		{
 			cv::Rect dstRect = cv::Rect(0, 0, dst.cols, dst.rows);
 			return roi & dstRect;
@@ -455,12 +452,12 @@ namespace act {
 		static void drawCoords(float size = 1.0f) {
 			auto c = ci::gl::ScopedColor();
 			auto l = ci::gl::ScopedLineWidth(3.0f);
-			gl::color(Color(1, 0, 0));
-			ci::gl::drawLine(vec3(0, 0, 0), vec3(size, 0, 0));
-			gl::color(Color(0, 1, 0));
-			ci::gl::drawLine(vec3(0, 0, 0), vec3(0, size, 0));
-			gl::color(Color(0, 0, 1));
-			ci::gl::drawLine(vec3(0, 0, 0), vec3(0, 0, size));
+			ci::gl::color(ci::Color(1, 0, 0));
+			ci::gl::drawLine(glm::vec3(0, 0, 0), glm::vec3(size, 0, 0));
+			ci::gl::color(ci::Color(0, 1, 0));
+			ci::gl::drawLine(glm::vec3(0, 0, 0), glm::vec3(0, size, 0));
+			ci::gl::color(ci::Color(0, 0, 1));
+			ci::gl::drawLine(glm::vec3(0, 0, 0), glm::vec3(0, 0, size));
 		}
 	}
 }

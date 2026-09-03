@@ -38,7 +38,6 @@
 #include "Port.hpp"
 #include "PortMsg.hpp"
 
-
 #include "ProcNodeBase.hpp"
 #include "MatListener.hpp"
 

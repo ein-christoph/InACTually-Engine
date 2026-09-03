@@ -65,6 +65,7 @@ using k4abt_tracker_t = bool;
 
 #endif
 
+
 namespace act {
 	namespace room {
 
@@ -119,8 +120,8 @@ namespace act {
 			//Pointcloud getPointCloud() { return m_pointcloud; };
 
 			float getTemperatureSample() { return m_temperatureSample; };
-			vec3 getAccelerometerSample() { return m_accelerometerSample; };
-			vec3 getGyroscopeSample() { return m_gyroscopeSample; };
+			glm::vec3 getAccelerometerSample() { return m_accelerometerSample; };
+			glm::vec3 getGyroscopeSample() { return m_gyroscopeSample; };
 
 
 			std::map<uint32_t, k4abt_skeleton_t> getBodyMap() { return m_bodyMap; };
@@ -165,8 +166,8 @@ namespace act {
 			// Pointcloud m_pointcloud;
 
 			float m_temperatureSample;
-			vec3 m_accelerometerSample;
-			vec3 m_gyroscopeSample;
+			glm::vec3 m_accelerometerSample;
+			glm::vec3 m_gyroscopeSample;
 
 			std::map<uint32_t, k4abt_skeleton_t> m_bodyMap;
 			std::map<uint32_t, k4abt_skeleton_t> m_repositionedBodyMap;

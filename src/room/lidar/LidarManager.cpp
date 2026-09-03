@@ -139,16 +139,16 @@ void act::room::LidarManager::fromJson(ci::Json json)
 
 void act::room::LidarManager::loadFixtures()
 {
-	fs::path path = app::getAssetPath("lidar\\fixtures.json");
+	ci::fs::path path = ci::app::getAssetPath("lidar\\fixtures.json");
 	if (path.empty()) {
-		path = app::getAssetPath("").string() + "lidar\\fixtures.json";
-		writeJson(path, ""); // touch
+		path = ci::app::getAssetPath("").string() + "lidar\\fixtures.json";
+		ci::writeJson(path, ""); // touch
 		saveFixtures();
 	}
 
 	m_fixtureDescriptions.clear();
 	m_fixtureNames.clear();
-	auto file = loadFile(path);
+	auto file = ci::loadFile(path);
 	if (!file || !file->getBuffer())
 		return;
 
@@ -164,8 +164,8 @@ void act::room::LidarManager::loadFixtures()
 }
 
 void act::room::LidarManager::saveDevicesToJson() {
-	fs::path path = app::getAssetPath("recentRoomSetup.json");
-	ci::Json wholeFile = ci::loadJson(loadFile(path));
+	ci::fs::path path = ci::app::getAssetPath("recentRoomSetup.json");
+	ci::Json wholeFile = ci::loadJson(ci::loadFile(path));
 	//save nodes
 	try {
 		wholeFile["lidarManager"]["devices"].clear();
@@ -186,10 +186,10 @@ void act::room::LidarManager::saveDevicesToJson() {
 
 void act::room::LidarManager::saveFixtures()
 {
-	fs::path path = app::getAssetPath("lidar/fixtures.json");
+	ci::fs::path path = ci::app::getAssetPath("lidar/fixtures.json");
 	if (path.empty()) {
-		path = app::getAssetPath("").string() + "lidar/fixtures.json";
-		writeJson(path, ""); // touch
+		path = ci::app::getAssetPath("").string() + "lidar/fixtures.json";
+		ci::writeJson(path, ""); // touch
 	}
 
 	ci::Json fixtureDescriptions = ci::Json("{\"devices\":[]");

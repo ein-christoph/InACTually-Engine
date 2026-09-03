@@ -19,7 +19,7 @@
 #include "audio/AudioRoomNodeBase.hpp"
 
 
-act::room::AudioRoomNodeBase::AudioRoomNodeBase(std::string name, ci::vec3 position, ci::vec3 rotation, float radius)
+act::room::AudioRoomNodeBase::AudioRoomNodeBase(std::string name, glm::vec3 position, glm::vec3 rotation, float radius)
 	: RoomNodeBase(name, position, rotation, radius)
 {
 	m_volume = 100;
@@ -35,13 +35,13 @@ void act::room::AudioRoomNodeBase::setVolume(float volume, float rampDuration)
 {
 	//m_gain->getParam()->applyRamp();
 	ci::app::timeline().apply(&m_volume, volume, rampDuration).updateFn([&]() {
-		m_gain->setValue(audio::decibelToLinear(m_volume));
+		m_gain->setValue(ci::audio::decibelToLinear(m_volume));
 	});
 }
 
 void act::room::AudioRoomNodeBase::rampVolume(float volume, float rampDuration)
 {
 	ci::app::timeline().appendTo(&m_volume, volume, rampDuration).updateFn([&]() {
-		m_gain->setValue(audio::decibelToLinear(m_volume));
+		m_gain->setValue(ci::audio::decibelToLinear(m_volume));
 	});
 }

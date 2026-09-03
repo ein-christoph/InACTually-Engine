@@ -22,15 +22,16 @@
 #include "cinder/audio/audio.h"
 #include <memory>
 
+
 namespace act {
 	namespace room {
 
 		class SoundRoomNode : public AudioRoomNodeBase {
 		public:
-			SoundRoomNode(ci::vec3 position, float radius, std::string name = "");
+			SoundRoomNode(glm::vec3 position, float radius, std::string name = "");
 			~SoundRoomNode();
 
-			static std::shared_ptr<SoundRoomNode> create(ci::vec3 position, float radius, std::string name = "") { return std::make_shared<SoundRoomNode>(position, radius, name); };
+			static std::shared_ptr<SoundRoomNode> create(glm::vec3 position, float radius, std::string name = "") { return std::make_shared<SoundRoomNode>(position, radius, name); };
 
 			std::string		getName() { return m_name; };
 

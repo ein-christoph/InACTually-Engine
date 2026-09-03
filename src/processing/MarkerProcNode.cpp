@@ -20,9 +20,9 @@
 
 act::proc::MarkerProcNode::MarkerProcNode() : ProcNodeBase("Marker") {
 	m_selectedMarker= 0;
-	m_drawSize = ci::ivec2(200, 100);
+	m_drawSize = glm::ivec2(200, 100);
 
-	m_markerPositionInPort = createVec3Input("markerPosIn", [&](ci::vec3 position) {
+	m_markerPositionInPort = createVec3Input("markerPosIn", [&](glm::vec3 position) {
 		m_markerPositionOutPort->send(position);
 	}, false);
 

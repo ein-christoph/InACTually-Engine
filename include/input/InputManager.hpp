@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include "stddef.hpp"
 
 #include "InputListeners.hpp"
@@ -27,6 +26,7 @@
 
 #include "InteractionManager.hpp"
 #include <thread> 
+
 
 namespace act {
 	/**
@@ -59,13 +59,13 @@ namespace act {
 			std::shared_ptr<KeyInput>		keyInput;
 			std::shared_ptr<TouchInput>		touchInput;
 
-			void onKeyDown(KeyEvent event)					override;
-			void onKeyUp(KeyEvent event)					override;
-			void onMouseUp(MouseEvent event)				override;
-			void onMouseDown(MouseEvent event)				override;
-			void onMouseWheel(MouseEvent event)				override;
-			void onMouseMove(MouseEvent event)				override;
-			void onMouseDrag(MouseEvent event)				override;
+			void onKeyDown(ci::app::KeyEvent event)					override;
+			void onKeyUp(ci::app::KeyEvent event)					override;
+			void onMouseUp(ci::app::MouseEvent event)				override;
+			void onMouseDown(ci::app::MouseEvent event)				override;
+			void onMouseWheel(ci::app::MouseEvent event)				override;
+			void onMouseMove(ci::app::MouseEvent event)				override;
+			void onMouseDrag(ci::app::MouseEvent event)				override;
 			void onTouchesBegin(ci::app::TouchEvent event)	override;
 			void onTouchesMove(ci::app::TouchEvent event)	override;
 			void onTouchesEnd(ci::app::TouchEvent event)	override;

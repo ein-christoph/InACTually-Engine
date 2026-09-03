@@ -59,14 +59,14 @@ void act::proc::ImageEnhancerProcNode::draw() {
 	ImGui::Checkbox("show", &m_show);
 	
 	if (m_show && m_texture) {
-		gl::pushMatrices();
-		gl::rotate(toRadians(180.0f));
+		ci::gl::pushMatrices();
+		ci::gl::rotate(ci::toRadians(180.0f));
 		
-		ci::vec2 texSize = Rectf(m_texture->getBounds()).getCenteredFit(ci::Rectf(ivec2(0, 0), m_drawSize), true).getSize();
-		ImGui::Image(m_texture, texSize, vec2(1, 1), vec2(0, 0));
+		glm::vec2 texSize = ci::Rectf(m_texture->getBounds()).getCenteredFit(ci::Rectf(glm::ivec2(0, 0), m_drawSize), true).getSize();
+		ImGui::Image(m_texture, texSize, glm::vec2(1, 1), glm::vec2(0, 0));
 
 
-		gl::pushMatrices();
+		ci::gl::pushMatrices();
 	}
 
 	ImGui::SetNextItemWidth(500);
@@ -205,7 +205,7 @@ void act::proc::ImageEnhancerProcNode::onMat(cv::UMat event) {
 	m_imagePort->send(enhanced);
 
 	if (m_show) {
-		m_texture = gl::Texture2d::create(fromOcv(enhanced));
+		m_texture = ci::gl::Texture2d::create(ci::fromOcv(enhanced));
 	}
 }
 

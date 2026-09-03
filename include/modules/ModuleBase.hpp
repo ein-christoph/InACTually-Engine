@@ -27,10 +27,13 @@
 
 
 namespace act {
+
 	namespace net {
 		class NetworkManager;
 	}
+
 	namespace mod {
+
 		class ModuleBase
 		{
 		public:

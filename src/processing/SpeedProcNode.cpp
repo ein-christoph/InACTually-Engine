@@ -22,9 +22,9 @@
 
 
 act::proc::SpeedProcNode::SpeedProcNode() : ProcNodeBase("Speed") {
-	m_drawSize = ivec2(300, 300);
+	m_drawSize = glm::ivec2(300, 300);
 
-	auto positionInput = createVec3Input("position", [&](vec3 pos) { this->onPosition(pos); });
+	auto positionInput = createVec3Input("position", [&](glm::vec3 pos) { this->onPosition(pos); });
 	
 	m_speedPort = createNumberOutput("speed");
 	
@@ -59,7 +59,7 @@ ci::Json act::proc::SpeedProcNode::toParams() {
 void act::proc::SpeedProcNode::fromParams(ci::Json json) {
 }
 
-void act::proc::SpeedProcNode::onPosition(ci::vec3 position) {
+void act::proc::SpeedProcNode::onPosition(glm::vec3 position) {
 
 	float distance = ci::distance(position, m_lastPosition);
 	m_lastPosition = position;

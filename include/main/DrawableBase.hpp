@@ -19,10 +19,6 @@
 #include <cinder/app/App.h>
 
 
-using namespace ci;
-using namespace ci::app;
-
-
 namespace act {
 
 	class DrawableBase

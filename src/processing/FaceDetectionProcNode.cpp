@@ -40,14 +40,14 @@ act::proc::FaceDetectionProcNode::FaceDetectionProcNode() : ProcNodeBase("FaceDe
 	auto image = createImageInput("image", [&](cv::UMat mat) { this->onMat(mat); });
 
 
-	std::string path = getAssetPath("3rd/haarcascade_cuda/haarcascade_frontalface_alt.xml").string();
+	std::string path = ci::app::getAssetPath("3rd/haarcascade_cuda/haarcascade_frontalface_alt.xml").string();
 	
 	if (path.empty()) {
 		CI_LOG_E("file not avaiable.");
 		return;
 	}
 	try {
-		mFaceCascade.load(path);
+		//mFaceCascade.load(path);
 	}
 	catch (cv::Exception exc) {
 		CI_LOG_EXCEPTION("FaceDetection", exc);
@@ -67,15 +67,15 @@ void act::proc::FaceDetectionProcNode::draw() {
 	ImGui::Checkbox("show", &m_show);
 
 	if (m_show && m_texture) {
-		gl::pushMatrices();
-		gl::rotate(toRadians(180.0f));
-		ci::vec2 texSize = Rectf(m_texture->getBounds()).getCenteredFit(ci::Rectf(ivec2(0, 0), m_drawSize), true).getSize();
+		ci::gl::pushMatrices();
+		ci::gl::rotate(ci::toRadians(180.0f));
+		glm::vec2 texSize = ci::Rectf(m_texture->getBounds()).getCenteredFit(ci::Rectf(glm::ivec2(0, 0), m_drawSize), true).getSize();
 
-		ImGui::Image(m_texture, texSize, vec2(1, 1), vec2(0, 0));
+		ImGui::Image(m_texture, texSize, glm::vec2(1, 1), glm::vec2(0, 0));
 
-		//displaySize = ivec2(m_texture->getWidth(), m_texture->getHeight());
-		//ImGui::Image(m_texture, displaySize, vec2(1, 1), vec2(0, 0));
-		gl::pushMatrices();
+		//displaySize = glm::ivec2(m_texture->getWidth(), m_texture->getHeight());
+		//ImGui::Image(m_texture, displaySize, glm::vec2(1, 1), glm::vec2(0, 0));
+		ci::gl::pushMatrices();
 	}
 
 	ImGui::SetNextItemWidth(600);
@@ -108,12 +108,12 @@ void act::proc::FaceDetectionProcNode::onMat(cv::UMat event) {
 	float calcScale = 1.0f / m_resizeScale;
 	// detect the faces and iterate them, appending them to m_faces
 	std::vector<cv::Rect> faces;
-	mFaceCascade.detectMultiScale(mat, faces);
+	//mFaceCascade.detectMultiScale(mat, faces);
 	float faceArea = 0.0f;
 	float faceHeight = 0.0f;
 	cv::Rect biggestFace;
 	for (std::vector<cv::Rect>::const_iterator faceIter = faces.begin(); faceIter != faces.end(); ++faceIter) {
-		Rectf faceRect(fromOcv(*faceIter));
+		ci::Rectf faceRect(ci::fromOcv(*faceIter));
 		faceRect *= calcScale;
 		faceRect.x1 -= faceRect.getWidth() * 0.02f;
 		faceRect.x2 += faceRect.getWidth() * 0.02f;
@@ -121,11 +121,11 @@ void act::proc::FaceDetectionProcNode::onMat(cv::UMat event) {
 		faceRect.y2 += faceRect.getHeight() * 0.06f;
 		faceRect = util::fitRoi(faceRect, event);
 
-		float area = toOcv(Area(faceRect)).area();
+		float area = ci::toOcv(ci::Area(faceRect)).area();
 		if(faceArea < area) {
 			faceArea = area;
 			faceHeight = faceRect.getHeight();
-			biggestFace = toOcv(Area(faceRect));
+			biggestFace = ci::toOcv(ci::Area(faceRect));
 		}
 		mFaces.push_back(faceRect);
 		cv::rectangle(mat, faceIter->tl(), faceIter->br(), cv::Scalar(util::Design::primaryColor().b*255, util::Design::primaryColor().g * 255, util::Design::primaryColor().r * 255), 5);
@@ -164,7 +164,7 @@ void act::proc::FaceDetectionProcNode::onMat(cv::UMat event) {
 		mFacesHistory.pop_front();
 	}
 	if (m_show) {
-		m_texture = gl::Texture2d::create(fromOcv(mat));
+		m_texture = ci::gl::Texture2d::create(ci::fromOcv(mat));
 	}
 }
 

@@ -20,7 +20,7 @@
 
 
 act::proc::SkeletonFilterProcNode::SkeletonFilterProcNode() : ProcNodeBase("SkeletonFilter") {
-	m_drawSize = ivec2(250, 250);
+	m_drawSize = glm::ivec2(250, 250);
 
 	m_positionOutPort = createVec3Output("Position");
 
@@ -60,7 +60,7 @@ void act::proc::SkeletonFilterProcNode::onSkeleton(std::tuple<uint32_t, k4abt_sk
 	k4abt_skeleton_t skeleton = std::get<1>(event);
 	k4a_float3_t::_xyz skelPos = skeleton.joints[m_currentJoint].position.xyz;
 
-	m_currentJointPosition = vec3(skelPos.x, skelPos.y, skelPos.z);
+	m_currentJointPosition = glm::vec3(skelPos.x, skelPos.y, skelPos.z);
 
 	m_positionOutPort->send(m_currentJointPosition);
 }

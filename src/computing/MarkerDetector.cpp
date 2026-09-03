@@ -171,7 +171,7 @@ void act::comp::MarkerDetector::checkOccurency(int id)
 
 glm::vec3 act::comp::MarkerDetector::transformPosition(cv::Vec3d tvec, glm::vec3 parentPosition, glm::quat parentOrientation)
 {
-	ci::vec3 relMarkerPos = ci::vec3(tvec[0], tvec[1], tvec[2]);
+	glm::vec3 relMarkerPos = glm::vec3(tvec[0], tvec[1], tvec[2]);
 	relMarkerPos = relMarkerPos; // glm::rotateY(relMarkerPos, m_rotation.y);
 	relMarkerPos.x = -relMarkerPos.x;
 	relMarkerPos.y = -relMarkerPos.y;
@@ -211,7 +211,7 @@ glm::mat4 act::comp::MarkerDetector::transformRotation(cv::Vec3d tvec, cv::Vec3d
 			transform[i][j] = transformMat.at<double>(i, j);
 
 	glm::mat4 parentMat = glm::mat4(parentOrientation);
-	glm::mat4 offsetMat = glm::rotate(glm::pi<float>(), vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 offsetMat = glm::rotate(glm::pi<float>(), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	return parentMat * transform * offsetMat;
 }
@@ -235,7 +235,7 @@ std::vector<cv::Vec3d> act::comp::MarkerDetector::inversePerspective(cv::Vec3d r
 	return returnVals;
 }
 
-void act::comp::MarkerDetector::setCameraInverseToMarker(cv::Vec3d rvec, cv::Vec3d tvec, ci::vec3 markerPosition, ci::quat markerOrientierung)
+void act::comp::MarkerDetector::setCameraInverseToMarker(cv::Vec3d rvec, cv::Vec3d tvec, glm::vec3 markerPosition, glm::quat markerOrientierung)
 {
 	std::vector<cv::Vec3d> invVecs = inversePerspective(rvec, tvec);
 	cv::Vec3d tvecCam = invVecs[0];
@@ -243,7 +243,7 @@ void act::comp::MarkerDetector::setCameraInverseToMarker(cv::Vec3d rvec, cv::Vec
 
 	m_camera->doSmoothing(true);
 
-	ci::vec3 cameraPosition			= transformPosition(tvecCam, markerPosition, markerOrientierung);
+	glm::vec3 cameraPosition			= transformPosition(tvecCam, markerPosition, markerOrientierung);
 	glm::mat4 cameraOrientierung	= transformRotation(tvecCam, rvecCam, markerPosition, markerOrientierung);
 	
 	m_camera->setPosition(cameraPosition);

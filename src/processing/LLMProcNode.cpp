@@ -17,7 +17,7 @@
 #include "LLMProcNode.hpp"
 
 act::proc::LLMProcNode::LLMProcNode() : ProcNodeBase("LLM") {
-	m_drawSize   = ci::ivec2(500, 700);
+	m_drawSize   = glm::ivec2(500, 700);
 	m_statusText = "ready";
 
 	m_llmConnector  = act::llm::LLMConnector::create();

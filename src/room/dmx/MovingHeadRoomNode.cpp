@@ -20,7 +20,7 @@
 
 #include "RGBAWHelper.h"
 
-act::room::MovingHeadRoomNode::MovingHeadRoomNode(DMXProRef dmxInterface, ci::Json description, std::string name, int startAddress, ci::vec3 position, ci::vec3 rotation, float radius, act::UID replyUID)
+act::room::MovingHeadRoomNode::MovingHeadRoomNode(DMXProRef dmxInterface, ci::Json description, std::string name, int startAddress, glm::vec3 position, glm::vec3 rotation, float radius, act::UID replyUID)
 	: DMXRoomNodeBase(dmxInterface, description, startAddress), RoomNodeBase("movinghead", position, rotation, radius, replyUID)
 {
 	util::setValueFromJson(description, "panRange",			m_panRange);
@@ -88,7 +88,7 @@ act::room::MovingHeadRoomNode::MovingHeadRoomNode(DMXProRef dmxInterface, ci::Js
 	//m_triMesh = ci::TriMesh::create(ci::geom::Cone()); // m_triMesh is for intersection
 
 	m_cameraPersp = ci::CameraPersp(64, 64, m_beamAngle, 0.1f, 5.0f);
-	m_cameraPersp.setEyePoint(vec3(0.0f));
+	m_cameraPersp.setEyePoint(glm::vec3(0.0f));
 	setPosition(position);
 	setRotation(rotation);
 	lookAt(position + (m_orientation * m_upDir));
@@ -112,60 +112,60 @@ void act::room::MovingHeadRoomNode::update()
 
 void act::room::MovingHeadRoomNode::draw()
 {
-	gl::ScopedColor color;
+	ci::gl::ScopedColor color;
 
 	// 
-	// gl::drawVector(m_position, m_position + glm::normalize(m_orientation * m_frontDir)); // sanity-check
+	// ci::gl::drawVector(m_position, m_position + glm::normalize(m_orientation * m_frontDir)); // sanity-check
 	
 	// drawVector only if debugging
 	/*
-	gl::color(ci::Color(0, 0, 255));
-	gl::drawVector(m_position, m_position + glm::normalize(glm::normalize(m_orientation * m_gaze) * m_frontDir)); // sanity-check
-	gl::color(ci::Color(255, 0, 0));
-	gl::drawVector(m_position, m_position + glm::normalize(m_lookAt - m_position));
+	ci::gl::color(ci::Color(0, 0, 255));
+	ci::gl::drawVector(m_position, m_position + glm::normalize(glm::normalize(m_orientation * m_gaze) * m_frontDir)); // sanity-check
+	ci::gl::color(ci::Color(255, 0, 0));
+	ci::gl::drawVector(m_position, m_position + glm::normalize(m_lookAt - m_position));
 	*/
-	gl::pushMatrices();
-		gl::translate(m_position);
-		gl::rotate(m_orientation);
+	ci::gl::pushMatrices();
+		ci::gl::translate(m_position);
+		ci::gl::rotate(m_orientation);
 
 		// drawVector only if debugging
 	/*
-		gl::color(ci::Color(0, 255, 0));
-		gl::drawVector(ci::vec3(0.0f), glm::normalize(m_gaze * m_frontDir)); // sanity-check
+		ci::gl::color(ci::Color(0, 255, 0));
+		ci::gl::drawVector(glm::vec3(0.0f), glm::normalize(m_gaze * m_frontDir)); // sanity-check
 
-		gl::color(Color::white());
+		ci::gl::color(ci::Color::white());
 		 
-		gl::drawVector(ci::vec3(0.0f), m_upDir * vec3(0.5));
-		gl::drawVector(ci::vec3(0.0f), m_frontDir * vec3(0.5));		
+		ci::gl::drawVector(glm::vec3(0.0f), m_upDir * glm::vec3(0.5));
+		ci::gl::drawVector(glm::vec3(0.0f), m_frontDir * glm::vec3(0.5));		
 
-		gl::color(Color(1.0f, 1.0f, 0.0f));
+		ci::gl::color(ci::Color(1.0f, 1.0f, 0.0f));
 		*/
 
-		//vec3 v = m_cameraPersp.getViewDirection();
-		//gl::drawVector(ci::vec3(0.0f), normalize(vec3(v.x, 0.0f, v.z)));
-		//gl::drawVector(ci::vec3(0.0f), normalize(vec3(0.0f, v.y, v.z)));
+		//glm::vec3 v = m_cameraPersp.getViewDirection();
+		//ci::gl::drawVector(glm::vec3(0.0f), normalize(glm::vec3(v.x, 0.0f, v.z)));
+		//ci::gl::drawVector(glm::vec3(0.0f), normalize(glm::vec3(0.0f, v.y, v.z)));
 
 		enableStatusColor();
 
-		gl::drawCube(ci::vec3(0.0f,-0.15f,0.0f), ci::vec3(0.2f, 0.05f, 0.2f));
-		gl::rotate(m_phi, m_upDir);
+		ci::gl::drawCube(glm::vec3(0.0f,-0.15f,0.0f), glm::vec3(0.2f, 0.05f, 0.2f));
+		ci::gl::rotate(m_phi, m_upDir);
 
-		gl::drawCube(ci::vec3(-0.075f, -0.075f, 0.0f), ci::vec3(0.05f, 0.15f, 0.05f));
-		gl::drawCube(ci::vec3(0.075f, -0.075f, 0.0f), ci::vec3(0.05f, 0.15f, 0.05f));
+		ci::gl::drawCube(glm::vec3(-0.075f, -0.075f, 0.0f), glm::vec3(0.05f, 0.15f, 0.05f));
+		ci::gl::drawCube(glm::vec3(0.075f, -0.075f, 0.0f), glm::vec3(0.05f, 0.15f, 0.05f));
 
-		gl::pushMatrices();
-			gl::rotate(m_theta - glm::half_pi<float>(), m_rightDir);
-			gl::drawCube(ci::vec3(0.0f), ci::vec3(0.1f, 0.125f, 0.1f));
+		ci::gl::pushMatrices();
+			ci::gl::rotate(m_theta - glm::half_pi<float>(), m_rightDir);
+			ci::gl::drawCube(glm::vec3(0.0f), glm::vec3(0.1f, 0.125f, 0.1f));
 			
 			// drawVector only if debugging
 			/*
-			gl::drawVector(ci::vec3(0.0f), m_frontDir);
+			ci::gl::drawVector(glm::vec3(0.0f), m_frontDir);
 			*/
 
-			//gl::drawCoordinateFrame();
+			//ci::gl::drawCoordinateFrame();
 
-		gl::popMatrices();
-	gl::popMatrices();
+		ci::gl::popMatrices();
+	ci::gl::popMatrices();
 
 	if (m_isLookingAt) {
 		//glEnable(GL_BLEND); 
@@ -173,26 +173,26 @@ void act::room::MovingHeadRoomNode::draw()
 
 		//TODO: change to project color
 		
-		gl::color(m_color);
-		gl::drawSphere(m_lookAt, 0.25f, 8);
+		ci::gl::color(m_color);
+		ci::gl::drawSphere(m_lookAt, 0.25f, 8);
 	}
 
 		
-	gl::color(ColorA(m_color, 0.6f));
-	gl::drawFrustum(m_cameraPersp);
+	ci::gl::color(ci::ColorA(m_color, 0.6f));
+	ci::gl::drawFrustum(m_cameraPersp);
 	/*
-	gl::pushMatrices();
-		gl::translate(m_cameraPersp.getEyePoint()); 
-		gl::drawVector(ci::vec3(0.0f), m_cameraPersp.getViewDirection());
+	ci::gl::pushMatrices();
+		ci::gl::translate(m_cameraPersp.getEyePoint()); 
+		ci::gl::drawVector(glm::vec3(0.0f), m_cameraPersp.getViewDirection());
 	
-		gl::color(Color(0.0f, 1.0f, 1.0f));
-		gl::pushMatrices();
-			gl::rotate(glm::eulerAngles(m_cameraPersp.getOrientation()));
-			gl::drawVector(ci::vec3(0.0f), vec3(3.0f));
-		gl::popMatrices();
-		gl::rotate(glm::eulerAngles(glm::rotation(m_frontDir, normalize(m_cameraPersp.getViewDirection()))));
-		gl::drawVector(ci::vec3(0.0f), vec3(5.0f));
-	gl::popMatrices();
+		ci::gl::color(ci::Color(0.0f, 1.0f, 1.0f));
+		ci::gl::pushMatrices();
+			ci::gl::rotate(glm::eulerAngles(m_cameraPersp.getOrientation()));
+			ci::gl::drawVector(glm::vec3(0.0f), glm::vec3(3.0f));
+		ci::gl::popMatrices();
+		ci::gl::rotate(glm::eulerAngles(glm::rotation(m_frontDir, normalize(m_cameraPersp.getViewDirection()))));
+		ci::gl::drawVector(glm::vec3(0.0f), glm::vec3(5.0f));
+	ci::gl::popMatrices();
 	*/
 }
 
@@ -210,7 +210,7 @@ void act::room::MovingHeadRoomNode::drawSpecificSettings()
 
 	if (ImGui::Button("flip upside down")) {
 		m_upDir.y = -m_upDir.y;
-		setRotation(getRotation() + vec3(0, 0, glm::pi<float>()));
+		setRotation(getRotation() + glm::vec3(0, 0, glm::pi<float>()));
 		if (m_isLookingAt) // refresh
 			lookAt(m_lookAt);
 	}
@@ -254,7 +254,7 @@ void act::room::MovingHeadRoomNode::drawSpecificSettings()
 	}
 
 	ImGui::SetNextItemWidth(200);
-	vec3 lAt = getLookAt();
+	glm::vec3 lAt = getLookAt();
 	if (ImGui::DragFloat3("lookAt", &lAt, 0.01f))
 		lookAt(lAt);
 
@@ -276,11 +276,11 @@ void act::room::MovingHeadRoomNode::drawSpecificSettings()
 	ImGui::NewLine();
 	ImGui::BeginDisabled();
 	ImGui::SetNextItemWidth(120);
-	float yaw = toDegrees(m_yaw);
+	float yaw = ci::toDegrees(m_yaw);
 	ImGui::DragFloat("yaw", &yaw);
 	ImGui::SameLine();
 	ImGui::SetNextItemWidth(120);
-	float pitch = toDegrees(m_pitch);
+	float pitch = ci::toDegrees(m_pitch);
 	ImGui::DragFloat("pitch", &pitch);
 
 	ImGui::SetNextItemWidth(120);
@@ -342,7 +342,7 @@ void act::room::MovingHeadRoomNode::fromParams(ci::Json json)
 		setStartAddress(startAdress);
 	}
 
-	ci::vec3 lookAtVec;
+	glm::vec3 lookAtVec;
 	if (util::setValueFromJson(json, "lookAt", lookAtVec)) {
 			lookAt(lookAtVec);
 	}
@@ -379,7 +379,7 @@ void act::room::MovingHeadRoomNode::setColor(ci::Color color, bool publish)
 	}
 	
 	if (m_hasColorWheel) {
-		vec3 hsv = ci::rgbToHsv(m_color);
+		glm::vec3 hsv = ci::rgbToHsv(m_color);
 		int wheelValue = 0;
 		if (m_hasWhiteColorWheel && hsv.y <= 0.1f)
 			wheelValue = m_whiteColorWheelValue;
@@ -425,7 +425,7 @@ glm::vec3 toPitchYawRoll(glm::quat data)
 	return ans;
 }
 
-void act::room::MovingHeadRoomNode::lookAt(ci::vec3 at)
+void act::room::MovingHeadRoomNode::lookAt(glm::vec3 at)
 {
 	m_isLookingAt = true;
 
@@ -439,26 +439,26 @@ void act::room::MovingHeadRoomNode::lookAt(ci::vec3 at)
 
 	// m_position + glm::normalize(m_orientation * m_frontDir))
 
-	vec3 atVec = glm::normalize(m_lookAt - m_position);
+	glm::vec3 atVec = glm::normalize(m_lookAt - m_position);
 	m_gaze = util::rotationBetween(m_frontDir, atVec);
 	if (isnan(m_gaze.w)) {
 		m_gaze = m_previousGaze;
 	}
 
-	vec3 right = glm::cross(atVec, m_upDir);
-	vec3 up = glm::cross(right, atVec);
+	glm::vec3 right = glm::cross(atVec, m_upDir);
+	glm::vec3 up = glm::cross(right, atVec);
 	if (length(up) > 0.0f) { // otherwise rotationBetween will become nan
-		vec3 newUp = m_gaze * m_upDir;
-		quat upCorrection = util::rotationBetween(newUp, up);
+		glm::vec3 newUp = m_gaze * m_upDir;
+		glm::quat upCorrection = util::rotationBetween(newUp, up);
 		m_gaze = upCorrection * m_gaze;
 	}
 	m_gaze = glm::inverse(m_orientation) * m_gaze;
 
-	vec3 gazeFront = glm::normalize(m_gaze * m_frontDir);
+	glm::vec3 gazeFront = glm::normalize(m_gaze * m_frontDir);
 	m_phi		= atan2(gazeFront.x, gazeFront.z);
 	m_theta		= acos(gazeFront.y / length(gazeFront));
 	
-	vec3 gaze = glm::eulerAngles(util::rotationBetween(m_frontDir, glm::normalize(m_gaze * m_frontDir)));
+	glm::vec3 gaze = glm::eulerAngles(util::rotationBetween(m_frontDir, glm::normalize(m_gaze * m_frontDir)));
 	m_pitch = gaze.x;
 	m_yaw = gaze.y;
 	// float roll	= gaze.z;
@@ -551,7 +551,7 @@ void act::room::MovingHeadRoomNode::createColorWheelLookUp(ci::Json colorMap)
 		int value = color["value"];
 
 		ci::Color rgb = ci::Color(color["R"], color["G"], color["B"]);
-		vec3 hsv = ci::rgbToHsv(rgb);
+		glm::vec3 hsv = ci::rgbToHsv(rgb);
 
 		if (hsv.y <= 0.05f) {
 			m_hasWhiteColorWheel = true;
@@ -594,8 +594,8 @@ void act::room::MovingHeadRoomNode::createColorWheelLookUp(ci::Json colorMap)
 
 bool act::room::MovingHeadRoomNode::polarToPanTilt()
 {
-	float tilt	= toDegrees(m_theta)	+ 90	;	// shift to middle position and add offset
-	float pan	= toDegrees(m_phi)		+ 180	+ m_panCenterOffset;	// shift to middle position and add offset
+	float tilt	= ci::toDegrees(m_theta)	+ 90	;	// shift to middle position and add offset
+	float pan	= ci::toDegrees(m_phi)		+ 180	+ m_panCenterOffset;	// shift to middle position and add offset
 
 	if (pan > (m_panCenterOffset + 360.0f))
 		pan -= (m_panRange - m_panCenterOffset);
@@ -616,8 +616,8 @@ bool act::room::MovingHeadRoomNode::polarToPanTilt()
 
 void act::room::MovingHeadRoomNode::panTiltToPolar()
 {
-	m_theta		= toRadians(m_tilt.getValue() - 90);
-	m_phi		= toRadians(m_pan.getValue()  - 180);
+	m_theta		= ci::toRadians(m_tilt.getValue() - 90);
+	m_phi		= ci::toRadians(m_pan.getValue()  - 180);
 
 	m_yaw		= m_phi;
 	m_pitch		= glm::two_pi<float>() - (m_theta);
@@ -644,7 +644,7 @@ void act::room::MovingHeadRoomNode::panTo(float pan)
 
 void act::room::MovingHeadRoomNode::tiltTo(float tilt)
 {
-	m_tilt.setValue(clamp(tilt, 0.0f, (float)(m_tiltRange)));
+	m_tilt.setValue(glm::clamp(tilt, 0.0f, (float)(m_tiltRange)));
 
 	double tiltRough = ((double)(m_tilt.getValue() - m_tiltOffset) / (double)m_tiltRange);
 	

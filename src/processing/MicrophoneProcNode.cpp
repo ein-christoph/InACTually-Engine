@@ -20,7 +20,7 @@
 
 act::proc::MicrophoneProcNode::MicrophoneProcNode() : ProcNodeBase("Microphone", NT_INPUT) {
 	
-	m_drawSize = ivec2(400, 300);
+	m_drawSize = glm::ivec2(400, 300);
 
 	m_show = false;
 
@@ -70,9 +70,9 @@ void act::proc::MicrophoneProcNode::draw() {
 	}
 
 	if (m_show) {
-		gl::pushMatrices();
+		ci::gl::pushMatrices();
 
-		gl::pushMatrices();
+		ci::gl::pushMatrices();
 	}
 
 	endNodeDraw();

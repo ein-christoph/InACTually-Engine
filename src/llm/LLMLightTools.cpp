@@ -209,7 +209,7 @@ std::vector<act::llm::ToolEntry> act::llm::LLMLightTools::getToolDefinitions(act
 			auto mh = roomMgrs.dmxMgr->getMovingHeadByIndex(index);
 			if (!mh)
 				return "{\"error\":\"Moving head not found at index " + std::to_string(index) + "\"}";
-			mh->lookAt(ci::vec3(x, y, z));
+			mh->lookAt(glm::vec3(x, y, z));
 			return "{\"ok\":true,\"id\":\"" + call.id + "\",\"lookAt\":{\"x\":" + std::to_string(x) + ",\"y\":" + std::to_string(y) + ",\"z\":" + std::to_string(z) + "}}";
 		}
 	});

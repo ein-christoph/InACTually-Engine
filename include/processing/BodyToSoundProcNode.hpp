@@ -19,9 +19,6 @@
 
 #include "ProcNodeBase.hpp"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace proc {
@@ -47,12 +44,12 @@ namespace act {
 		private:
 			OutputPortRef<float>	m_localMovementPort;
 			OutputPortRef<float>	m_globalMovementPort;
-			OutputPortRef<audio::NodeRef>	m_audioOutPort;
+			OutputPortRef<ci::audio::NodeRef>	m_audioOutPort;
 			
 			float calcLocalMovement(room::BodyRef body);
 			float calcGlobalMovement(room::BodyRef body);
 			float calcHandDistance(room::BodyRef body);
-			float calcVelocity(vec3 last, vec3 current);
+			float calcVelocity(glm::vec3 last, glm::vec3 current);
 
 			float m_localMovement;
 			float m_globalMovement;
@@ -79,14 +76,14 @@ namespace act {
 			room::BodyRef m_oldBody;
 			float   m_scaleValue;
 
-			audio::GenTriangleNodeRef m_osc;
-			audio::GenSineNodeRef m_modFM;
-			audio::GainNodeRef m_gainFM;
-			audio::GenSineNodeRef m_modAM;
-			audio::AddNodeRef m_add;
-			audio::MultiplyNodeRef m_mul;
-			audio::GainNodeRef m_gain;
-			audio::FilterLowPassNodeRef m_lowP;
+			ci::audio::GenTriangleNodeRef m_osc;
+			ci::audio::GenSineNodeRef m_modFM;
+			ci::audio::GainNodeRef m_gainFM;
+			ci::audio::GenSineNodeRef m_modAM;
+			ci::audio::AddNodeRef m_add;
+			ci::audio::MultiplyNodeRef m_mul;
+			ci::audio::GainNodeRef m_gain;
+			ci::audio::FilterLowPassNodeRef m_lowP;
 
 
 			static bool m_registered;

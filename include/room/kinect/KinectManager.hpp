@@ -31,6 +31,7 @@
 
 #include "PortMsg.hpp"
 
+
 namespace act {
 	namespace room {
 
@@ -75,8 +76,8 @@ namespace act {
 
 			act::room::KinectDeviceRef getDeviceByName(std::string name);
 
-			vec3 getKinectPositionByUID(act::UID uid);
-			vec3 getKinectOrientationByUID(act::UID uid);
+			glm::vec3 getKinectPositionByUID(act::UID uid);
+			glm::vec3 getKinectOrientationByUID(act::UID uid);
 
 			PointcloudRoomNodeRef createPointcloudRoomNode();
 
@@ -106,7 +107,7 @@ namespace act {
 			//Parent joints regarding to joint index --> https://docs.microsoft.com/en-us/azure/kinect-dk/body-joints
 			const int jointParentLookUp[32] = { 0, 0, 1, 2, 2, 4, 5, 6, 7, 8, 7, 2, 11, 12, 13, 14, 15, 14, 0, 18, 19, 20, 0, 22, 23, 24, 3, 26, 26, 26, 26, 26 };
 
-			std::map < uint32_t, ColorA> m_colorMapping;
+			std::map < uint32_t, ci::ColorA> m_colorMapping;
 			const float COLOROFFSET = 0.56f;
 
 			std::map<uint32_t, k4abt_skeleton_t> m_bodiesMerged;

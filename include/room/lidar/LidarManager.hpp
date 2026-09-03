@@ -20,6 +20,7 @@
 #include "lidar/LidarRoomNodeBase.hpp"
 #include "lidar/LDLidarRoomNode.hpp"
 
+
 namespace act {
 	namespace room {
 

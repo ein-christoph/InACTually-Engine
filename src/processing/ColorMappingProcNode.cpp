@@ -20,7 +20,7 @@
 
 
 act::proc::ColorMappingProcNode::ColorMappingProcNode() : ProcNodeBase("ColorMapping") {
-	m_drawSize = ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 
 	init = true;
 	 
@@ -47,7 +47,7 @@ void act::proc::ColorMappingProcNode::draw() {
 	beginNodeDraw();
 	 
 		if (ImGui::ColorPicker3("Color", m_color.ptr())) {
-			glm:vec3 c = m_color.get(ColorModel::CM_HSV);
+			glm::vec3 c = m_color.get(ci::ColorModel::CM_HSV);
 			m_hue = c.x;
 			m_saturation = c.y;
 			m_lightness = c.z;
@@ -81,22 +81,22 @@ void act::proc::ColorMappingProcNode::fromParams(ci::Json json) {
 
 
 void act::proc::ColorMappingProcNode::onHue(float number) {
-	m_hue = clamp(number, 0.0f, 1.0f);
+	m_hue = glm::clamp(number, 0.0f, 1.0f);
 	sendColor();
 }
 
 void act::proc::ColorMappingProcNode::onSaturation(float number) {
-	m_saturation = clamp(number, 0.0f, 1.0f);
+	m_saturation = glm::clamp(number, 0.0f, 1.0f);
 	sendColor();
 }
 
 void act::proc::ColorMappingProcNode::onLightness(float number) {
-	m_lightness = clamp(number, 0.0f, 1.0f);
+	m_lightness = glm::clamp(number, 0.0f, 1.0f);
 	sendColor();
 }
 
 
 void act::proc::ColorMappingProcNode::sendColor() {
-	m_color = Color(ColorModel::CM_HSV, m_hue, m_saturation, m_lightness);
+	m_color = ci::Color(ci::ColorModel::CM_HSV, m_hue, m_saturation, m_lightness);
 	m_colorPort->send(m_color);
 }

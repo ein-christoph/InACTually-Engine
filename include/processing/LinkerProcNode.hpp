@@ -16,14 +16,10 @@
 	Lars Engeln - mail@lars-engeln.de
 */
 
-
 #pragma once
 
 #include "ProcNodeBase.hpp"
  
- 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace proc {

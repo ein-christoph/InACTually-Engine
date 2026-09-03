@@ -26,7 +26,7 @@
 #include "cinder/audio/Utilities.h"
 #include "cinder/audio/Param.h"
 
-act::room::SoundFileRoomNode::SoundFileRoomNode(ci::vec3 position, std::filesystem::path path, float radius, std::string name, bool noTimestretch)
+act::room::SoundFileRoomNode::SoundFileRoomNode(glm::vec3 position, std::filesystem::path path, float radius, std::string name, bool noTimestretch)
 	: SoundRoomNode(position, radius, name)
 {
 	setTriMesh(ci::TriMesh::create(ci::geom::Sphere()));
@@ -34,7 +34,7 @@ act::room::SoundFileRoomNode::SoundFileRoomNode(ci::vec3 position, std::filesyst
 	//m_gen = ci::audio::Context::master()->makeNode(new ci::audio::GenSineNode(440, ci::audio::Node::Format().autoEnable()));
 	//m_gen >> m_gain;
 	m_bufferPlayerNode = ci::audio::Context::master()->makeNode(new ci::audio::BufferPlayerNode());
-	auto monitorFormat = audio::MonitorSpectralNode::Format().fftSize(2048).windowSize(1024);
+	auto monitorFormat = ci::audio::MonitorSpectralNode::Format().fftSize(2048).windowSize(1024);
 	m_monitorNode = ci::audio::Context::master()->makeNode(new ci::audio::MonitorNode(monitorFormat));
 
 	m_noTimestretch = noTimestretch;
@@ -162,7 +162,7 @@ void act::room::SoundFileRoomNode::loop(bool isLooping)
 	m_bufferPlayerNode->setLoopEnabled(m_isLooping);
 }
 
-void act::room::SoundFileRoomNode::loadFile(fs::path path, bool isAdding)
+void act::room::SoundFileRoomNode::loadFile(ci::fs::path path, bool isAdding)
 {
 	try {
 		auto source = ci::audio::load(ci::loadFile(path), ci::audio::Context::master()->getSampleRate());
@@ -189,7 +189,7 @@ void act::room::SoundFileRoomNode::loadFile(fs::path path, bool isAdding)
 		if (!m_noTimestretch) {
 			m_gain->disconnectAll();
 
-			auto ctx = audio::Context::master();
+			auto ctx = ci::audio::Context::master();
 			m_stretcherNode = ctx->makeNode(new aio::TimeStretchingNode(source, 120));
 			m_stretcherNode >> m_gain >> ctx->getOutput();
 			m_gain >> m_monitorNode;
@@ -238,12 +238,12 @@ void act::room::SoundFileRoomNode::setVolume(float volume, float rampDuration)
 	if (rampDuration == 0.0f) {
 		m_volume.stop();
 		m_volume = volume;
-		m_gain->setValue(audio::decibelToLinear(m_volume));
+		m_gain->setValue(ci::audio::decibelToLinear(m_volume));
 		return;
 	}
 	//m_targetVolume = volume;
 	ci::app::timeline().apply(&m_volume, volume, rampDuration).updateFn([&]() {
-		m_gain->setValue(audio::decibelToLinear(m_volume));
+		m_gain->setValue(ci::audio::decibelToLinear(m_volume));
 	});
 }
 

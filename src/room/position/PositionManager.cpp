@@ -40,7 +40,7 @@ act::room::RoomNodeBaseRef act::room::PositionManager::drawMenu()
 	act::room::RoomNodeBaseRef node;
 
 	if (ImGui::Button("add Position")) {
-		node = addPosition(vec3(0.0f, 0.1f, 0.0f));
+		node = addPosition(glm::vec3(0.0f, 0.1f, 0.0f));
 	}
 
 	return node;
@@ -78,7 +78,7 @@ void act::room::PositionManager::fromJson(ci::Json json)
 		for (auto&& nodeJson : nodesJson) {
 
 			//util::setValueFromJson(nodeJson, "name", name);
-			auto node = addPosition(vec3(0.0f));
+			auto node = addPosition(glm::vec3(0.0f));
 			node->fromJson(nodeJson);
 
 			refreshLists();
@@ -93,7 +93,7 @@ void act::room::PositionManager::refreshLists()
 }
 
 
-act::room::RoomNodeBaseRef act::room::PositionManager::addPosition(vec3 position)
+act::room::RoomNodeBaseRef act::room::PositionManager::addPosition(glm::vec3 position)
 {
 	auto node = PositionRoomNode::create("position");
 	node->setPosition(position);

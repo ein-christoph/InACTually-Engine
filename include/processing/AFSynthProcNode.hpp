@@ -18,9 +18,6 @@
 
 #include "ProcNodeBase.hpp"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace proc {
@@ -43,7 +40,7 @@ namespace act {
  
 		private:
 			OutputPortRef<float>	m_volumePort;
-			OutputPortRef<audio::NodeRef>	m_audioOutPort;
+			OutputPortRef<ci::audio::NodeRef>	m_audioOutPort;
 
 			void onFMValue(float value);
 			void onAMValue(float value);
@@ -59,15 +56,15 @@ namespace act {
 
 			float   m_scaleValue;
 
-			audio::GenTriangleNodeRef m_osc;
-			audio::GenSineNodeRef m_modFM;
-			audio::GainNodeRef m_gainFM;
-			audio::GenSineNodeRef m_modAM;
-			audio::AddNodeRef m_add;
-			audio::MultiplyNodeRef m_mul;
-			audio::GainNodeRef m_gain;
-			audio::FilterLowPassNodeRef m_lowP;
-			audio::MonitorNodeRef m_monitor;
+			ci::audio::GenTriangleNodeRef m_osc;
+			ci::audio::GenSineNodeRef m_modFM;
+			ci::audio::GainNodeRef m_gainFM;
+			ci::audio::GenSineNodeRef m_modAM;
+			ci::audio::AddNodeRef m_add;
+			ci::audio::MultiplyNodeRef m_mul;
+			ci::audio::GainNodeRef m_gain;
+			ci::audio::FilterLowPassNodeRef m_lowP;
+			ci::audio::MonitorNodeRef m_monitor;
 
 
 			static bool m_registered;

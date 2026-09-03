@@ -20,7 +20,7 @@
 
 act::proc::AFSynthProcNode::AFSynthProcNode() : ProcNodeBase("AFSynth") {
 
-	m_drawSize = ivec2(250, 250);
+	m_drawSize = glm::ivec2(250, 250);
 
 	auto fm = createNumberInput("FM Value", [&](float value) { this->onModValue(value); });
 	auto am = createNumberInput("AM Value", [&](float value) { this->onModValue(value); });
@@ -35,16 +35,16 @@ act::proc::AFSynthProcNode::AFSynthProcNode() : ProcNodeBase("AFSynth") {
 
 	ci::audio::Context* ctx = ci::audio::master();
 
-	m_osc		= ctx->makeNode(new audio::GenTriangleNode);
-	m_modFM		= ctx->makeNode(new audio::GenSineNode);
-	m_modAM		= ctx->makeNode(new audio::GenSineNode);
-	m_add		= ctx->makeNode(new audio::AddNode);
-	m_mul		= ctx->makeNode(new audio::MultiplyNode);
-	m_gain		= ctx->makeNode(new audio::GainNode);
-	m_gainFM	= ctx->makeNode(new audio::GainNode);
-	m_lowP		= ctx->makeNode(new audio::FilterLowPassNode);
-	auto monitorFormat = audio::MonitorSpectralNode::Format().fftSize(2048).windowSize(1024);
-	m_monitor	= ctx->makeNode(new audio::MonitorNode(monitorFormat));
+	m_osc		= ctx->makeNode(new ci::audio::GenTriangleNode);
+	m_modFM		= ctx->makeNode(new ci::audio::GenSineNode);
+	m_modAM		= ctx->makeNode(new ci::audio::GenSineNode);
+	m_add		= ctx->makeNode(new ci::audio::AddNode);
+	m_mul		= ctx->makeNode(new ci::audio::MultiplyNode);
+	m_gain		= ctx->makeNode(new ci::audio::GainNode);
+	m_gainFM	= ctx->makeNode(new ci::audio::GainNode);
+	m_lowP		= ctx->makeNode(new ci::audio::FilterLowPassNode);
+	auto monitorFormat = ci::audio::MonitorSpectralNode::Format().fftSize(2048).windowSize(1024);
+	m_monitor	= ctx->makeNode(new ci::audio::MonitorNode(monitorFormat));
 
 	//m_sine >> m_gain;
 

@@ -20,8 +20,6 @@
 #include "roompch.hpp"
 #include "UniqueIDBase.hpp"
 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace net {

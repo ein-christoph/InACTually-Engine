@@ -19,7 +19,7 @@
 #include "DMXDimmerProcNode.hpp"
 
 act::proc::DMXDimmerProcNode::DMXDimmerProcNode() : ProcNodeBase("DMXDimmer") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 
 	m_dim = 1.0f;
 

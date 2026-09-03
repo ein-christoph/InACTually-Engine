@@ -55,7 +55,7 @@ void act::room::AudioManager::update()
 	m_mixerMgr->update();
 }
 
-act::room::SoundRoomNodeRef act::room::AudioManager::createSound(vec3 position, float radius, std::string name)
+act::room::SoundRoomNodeRef act::room::AudioManager::createSound(glm::vec3 position, float radius, std::string name)
 {
 	auto sound = room::SoundRoomNode::create(position, radius, name);
 	m_sounds.push_back(sound);
@@ -64,7 +64,7 @@ act::room::SoundRoomNodeRef act::room::AudioManager::createSound(vec3 position, 
 	return sound;
 }
 
-act::room::SoundFileRoomNodeRef act::room::AudioManager::createSoundFile(vec3 position, std::filesystem::path path, float radius, std::string name, bool noTimestretch)
+act::room::SoundFileRoomNodeRef act::room::AudioManager::createSoundFile(glm::vec3 position, std::filesystem::path path, float radius, std::string name, bool noTimestretch)
 {
 	auto sound = room::SoundFileRoomNode::create(position, path, radius, name, noTimestretch);
 	m_sounds.push_back(sound);
@@ -75,7 +75,7 @@ act::room::SoundFileRoomNodeRef act::room::AudioManager::createSoundFile(vec3 po
 
 act::room::SpeakerRoomNodeRef act::room::AudioManager::addSpeaker(int channel)
 {
-	auto speaker = SpeakerRoomNode::create(m_selectedOutputChannel, vec3(0.0f, 1.0f, 0.0f), 0.15f);
+	auto speaker = SpeakerRoomNode::create(m_selectedOutputChannel, glm::vec3(0.0f, 1.0f, 0.0f), 0.15f);
 	m_speakers.push_back(speaker);
 	m_nodes.push_back(speaker);
 
@@ -86,7 +86,7 @@ act::room::SpeakerRoomNodeRef act::room::AudioManager::addSpeaker(int channel)
 
 act::room::SubwooferRoomNodeRef act::room::AudioManager::addSubwoofer(int channel)
 {
-	auto subwoofer = SubwooferRoomNode::create(m_selectedOutputChannel, vec3(0.0f, 1.0f, 0.0f), 0.3f);
+	auto subwoofer = SubwooferRoomNode::create(m_selectedOutputChannel, glm::vec3(0.0f, 1.0f, 0.0f), 0.3f);
 	m_subwoofers.push_back(subwoofer);
 	m_nodes.push_back(subwoofer);
 
@@ -97,7 +97,7 @@ act::room::SubwooferRoomNodeRef act::room::AudioManager::addSubwoofer(int channe
 
 act::room::MicrophoneRoomNodeRef act::room::AudioManager::addMicrophone(int channel)
 {
-	MicrophoneRoomNodeRef mic = room::MicrophoneRoomNode::create(channel, vec3(0.0f, 1.0f, 0.0f), 0.15f);
+	MicrophoneRoomNodeRef mic = room::MicrophoneRoomNode::create(channel, glm::vec3(0.0f, 1.0f, 0.0f), 0.15f);
 	m_microphones.push_back(mic);
 	m_nodes.push_back(mic);
 
@@ -234,9 +234,9 @@ void act::room::AudioManager::onOutputDeviceChange(ci::audio::OutputDeviceNodeRe
 
 void act::room::AudioManager::onInputDeviceChange(ci::audio::InputDeviceNodeRef inputDevice)
 {
-	auto ctx = audio::Context::master();
+	auto ctx = ci::audio::Context::master();
 	m_inputDeviceNode = inputDevice;
-	m_inputRouter = ctx->makeNode(new audio::ChannelRouterNode(audio::Node::Format()
+	m_inputRouter = ctx->makeNode(new ci::audio::ChannelRouterNode(ci::audio::Node::Format()
 		.channels(m_inputDeviceNode->getNumChannels())));
 
 	m_inputDeviceNode >> m_inputRouter;

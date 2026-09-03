@@ -22,7 +22,7 @@
 
 
 act::proc::NumberEnhancerProcNode::NumberEnhancerProcNode() : ProcNodeBase("NumberEnhancer") {
-	m_drawSize = ivec2(300, 300);
+	m_drawSize = glm::ivec2(300, 300);
 
 	auto number = createNumberInput("number", [&](float num) { this->onNumber(num); });
 	

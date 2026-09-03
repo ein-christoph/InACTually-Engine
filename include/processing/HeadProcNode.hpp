@@ -20,9 +20,6 @@
 #include "ProcNodeBase.hpp"
 
 
-using namespace ci;
-using namespace ci::app;
-
 namespace act {
 	namespace proc {
 
@@ -45,14 +42,14 @@ namespace act {
 
 		private:
 			
-			OutputPortRef<ci::vec3>	m_directionOutput;
-			OutputPortRef<ci::quat>	m_orientationOutput;
+			OutputPortRef<glm::vec3>	m_directionOutput;
+			OutputPortRef<glm::quat>	m_orientationOutput;
 
-			ci::vec3				m_direction;
-			ci::vec3				m_horizontal;
-			ci::vec3				m_vertical;
+			glm::vec3				m_direction;
+			glm::vec3				m_horizontal;
+			glm::vec3				m_vertical;
 
-			vec3 toVec(k4a_float3_t::_xyz xyz);
+			glm::vec3 toVec(k4a_float3_t::_xyz xyz);
 
 
 		}; using HeadProcNodeRef = std::shared_ptr<HeadProcNode>;

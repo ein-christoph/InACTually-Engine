@@ -30,18 +30,17 @@
 
 #include "PortMsg.hpp"
 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace room {
+
 		class KinectRoomNode : public RoomNodeBase
 		{
 		public:
-			KinectRoomNode(KinectDeviceRef kinect, std::string deviceName, std::string name, ci::vec3 position, ci::vec3 rotation, float radius, act::UID replyUID = "");
+			KinectRoomNode(KinectDeviceRef kinect, std::string deviceName, std::string name, glm::vec3 position, glm::vec3 rotation, float radius, act::UID replyUID = "");
 			virtual ~KinectRoomNode();
 
-			static std::shared_ptr<KinectRoomNode> create(KinectDeviceRef kinect, std::string deviceName, std::string name, ci::vec3 position = ci::vec3(0.0f, 1.0f, 0.0f), ci::vec3 rotation = ci::vec3(0.0f, 0.0f, 0.0f), float radius = 0.5f, act::UID replyUID = "") { return std::make_shared<KinectRoomNode>(kinect, deviceName, name, position, rotation, radius, replyUID); };
+			static std::shared_ptr<KinectRoomNode> create(KinectDeviceRef kinect, std::string deviceName, std::string name, glm::vec3 position = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f), float radius = 0.5f, act::UID replyUID = "") { return std::make_shared<KinectRoomNode>(kinect, deviceName, name, position, rotation, radius, replyUID); };
 
 			virtual void setup()	override;
 			virtual void update()	override;
@@ -65,8 +64,7 @@ namespace act {
 			std::string m_deviceName = "";
 			std::string m_nameAddition = "[AzureKinect]";
 
-
-			vec2 asd = vec2(0, 0);
+			glm::vec2 asd = glm::vec2(0, 0);
 
 			const char* jointSelection[32] = {
 				"01 - PELVIS",
@@ -103,8 +101,8 @@ namespace act {
 				"32 - EAR_RIGHT"
 			};
 
-			ci::ivec2 m_captureSize;
-			ci::ivec2 m_displaySize;
+			glm::ivec2 m_captureSize;
+			glm::ivec2 m_displaySize;
 
 			bool cameraInit = false;
 
@@ -119,8 +117,8 @@ namespace act {
 			std::map<uint32_t, k4abt_skeleton_t> m_repositionedBodies;
 
 			KinectDeviceRef			m_kinect;
-			ci::vec3				m_offsetPosition = ci::vec3(0.0f);
-			ci::vec3				m_offsetRotation = ci::vec3(0.0f);
+			glm::vec3				m_offsetPosition = glm::vec3(0.0f);
+			glm::vec3				m_offsetRotation = glm::vec3(0.0f);
 
 			bool					m_isProvidingPointCloud;
 
@@ -135,7 +133,7 @@ namespace act {
 
 			void initCameraPersp(int width, int height);
 			std::map<uint32_t, k4abt_skeleton_t> repositionBodies(std::map<uint32_t, k4abt_skeleton_t> bodyMap);
-			vec3 calcRoomPos(vec3 pos);			
+			glm::vec3 calcRoomPos(glm::vec3 pos);			
 
 		}; using KinectRoomNodeRef = std::shared_ptr<KinectRoomNode>;
 	}

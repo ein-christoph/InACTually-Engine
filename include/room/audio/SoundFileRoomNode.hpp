@@ -24,15 +24,16 @@
 
 #include <memory>
 
+
 namespace act {
 	namespace room {
 
 		class SoundFileRoomNode : public SoundRoomNode {
 		public:
-			SoundFileRoomNode(ci::vec3 position, std::filesystem::path path, float radius, std::string name = "", bool noTimestretch = true);
+			SoundFileRoomNode(glm::vec3 position, std::filesystem::path path, float radius, std::string name = "", bool noTimestretch = true);
 			~SoundFileRoomNode();
 
-			static std::shared_ptr<SoundFileRoomNode> create(ci::vec3 position, std::filesystem::path path, float radius, std::string name = "", bool noTimestretch = true) { return std::make_shared<SoundFileRoomNode>(position, path, radius, name, noTimestretch); };
+			static std::shared_ptr<SoundFileRoomNode> create(glm::vec3 position, std::filesystem::path path, float radius, std::string name = "", bool noTimestretch = true) { return std::make_shared<SoundFileRoomNode>(position, path, radius, name, noTimestretch); };
 
 			std::string		getName() { return m_name; };
 
@@ -52,7 +53,7 @@ namespace act {
 			std::function<void()> finishedLoadingFn = []() {};
 			std::function<void()> finishedPlayingFn = []() {};
 
-			void loadFile(fs::path path, bool isAdding = false);
+			void loadFile(ci::fs::path path, bool isAdding = false);
 
 			float getPlayPosition() { return  (float)(m_bufferPlayerNode->getReadPositionTime() / m_bufferPlayerNode->getNumSeconds()); };
 			float getSeconds()		{ return  (float)(m_bufferPlayerNode->getNumSeconds()); };
@@ -76,7 +77,7 @@ namespace act {
 			aio::TimeStrechingNodeRef			m_stretcherNode;
 			bool m_noTimestretch = true;
 
-			audio::MonitorNodeRef				m_monitorNode;
+			ci::audio::MonitorNodeRef			m_monitorNode;
 
 			bool m_isPlaying = false;
 			bool m_isLooping = false;

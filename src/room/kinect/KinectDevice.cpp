@@ -38,8 +38,8 @@ void KinectDevice::initialize()
 	m_isProvidingPointCloud = false;
 	util::ColorGradient colorGrad;
 
-	colorGrad.add(ColorA(0, 0, 0, 1), 0.0f);
-	colorGrad.add(ColorA(1, 1, 1, 1), 1.0f);
+	colorGrad.add(ci::ColorA(0, 0, 0, 1), 0.0f);
+	colorGrad.add(ci::ColorA(1, 1, 1, 1), 1.0f);
 	setColorMap(colorGrad.toColorMap(colorGrad));
 
 #ifdef WITHKINECT
@@ -95,7 +95,7 @@ Pointcloud act::room::KinectDevice::toPointCloud(k4a::image depth, k4a::image co
 {
 	Pointcloud pointcloud
 
-	bool noColor = color == nullptr;
+	bool noci::Color = color == nullptr;
 
 	int width = k4a_image_get_width_pixels(depth);
 	int height = k4a_image_get_height_pixels(depth);
@@ -104,7 +104,7 @@ Pointcloud act::room::KinectDevice::toPointCloud(k4a::image depth, k4a::image co
 		return pointcloud;
 	}
 
-	k4a::image transformedColor = NULL;
+	k4a::image transformedci::Color = NULL;
 	if (K4A_RESULT_SUCCEEDED != k4a_image_create(K4A_IMAGE_FORMAT_COLOR_BGRA32,
 		width,
 		height,
@@ -126,14 +126,14 @@ Pointcloud act::room::KinectDevice::toPointCloud(k4a::image depth, k4a::image co
 		return pointcloud;
 	}
 
-	if (!noColor && K4A_RESULT_SUCCEEDED != k4a_transformation_color_image_to_depth_camera(m_transformation,
+	if (!noci::Color && K4A_RESULT_SUCCEEDED != k4a_transformation_color_image_to_depth_camera(m_transformation,
 		depth,
 		color,
 		transformedColor))
 	{
 		CI_LOG_E("Failed to compute transformed color image\n");
 		//return pointcloud; // most the time, if color is given, but cannot transformed, some more data is malicious
-		noColor = true;
+		noci::Color = true;
 	}
 
 	if (K4A_RESULT_SUCCEEDED != k4a_transformation_depth_image_to_point_cloud(m_transformation,
@@ -150,7 +150,7 @@ Pointcloud act::room::KinectDevice::toPointCloud(k4a::image depth, k4a::image co
 
 	int16_t* pointcloudData = (int16_t*)(void*)k4a_image_get_buffer(pointcloudImage);
 	uint8_t* colorData;
-	if(!noColor && transformedColor != nullptr)
+	if(!noci::Color && transformedci::Color != nullptr)
 		colorData = k4a_image_get_buffer(transformedColor);
 
 	if (!pointcloudData)
@@ -426,8 +426,8 @@ void KinectDevice::updateIMU()
 	if (m_device.get_imu_sample(&imuSample))
 	{
 		m_temperatureSample = imuSample.temperature;
-		m_accelerometerSample = vec3(imuSample.acc_sample.xyz.x, imuSample.acc_sample.xyz.y, imuSample.acc_sample.xyz.z);
-		m_gyroscopeSample = vec3(imuSample.gyro_sample.xyz.x, imuSample.gyro_sample.xyz.y, imuSample.gyro_sample.xyz.z);
+		m_accelerometerSample = glm::vec3(imuSample.acc_sample.xyz.x, imuSample.acc_sample.xyz.y, imuSample.acc_sample.xyz.z);
+		m_gyroscopeSample = glm::vec3(imuSample.gyro_sample.xyz.x, imuSample.gyro_sample.xyz.y, imuSample.gyro_sample.xyz.z);
 	}
 #endif
 }

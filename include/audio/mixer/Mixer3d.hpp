@@ -27,6 +27,7 @@
 
 namespace act {
 	namespace aio {
+
 		class Mixer3d :public MixerBase {
 		public:
 			Mixer3d();
@@ -49,7 +50,7 @@ namespace act {
 			) override;
 			
 			// calculate intersection between line spanned by p0 and p1 and plane a float4 unit hessian normal form (fourth component -d)
-			static bool calculate_intersection_line_plane(ci::vec3 p0, ci::vec3 p1, ci::vec4 plane, ci::vec3& intersection, float epsilon = 1e-6f);
+			static bool calculate_intersection_line_plane(glm::vec3 p0, glm::vec3 p1, ci::vec4 plane, glm::vec3& intersection, float epsilon = 1e-6f);
 
 			void updateColliders();
 			void updateMaxDistance();
@@ -60,19 +61,19 @@ namespace act {
 
 			// contains the speakers belonging to a merged face and their centroid
 			struct MergedFace {
-				ci::vec3 planeCentroid;
+				glm::vec3 planeCentroid;
 				std::vector<act::room::SpeakerRoomNodeRef> speakers;
 			};
 			// used for finding the right speakers for panning
 			struct Collider {
 				std::vector<act::room::SpeakerRoomNodeRef> speakers;
 				std::optional<MergedFace> mergedFace;
-				ci::vec3 normal;
+				glm::vec3 normal;
 			};
 
-			Collider findCollider(ci::vec3 soundPos);
+			Collider findCollider(glm::vec3 soundPos);
 
-			ci::vec3 calculatePlaneIntersection(const ci::vec3& normal, const ci::vec3& planePoint, const ci::vec3& soundPos);
+			glm::vec3 calculatePlaneIntersection(const glm::vec3& normal, const glm::vec3& planePoint, const glm::vec3& soundPos);
 
 
 		private:

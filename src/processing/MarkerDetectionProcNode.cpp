@@ -50,12 +50,12 @@ void act::proc::MarkerDetectionProcNode::draw() {
 
 	preventDrag(true);
 	if (m_show && m_texture) {
-		gl::pushMatrices();
-		//gl::rotate(toRadians(180.0f));
-		ci::vec2 texSize = Rectf(m_texture->getBounds()).getCenteredFit(ci::Rectf(ivec2(0, 0), m_drawSize), true).getSize();
-		ImGui::Image(m_texture, texSize, vec2(1, 1), vec2(0, 0));
+		ci::gl::pushMatrices();
+		//ci::gl::rotate(ci::toRadians(180.0f));
+		glm::vec2 texSize = ci::Rectf(m_texture->getBounds()).getCenteredFit(ci::Rectf(glm::ivec2(0, 0), m_drawSize), true).getSize();
+		ImGui::Image(m_texture, texSize, glm::vec2(1, 1), glm::vec2(0, 0));
 
-		gl::pushMatrices();
+		ci::gl::pushMatrices();
 	}
 
 	bool isSlider = false;
@@ -118,12 +118,10 @@ void act::proc::MarkerDetectionProcNode::onMat(cv::UMat event) {
 				cv::RotatedRect boundingBox = cv::minAreaRect(contour);
 				if (boundingBox.boundingRect().area() > 10 && m_distanceThreshold > cv::norm(boundingBox.center - center)) {
 					candidates.push_back(contour);
-					drawContours(canny, contours, i, toOcv(util::Design::primaryColor()), 2, 8, hierarchy, 0, cv::Point());
+					drawContours(canny, contours, i, ci::toOcv(util::Design::primaryColor()), 2, 8, hierarchy, 0, cv::Point());
 				}
 			}
 		}
-		
-		
 	}
 
 	std::vector<std::pair<int,cv::Point2f>> validmarker;
@@ -174,7 +172,7 @@ void act::proc::MarkerDetectionProcNode::onMat(cv::UMat event) {
 		int cornerCheck = m.at<uchar>(cv::Point(1, 1)) + m.at<uchar>(cv::Point(1, 4)) + m.at<uchar>(cv::Point(4, 4)) + m.at<uchar>(cv::Point(4, 1));
 		if(cv::mean(validCheck)[0] == 0 && cornerCheck == 765) {
 
-			drawContours(canny, candidates, i, toOcv(util::Design::additionalColor()), 2, 8, hierarchy, 0, cv::Point());
+			drawContours(canny, candidates, i, ci::toOcv(util::Design::additionalColor()), 2, 8, hierarchy, 0, cv::Point());
 			
 			if (isBlack(m, cv::Point(1, 1)))
 				m.at<uchar>(cv::Point(1, 1)) = 40;
@@ -233,20 +231,20 @@ void act::proc::MarkerDetectionProcNode::onMat(cv::UMat event) {
 			std::stringstream strstr;
 			strstr << id;
 
-			cv::putText(canny, strstr.str(), center, 0, 1, toOcv(util::Design::primaryColor()), 5);
+			cv::putText(canny, strstr.str(), center, 0, 1, ci::toOcv(util::Design::primaryColor()), 5);
 			
 			cv::cvtColor(tmp, marker, cv::COLOR_GRAY2BGR);
-			cv::putText(marker, strstr.str(), cv::Point(20, 200), 0, 3, toOcv(util::Design::primaryColor()), 15);
+			cv::putText(marker, strstr.str(), cv::Point(20, 200), 0, 3, ci::toOcv(util::Design::primaryColor()), 15);
 			cv::flip(marker, tmp, 1);
 			m_tinyMarkerPort->send(tmp);
 		}
 		else {
-			drawContours(canny, candidates, i, toOcv(util::Design::secondaryColor()), 2, 8, hierarchy, 0, cv::Point());
+			drawContours(canny, candidates, i, ci::toOcv(util::Design::secondaryColor()), 2, 8, hierarchy, 0, cv::Point());
 		}
 	}
 
 	if (m_show) {
-		m_texture = gl::Texture2d::create(fromOcv(canny));
+		m_texture = ci::gl::Texture2d::create(ci::fromOcv(canny));
 	}
 	
 

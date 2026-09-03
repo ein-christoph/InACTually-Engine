@@ -19,7 +19,7 @@
 #include "PositionProcNode.hpp"
 
 act::proc::PositionProcNode::PositionProcNode() : ProcNodeBase("Position") {
-	m_drawSize = ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 
 	m_t = 0.0f;
 
@@ -36,7 +36,7 @@ act::proc::PositionProcNode::~PositionProcNode() {
 void act::proc::PositionProcNode::setup(act::room::RoomManagers dMgrs)
 {
 	m_posMgr = dMgrs.positionMgr;
-	auto node = std::dynamic_pointer_cast<room::PositionRoomNode>(m_posMgr->addPosition(vec3(0.0f)));
+	auto node = std::dynamic_pointer_cast<room::PositionRoomNode>(m_posMgr->addPosition(glm::vec3(0.0f)));
 	if (node)
 		m_positionRoomNode = node;
 }
@@ -94,7 +94,7 @@ void act::proc::PositionProcNode::draw() {
 			m_positionRoomNode->removeControlPoint(i);
 		}
 		ImGui::SameLine();
-		vec3 pt = points[i];
+		glm::vec3 pt = points[i];
 		if (ImGui::DragFloat3("", &pt, 0.01f)) {
 			preventDrag(true);
 			m_positionRoomNode->setControlPoint(i, pt);
@@ -125,7 +125,7 @@ void act::proc::PositionProcNode::fromParams(ci::Json json) {
 	m_posMgr->removeNode(m_positionRoomNode->getUID());
 	m_positionRoomNode = std::dynamic_pointer_cast<room::PositionRoomNode>(m_posMgr->getNodeByUID(uid));
 	if(!m_positionRoomNode)
-		m_positionRoomNode = std::dynamic_pointer_cast<room::PositionRoomNode>(m_posMgr->addPosition(vec3(0)));
+		m_positionRoomNode = std::dynamic_pointer_cast<room::PositionRoomNode>(m_posMgr->addPosition(glm::vec3(0)));
 
 	m_pos = m_positionRoomNode->getPosition();
 

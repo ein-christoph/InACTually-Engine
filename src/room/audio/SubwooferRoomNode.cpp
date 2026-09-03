@@ -19,7 +19,7 @@
 #include "audio/SubwooferRoomNode.hpp"
 
 
-act::room::SubwooferRoomNode::SubwooferRoomNode(int channel, ci::vec3 position, float radius)
+act::room::SubwooferRoomNode::SubwooferRoomNode(int channel, glm::vec3 position, float radius)
 	: SpeakerRoomNode(channel, position, radius, "subwoofer")
 {
 	setTriMesh(ci::TriMesh::create(ci::geom::Cylinder()));
@@ -42,7 +42,7 @@ void act::room::SubwooferRoomNode::draw()
 		ci::gl::ScopedModelMatrix model;
 		ci::gl::multModelMatrix(m_transform);
 
-		//ci::gl::drawCube(getPosition(), ci::vec3(getRadius()) * ci::vec3(1.0f, 1.1f, 1.0f));
+		//ci::gl::drawCube(getPosition(), glm::vec3(getRadius()) * glm::vec3(1.0f, 1.1f, 1.0f));
 		m_mesh->draw();
 	}
 }

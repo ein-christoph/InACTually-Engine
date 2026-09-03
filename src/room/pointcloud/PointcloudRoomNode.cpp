@@ -19,8 +19,8 @@
 #include "pointcloud/PointcloudRoomNode.hpp"
 
 
-act::room::PointcloudRoomNode::PointcloudRoomNode(ci::vec3 position, float radius, std::string name, act::UID replyUID)
-	: RoomNodeBase("pointcloud", position, ci::vec3(0.0f), radius, replyUID)
+act::room::PointcloudRoomNode::PointcloudRoomNode(glm::vec3 position, float radius, std::string name, act::UID replyUID)
+	: RoomNodeBase("pointcloud", position, glm::vec3(0.0f), radius, replyUID)
 {
 	//setTriMesh(ci::TriMesh::create(ci::geom::Sphere()));
 
@@ -32,39 +32,39 @@ act::room::PointcloudRoomNode::PointcloudRoomNode(ci::vec3 position, float radiu
 
         uniform mat4 ciModelViewProjection;
         in vec4      ciPosition;
-        in vec3      ciColor;
+        in glm::vec3      ciColor;
         in float     vSize;
 
-        out vec3     Color;
+        out glm::vec3     Color;
 
         void main()
         {
             gl_PointSize = vSize;
             gl_Position = ciModelViewProjection * ciPosition;
 
-            Color = ciColor;
+            ci::Color = ciColor;
         }
 
     );
     auto fs = CI_GLSL(150,
 
         uniform sampler2D uTexture;
-        in vec3           Color;
+        in glm::vec3           Color;
         out vec4          FinalColor;
 
         void main()
         {
-            vec4 color = vec4(Color, 1);
+            vec4 color = vec4(ci::Color, 1);
            // color *= texture(uTexture, gl_PointCoord);
 
             if (color.a < 0.01f) discard;
 
-            FinalColor = color;
+            Finalci::Color = color;
         }
 
     );
 
-    m_shader = gl::GlslProg::create(vs, fs);
+    m_shader = ci::gl::GlslProg::create(vs, fs);
     m_shader->uniform("uTexture", 0);
 }
 
@@ -103,7 +103,7 @@ void act::room::PointcloudRoomNode::draw()
 
 		/*for (int i = 0; i < m_pointcloud->size(); i += 10) { // skipping a lot of points for debug/performance reasons
 			auto pt = m_pointcloud->at(i);
-			gl::drawCube(vec3(pt.x, pt.y, pt.z), vec3(0.05f));
+			ci::gl::drawCube(glm::vec3(pt.x, pt.y, pt.z), glm::vec3(0.05f));
 			glVertex3f(pt.x, pt.y, pt.z);
 		}*/
 
@@ -142,21 +142,21 @@ void act::room::PointcloudRoomNode::createPointCloud()
     for (int i = 0; i < m_numPoints; i++)
     {
         auto&& pt = m_pointcloud->at(i);
-        m_positions[i] = vec3(pt.x, pt.y, pt.z);
+        m_positions[i] = glm::vec3(pt.x, pt.y, pt.z);
 
         m_sizes[i] = 0.5f; //pt.z * 0.5f;
         m_colors[i] = ci::Colorf(pt.r, pt.g, pt.b);
     }
 
-    auto posLayout = gl::VboMesh::Layout().attrib(geom::POSITION, 3).usage(GL_DYNAMIC_DRAW); // Because these update every frame
-    auto colorAndSizeLayout = gl::VboMesh::Layout().attrib(geom::COLOR, 3).attrib(geom::CUSTOM_0, 1).usage(GL_DYNAMIC_DRAW); // GL_STATIC_DRAW if dont
+    auto posLayout = ci::gl::VboMesh::Layout().attrib(ci::geom::POSITION, 3).usage(GL_DYNAMIC_DRAW); // Because these update every frame
+    auto colorAndSizeLayout = ci::gl::VboMesh::Layout().attrib(ci::geom::COLOR, 3).attrib(ci::geom::CUSTOM_0, 1).usage(GL_DYNAMIC_DRAW); // GL_STATIC_DRAW if dont
 
-    auto mesh = gl::VboMesh::create(m_numPoints, GL_POINTS, { posLayout, colorAndSizeLayout });
-    mesh->bufferAttrib(geom::POSITION, m_positions);
-    mesh->bufferAttrib(geom::COLOR, m_colors);
-    mesh->bufferAttrib(geom::CUSTOM_0, m_sizes);
+    auto mesh = ci::gl::VboMesh::create(m_numPoints, GL_POINTS, { posLayout, colorAndSizeLayout });
+    mesh->bufferAttrib(ci::geom::POSITION, m_positions);
+    mesh->bufferAttrib(ci::geom::COLOR, m_colors);
+    mesh->bufferAttrib(ci::geom::CUSTOM_0, m_sizes);
 
-    m_geometry = gl::Batch::create(mesh, m_shader, { { geom::Attrib::CUSTOM_0, "vSize" } });
+    m_geometry = ci::gl::Batch::create(mesh, m_shader, { { ci::geom::Attrib::CUSTOM_0, "vSize" } });
 }
 
 void act::room::PointcloudRoomNode::updatePointCloud()
@@ -164,15 +164,15 @@ void act::room::PointcloudRoomNode::updatePointCloud()
     for (int i = 0; i < m_numPoints; i++)
     {
         auto&& pt = m_pointcloud->at(i);
-        m_positions[i] = vec3(pt.x, pt.y, pt.z);
+        m_positions[i] = glm::vec3(pt.x, pt.y, pt.z);
 
         //m_sizes[i] = pt.z * 0.5f;
         m_colors[i] = ci::Colorf(pt.r / 255.0f, pt.g / 255.0f, pt.b / 255.0f);
     }
 
-    m_geometry->getVboMesh()->bufferAttrib(geom::POSITION, m_positions);
-    m_geometry->getVboMesh()->bufferAttrib(geom::COLOR, m_colors);
-    //m_geometry->getVboMesh()->bufferAttrib(geom::CUSTOM_0, m_sizes);
+    m_geometry->getVboMesh()->bufferAttrib(ci::geom::POSITION, m_positions);
+    m_geometry->getVboMesh()->bufferAttrib(ci::geom::COLOR, m_colors);
+    //m_geometry->getVboMesh()->bufferAttrib(ci::geom::CUSTOM_0, m_sizes);
 }
 
 void act::room::PointcloudRoomNode::drawSpecificSettings() 

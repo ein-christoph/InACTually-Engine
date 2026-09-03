@@ -18,7 +18,7 @@
 #include "OSCRecieverProcNode.hpp"
 
 act::proc::OSCRecieverProcNode::OSCRecieverProcNode() : ProcNodeBase("OSCReciever", NT_OUTPUT) {
-	m_drawSize = ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 
 	//auto osc = OutputPort<ci::osc::Message>::create(PT_OSC, "osc");
 	//m_outputPorts.push_back(osc);

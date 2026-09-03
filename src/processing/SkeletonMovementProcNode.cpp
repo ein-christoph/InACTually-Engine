@@ -21,7 +21,7 @@
 
 act::proc::SkeletonMovementProcNode::SkeletonMovementProcNode() : ProcNodeBase("SkeletonMovement") {
 
-	m_drawSize = ivec2(250, 250);
+	m_drawSize = glm::ivec2(250, 250);
 
 	auto body = InputPort<room::BodyRef>::create(PT_BODY, "Body", [&](room::BodyRef body) { this->onBody(body); });
 	m_inputPorts.push_back(body);
@@ -70,8 +70,8 @@ float act::proc::SkeletonMovementProcNode::calcLocalMovement(room::BodyRef body)
 	for (int i = 0; i < numJoints; i++) {
 
 
-		vec3 currJointPos = body->joints[i]->position;
-		vec3 oldJointPos = m_oldBody->joints[i]->position;
+		glm::vec3 currJointPos = body->joints[i]->position;
+		glm::vec3 oldJointPos = m_oldBody->joints[i]->position;
 
 		distX = abs(currJointPos.x - oldJointPos.x);
 		distY = abs(currJointPos.y - oldJointPos.y);
@@ -95,8 +95,8 @@ float act::proc::SkeletonMovementProcNode::calcGlobalMovement(room::BodyRef body
 	float totalDist = 0.0f;
 	float distX, distY, distZ;
 
-	vec3 currJointPos = body->joints[room::BJT_SPINE_CHEST]->position;
-	vec3 oldJointPos = m_oldBody->joints[room::BJT_SPINE_CHEST]->position;
+	glm::vec3 currJointPos = body->joints[room::BJT_SPINE_CHEST]->position;
+	glm::vec3 oldJointPos = m_oldBody->joints[room::BJT_SPINE_CHEST]->position;
 
 	distX = abs(currJointPos.x - oldJointPos.x);
 	distY = abs(currJointPos.y - oldJointPos.y);

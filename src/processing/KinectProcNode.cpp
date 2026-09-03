@@ -20,7 +20,7 @@
 
 act::proc::KinectProcNode::KinectProcNode() : ProcNodeBase("Kinect", NT_INPUT)
 {
-	m_drawSize = ivec2(336, 189);
+	m_drawSize = glm::ivec2(336, 189);
 
 	m_kinectImageInPort = createImageInput("RGB", [&](cv::UMat image) {
 		if (image.rows == 0)
@@ -188,13 +188,13 @@ void act::proc::KinectProcNode::update()
 		m_isPreparedForRecording = true;
 		std::vector<std::string> exts;
 		exts.push_back("json");
-		//m_path = ci::app::getSaveFilePath(app::getAssetPath("./../recordings/"), exts).string();
-		m_path = app::getAssetPath("./").string();
+		//m_path = ci::app::getSaveFilePath(ci::app::getAssetPath("./../recordings/"), exts).string();
+		m_path = ci::app::getAssetPath("./").string();
 		if (m_path != "") {
 			int namePos = m_path.rfind("\\");
 			std::string filename = "kinect_capture";//m_path.substr(namePos + 1, m_path.size() - (namePos + 1));
 			m_path = m_path + "\\" + filename;
-			ci::writeJson(fs::path(m_path + ".json"), ci::Json::object()); // mkdir, touch json
+			ci::writeJson(ci::fs::path(m_path + ".json"), ci::Json::object()); // mkdir, touch json
 			prepareRecording();
 		}
 	}
@@ -276,8 +276,8 @@ void act::proc::KinectProcNode::draw()
 		ImGui::Checkbox("show joints", &m_isShowingJoints);
 
 		float temp = m_kinect->getTemperatureSample();
-		vec3 acc = m_kinect->getAccelerometerSample();
-		vec3 gyro = m_kinect->getGyroscopeSample();
+		glm::vec3 acc = m_kinect->getAccelerometerSample();
+		glm::vec3 gyro = m_kinect->getGyroscopeSample();
 
 		ImGui::Text("Temperature:    %.2f", temp);
 		ImGui::Text("Accelerometer:  (%.2f, %.2f, %.2f)", acc.x, acc.y, acc.z);
@@ -416,8 +416,8 @@ void act::proc::KinectProcNode::stopRecording()
 
 	ci::Json json = ci::Json::object();
 	std::stringstream strstr;
-	vec3 pos = m_kinectMgr->getKinectPositionByUID(m_kinect->getNodeUID());
-	vec3 rotation = m_kinectMgr->getKinectOrientationByUID(m_kinect->getNodeUID());
+	glm::vec3 pos = m_kinectMgr->getKinectPositionByUID(m_kinect->getNodeUID());
+	glm::vec3 rotation = m_kinectMgr->getKinectOrientationByUID(m_kinect->getNodeUID());
 
 	auto posJson = ci::Json::object();
 	posJson["x"] = pos.x;
@@ -434,7 +434,7 @@ void act::proc::KinectProcNode::stopRecording()
 	json["bodyFrames"] = m_bodyRec;
 	m_bodyRec = ci::Json::array();
 
-	ci::writeJson(fs::path(m_path + ".json"), json);
+	ci::writeJson(ci::fs::path(m_path + ".json"), json);
 }
 
 void act::proc::KinectProcNode::recordCurrentFrames()

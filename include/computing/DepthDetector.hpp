@@ -22,8 +22,8 @@
 #include "DetectorBase.hpp"
 #include "camera/CameraRoomNode.hpp"
 
-
 #include "onnxruntime_cxx_api.h"
+
 
 namespace act {
 	namespace comp {
@@ -72,7 +72,7 @@ namespace act {
 			cv::Size							m_blobSize;
 			void detect() override;
 
-			ivec2 m_displaySize = ivec2(640, 360);
+			glm::ivec2 m_displaySize = glm::ivec2(640, 360);
 
 		};
 		using DepthDetectorRef = std::shared_ptr<DepthDetector>;

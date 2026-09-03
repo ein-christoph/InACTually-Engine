@@ -19,13 +19,13 @@
 #include "audio/HeadphoneRoomNode.hpp"
 
 
-act::room::HeadphoneRoomNode::HeadphoneRoomNode(int channelL, int channelR, ci::vec3 position, float radius)
+act::room::HeadphoneRoomNode::HeadphoneRoomNode(int channelL, int channelR, glm::vec3 position, float radius)
 	: SpeakerRoomNode(channelL, position, radius, "headphones")
 {
 	m_isFixed = true;
 
-	m_leftSpeaker	= SpeakerRoomNode::create(channelL, position + ci::vec3( 0.1f, 0.0f, 0.0f), radius);
-	m_rightSpeaker	= SpeakerRoomNode::create(channelR, position + ci::vec3(-0.1f, 0.0f, 0.0f), radius);
+	m_leftSpeaker	= SpeakerRoomNode::create(channelL, position + glm::vec3( 0.1f, 0.0f, 0.0f), radius);
+	m_rightSpeaker	= SpeakerRoomNode::create(channelR, position + glm::vec3(-0.1f, 0.0f, 0.0f), radius);
 
 	m_channelRouterNodeLeft = ci::audio::master()->makeNode(new ci::audio::ChannelRouterNode(ci::audio::Node::Format().channels(ci::audio::master()->getOutput()->getNumChannels())));
 	m_channelRouterNodeRight = ci::audio::master()->makeNode(new ci::audio::ChannelRouterNode(ci::audio::Node::Format().channels(ci::audio::master()->getOutput()->getNumChannels())));
@@ -66,7 +66,7 @@ void act::room::HeadphoneRoomNode::draw()
 		ci::gl::ScopedModelMatrix model;
 		ci::gl::multModelMatrix(m_transform);
 
-		//ci::gl::drawCube(getPosition(), ci::vec3(getRadius()) * ci::vec3(1.0f, 1.1f, 1.0f));
+		//ci::gl::drawCube(getPosition(), glm::vec3(getRadius()) * glm::vec3(1.0f, 1.1f, 1.0f));
 		m_mesh->draw();
 	}
 }
@@ -87,7 +87,7 @@ void act::room::HeadphoneRoomNode::setVolume(float volume, float rampDuration)
 	m_rightSpeaker->setVolume(volume, rampDuration);
 }
 
-bool act::room::HeadphoneRoomNode::hit(ci::vec3 pos)
+bool act::room::HeadphoneRoomNode::hit(glm::vec3 pos)
 {
 	return m_leftSpeaker->hit(pos) || m_rightSpeaker->hit(pos);
 }

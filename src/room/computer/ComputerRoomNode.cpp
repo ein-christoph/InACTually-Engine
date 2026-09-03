@@ -18,12 +18,12 @@
 #include "roompch.hpp"
 #include "computer/ComputerRoomNode.hpp"
 
-act::room::ComputerRoomNode::ComputerRoomNode(std::string name, ci::vec3 position, ci::vec3 rotation, act::UID replyUID)
+act::room::ComputerRoomNode::ComputerRoomNode(std::string name, glm::vec3 position, glm::vec3 rotation, act::UID replyUID)
 	: RoomNodeBase("computer", position, rotation, 0.2f, replyUID)
 {
 
-	setPosition(vec3(0.0f, 0.0f, 0.0f));
-	setRotation(vec3(0.0f, 0.0f, 0.0f));
+	setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	setRotation(glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
 act::room::ComputerRoomNode::~ComputerRoomNode()
@@ -43,15 +43,15 @@ void act::room::ComputerRoomNode::update()
 
 void act::room::ComputerRoomNode::draw()
 {
-	gl::ScopedColor color;
+	ci::gl::ScopedColor color;
 	enableStatusColor();
 
-	gl::pushMatrices();
-	gl::translate(m_position);
-	gl::rotate(m_rotation);
-	gl::drawCube(ci::vec3(0.0f), ci::vec3(0.2f, 0.1f, 0.2f));
+	ci::gl::pushMatrices();
+	ci::gl::translate(m_position);
+	ci::gl::rotate(m_rotation);
+	ci::gl::drawCube(glm::vec3(0.0f), glm::vec3(0.2f, 0.1f, 0.2f));
 
-	gl::popMatrices();
+	ci::gl::popMatrices();
 }
 
 void act::room::ComputerRoomNode::drawSpecificSettings()

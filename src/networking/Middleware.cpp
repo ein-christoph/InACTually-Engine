@@ -373,11 +373,11 @@ void act::net::Middleware::createProcNodeTypeData()
 ci::Json act::net::Middleware::uploadAudio(act::UID msgUID, act::UID uid, std::string fileName, std::string fileData) {
 	const std::vector<BYTE> byteData = _BASE64_H_::base64_decode(fileData);
 
-	if (!std::filesystem::is_directory(getAssetPath("") / "uploaded-audio")) {
-		std::filesystem::create_directory(getAssetPath("") / "uploaded-audio");
+	if (!std::filesystem::is_directory(ci::app::getAssetPath("") / "uploaded-audio")) {
+		std::filesystem::create_directory(ci::app::getAssetPath("") / "uploaded-audio");
 	}
 
-	const std::filesystem::path filePath = getAssetPath("") / "uploaded-audio" / fileName;
+	const std::filesystem::path filePath = ci::app::getAssetPath("") / "uploaded-audio" / fileName;
 	std::ofstream audioFile(filePath, std::ios::binary | std::ios::out);
 	if (!audioFile) {
 		CI_LOG_D(filePath.string() + " is not valid!");

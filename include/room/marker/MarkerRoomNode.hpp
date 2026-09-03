@@ -19,8 +19,6 @@
 
 #include "RoomNodeBase.hpp"
 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace room {
@@ -45,7 +43,7 @@ namespace act {
 			virtual void fromParams(ci::Json json) override;
 
 		private:
-			gl::TextureRef m_markerTexture;
+			ci::gl::TextureRef m_markerTexture;
 			bool	m_dynamic = true;
 			int		m_id;
 			float	m_markerWidth = 0.18f;

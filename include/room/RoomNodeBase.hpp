@@ -19,8 +19,6 @@
 
 #include "roompch.hpp"
 
-using namespace ci;
-using namespace ci::app;
 
 #define ROOMNODECREATE(node) CREATE(node, RoomNodeBase);
 
@@ -40,7 +38,7 @@ namespace act {
 		class RoomNodeBase : public act::proc::PortContext, public act::UniqueIDBase, public net::RPCHandler
 		{
 		public:
-			RoomNodeBase(std::string name, ci::vec3 position = ci::vec3(0.0f, 0.0f, 0.0f), ci::vec3 rotation = ci::vec3(0.0f, 0.0f, 0.0f), float radius = 0.2f, act::UID replyUID = "");
+			RoomNodeBase(std::string name, glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f), float radius = 0.2f, act::UID replyUID = "");
 			virtual ~RoomNodeBase();
 
 			virtual void setup() = 0;
@@ -54,18 +52,18 @@ namespace act {
 			int				getMarkerID() { return m_markerID; };
 			void			setMarkerID(int id) { m_markerID = id; };
 
-			ci::vec3		getPosition() { return m_position; }
-			virtual void	setPosition(ci::vec3 position, bool publish = true);
-			ci::vec3		getRotation() { return m_rotation; }		// in radians !
-			virtual void	setRotation(ci::vec3 orientation, bool publish = true);			// in radians !
-			ci::quat		getOrientation() { return m_orientation; }	
-			virtual void	setOrientation(ci::quat orientation, bool publish = true);
+			glm::vec3		getPosition() { return m_position; }
+			virtual void	setPosition(glm::vec3 position, bool publish = true);
+			glm::vec3		getRotation() { return m_rotation; }		// in radians !
+			virtual void	setRotation(glm::vec3 orientation, bool publish = true);			// in radians !
+			glm::quat		getOrientation() { return m_orientation; }	
+			virtual void	setOrientation(glm::quat orientation, bool publish = true);
 			float			getRadius() { return m_radius; }
 			void			setRadius(float radius);
 			void			setTriMesh(ci::TriMeshRef triMesh);
 
-			virtual void	lookAt(ci::vec3 at);
-			ci::vec3		getLookAt() { return m_lookAt; };
+			virtual void	lookAt(glm::vec3 at);
+			glm::vec3		getLookAt() { return m_lookAt; };
 			bool			isLookingAt();
 			void			isLookingAt(bool isLooking);
 
@@ -78,7 +76,7 @@ namespace act {
 
 			virtual ci::AxisAlignedBox getBounds() { return m_bounds; }
 
-			virtual bool	hit(ci::vec3 pos);
+			virtual bool	hit(glm::vec3 pos);
 			virtual bool	hitRay(ci::Ray ray);
 
 			virtual	void	setIsHovered(bool hovered)					{ m_isHovered = hovered; }					// used directly by interacting with the room
@@ -102,9 +100,9 @@ namespace act {
 			virtual void fromParams(ci::Json json) {};
 
 			//void connectPositionPort(std::shared_ptr<RoomNodeBase> node);
-			//void disconnectPositionOutPort(act::proc::InputPortRef<vec3> inputPort);
-			//act::proc::OutputPortRef<vec3> getOutputPort() { return m_positionOutPort; };
-			//act::proc::InputPortRef<vec3>  getInputPort()  { return m_positionInPort; };
+			//void disconnectPositionOutPort(act::proc::InputPortRef<glm::vec3> inputPort);
+			//act::proc::OutputPortRef<glm::vec3> getOutputPort() { return m_positionOutPort; };
+			//act::proc::InputPortRef<glm::vec3>  getInputPort()  { return m_positionInPort; };
 			act::UID getCopyPosUID() { return m_copyPositionUID; };
 			void setCopyPosUid(act::UID uid) { m_copyPositionUID = uid; };
 			//void sendCurrentPosition();
@@ -117,17 +115,17 @@ namespace act {
 
 			int						m_markerID = -1;					//-1 equals no assigned marker
 
-			ci::vec3				m_position;
-			ci::vec3				m_rotation;							// in radians !
-			ci::quat				m_orientation;			
-			ci::vec3				m_lookAt = vec3(0.0f);
+			glm::vec3				m_position;
+			glm::vec3				m_rotation;							// in radians !
+			glm::quat				m_orientation;			
+			glm::vec3				m_lookAt = glm::vec3(0.0f);
 			bool					m_isLookingAt = false;
 			float					m_radius = 1.0f;
 			bool					m_isFixed = false;
 
-			ci::vec3				m_upDir = vec3(0.0f, 1.0f, 0.0f);
-			ci::vec3				m_frontDir = vec3(0.0f, 0.0f, 1.0f);
-			ci::vec3				m_rightDir = vec3(1.0f, 0.0f, 0.0f); // m_upDir x m_frontDir
+			glm::vec3				m_upDir = glm::vec3(0.0f, 1.0f, 0.0f);
+			glm::vec3				m_frontDir = glm::vec3(0.0f, 0.0f, 1.0f);
+			glm::vec3				m_rightDir = glm::vec3(1.0f, 0.0f, 0.0f); // m_upDir x m_frontDir
 
 			virtual void			onPosition(act::UID replyUID = "", bool publish = true);
 			virtual void			onOrientation(act::UID replyUID = "", bool publish = true);
@@ -147,8 +145,8 @@ namespace act {
 			void					publishParam(std::string key, ci::Json value);
 
 			void					enableStatusColor();
-			//act::proc::OutputPortRef<vec3>	m_positionOutPort;
-			//act::proc::InputPortRef<vec3>		m_positionInPort;
+			//act::proc::OutputPortRef<glm::vec3>	m_positionOutPort;
+			//act::proc::InputPortRef<glm::vec3>		m_positionInPort;
 			act::UID				m_copyPositionUID = "null";
 
 			bool					m_isConnected = true;

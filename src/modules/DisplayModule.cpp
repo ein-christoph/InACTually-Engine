@@ -34,10 +34,10 @@ void act::mod::DisplayModule::setup(act::room::RoomManagers roomMgrs, act::net::
 	m_roomMgrs = roomMgrs;
 	m_networkMgr = networkMgr;
 
-	fs::path path = app::getAssetPath("displaying.json");
+	ci::fs::path path = ci::app::getAssetPath("displaying.json");
 
 	if (path.empty()) {
-		path = app::getAssetPath("").string() + "displaying.json";
+		path = ci::app::getAssetPath("").string() + "displaying.json";
 		ci::writeJson(path, ""); // touch
 		saveToFile(path);
 	}
@@ -47,7 +47,7 @@ void act::mod::DisplayModule::setup(act::room::RoomManagers roomMgrs, act::net::
 }
 
 void act::mod::DisplayModule::cleanUp() {
-	saveToFile(app::getAssetPath("displaying.json"));
+	saveToFile(ci::app::getAssetPath("displaying.json"));
 }
 
 
@@ -67,21 +67,21 @@ void act::mod::DisplayModule::drawGUI() {
 	for(auto source : m_roomMgrs.displayMgr->getSources()) {
 		ImGui::Begin(source.first.c_str());
 		ImVec2 region = ImGui::GetContentRegionAvail();
-		vec2 size = vec2(region.x, region.y);
+		glm::vec2 size = glm::vec2(region.x, region.y);
 
-		ci::vec2 texSize = Rectf(source.second->getBounds()).getCenteredFit(ci::Rectf(ivec2(0, 0), size), true).getSize();
+		glm::vec2 texSize = ci::Rectf(source.second->getBounds()).getCenteredFit(ci::Rectf(glm::ivec2(0, 0), size), true).getSize();
 
-		gl::pushMatrices();
-			gl::rotate(toRadians(180.0f));
-			ImGui::Image(source.second, texSize, vec2(1, 1), vec2(0, 0));
-		gl::popMatrices();
+		ci::gl::pushMatrices();
+			ci::gl::rotate(ci::toRadians(180.0f));
+			ImGui::Image(source.second, texSize, glm::vec2(1, 1), glm::vec2(0, 0));
+		ci::gl::popMatrices();
 		ImGui::End();
 	}
 
 	ImGui::End();
 }
 
-void act::mod::DisplayModule::saveToFile(fs::path path) {
+void act::mod::DisplayModule::saveToFile(ci::fs::path path) {
 	ci::writeJson(path, getFullDescription());
 }
 
@@ -93,9 +93,9 @@ ci::Json act::mod::DisplayModule::getFullDescription()
 	return description;
 }
 
-void act::mod::DisplayModule::loadFromFile(fs::path path) {
+void act::mod::DisplayModule::loadFromFile(ci::fs::path path) {
 
-	ci::Json description = ci::loadJson(loadFile(path));
+	ci::Json description = ci::loadJson(ci::loadFile(path));
 
 	util::setValueFromJson(description, "isActive", m_isActive);
 	/*for (auto&& childs : nodeConfiguration.getChild("monitoring").getChildren()) {

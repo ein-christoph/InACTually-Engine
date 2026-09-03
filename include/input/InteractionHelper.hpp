@@ -39,9 +39,8 @@ namespace act {
 			MB_BTNMIDDLE
 		};
 		struct MouseEvent {
-			vec2 position;
+			glm::vec2 position;
 			MouseButton button;
-
 		};
 
 		/**
@@ -62,17 +61,17 @@ namespace act {
 			//virtual input::KeyListener*	  getKeyListener();
 			//virtual input::TouchListener* getTouchListener();
 
-			vec2 getNormalizedMousePos() { return m_mousePosNorm; };
+			glm::vec2 getNormalizedMousePos() { return m_mousePosNorm; };
 
 		private:
 
 			bool evaluateMouse();
 			bool evaluateMouseButton(MouseButton btn);
 
-			ImVec2	m_mousePos;
-			vec2	m_mousePosNorm;
-			bool	m_isDragging;
-			float	m_wheelIncrement;
+			ImVec2		m_mousePos;
+			glm::vec2	m_mousePosNorm;
+			bool		m_isDragging;
+			float		m_wheelIncrement;
 		};
 		typedef	std::shared_ptr<InteractionHelper> InteractionHelperRef;
 	};

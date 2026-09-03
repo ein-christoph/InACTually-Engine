@@ -19,9 +19,6 @@
 
 #include "ProcNodeBase.hpp"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace proc {
@@ -40,11 +37,11 @@ namespace act {
 			ci::Json toParams() override;
 			void fromParams(ci::Json json) override;
 
-			vec3 getPosition() { return m_position; };
+			glm::vec3 getPosition() { return m_position; };
 
 		private:
-			OutputPortRef<vec3>	m_positionPort;
-			vec3 m_position;
+			OutputPortRef<glm::vec3>	m_positionPort;
+			glm::vec3 m_position;
 			float m_radius;
 			float m_speed;
 			float m_angle;

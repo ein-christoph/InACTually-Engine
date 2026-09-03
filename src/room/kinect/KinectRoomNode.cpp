@@ -19,7 +19,7 @@
 #include "kinect/KinectRoomNode.hpp"
 #include "PortMsg.hpp"
 
-act::room::KinectRoomNode::KinectRoomNode(KinectDeviceRef kinect, std::string deviceName, std::string name, ci::vec3 position, ci::vec3 rotation, float radius, act::UID replyUID)
+act::room::KinectRoomNode::KinectRoomNode(KinectDeviceRef kinect, std::string deviceName, std::string name, glm::vec3 position, glm::vec3 rotation, float radius, act::UID replyUID)
 	: RoomNodeBase(deviceName, position, rotation, radius, replyUID)
 {
 	m_isProvidingPointCloud = true;
@@ -51,7 +51,7 @@ act::room::KinectRoomNode::KinectRoomNode(KinectDeviceRef kinect, std::string de
 
 	m_kinectBodiesOutPort	= act::proc::OutputPort<room::BodyRefList>::create(act::proc::PT_BODYLIST, "bodies");
 
-	m_pointcloudRoomNode	= PointcloudRoomNode::create(vec3(0,0,0), 1, getName()+"_Pointcloud");
+	m_pointcloudRoomNode	= PointcloudRoomNode::create(glm::vec3(0,0,0), 1, getName()+"_Pointcloud");
 }
 
 act::room::KinectRoomNode::~KinectRoomNode()
@@ -65,8 +65,8 @@ void act::room::KinectRoomNode::setup()
 void act::room::KinectRoomNode::update()
 {
 	m_cameraPersp = ci::CameraPersp(1920, 1080, 90, 0.5f, 3.86f);
-	m_cameraPersp.setEyePoint(vec3(0, 0, 0));
-	m_cameraPersp.lookAt(vec3(0, 0, 1));
+	m_cameraPersp.setEyePoint(glm::vec3(0, 0, 0));
+	m_cameraPersp.lookAt(glm::vec3(0, 0, 1));
 
 	if (m_kinect != nullptr) {
 
@@ -124,30 +124,30 @@ void act::room::KinectRoomNode::draw()
 {
 	enableStatusColor();
 
-	gl::pushMatrices();
-	gl::translate(m_position);
-	gl::rotate(m_rotation);
-	gl::drawCube(ci::vec3(0.0f), ci::vec3(0.3f, 0.15f, 0.15f));
+	ci::gl::pushMatrices();
+	ci::gl::translate(m_position);
+	ci::gl::rotate(m_rotation);
+	ci::gl::drawCube(glm::vec3(0.0f), glm::vec3(0.3f, 0.15f, 0.15f));
 
 	m_pointcloudRoomNode->draw();
 
-	gl::color(ColorA(1.0f, 1.0f, 1.0f, 0.6f));
+	ci::gl::color(ci::ColorA(1.0f, 1.0f, 1.0f, 0.6f));
 
 	if (getIsUnfolded())
-		gl::color(util::Design::highlightColor(0.85f));
+		ci::gl::color(util::Design::highlightColor(0.85f));
 	else
-		gl::color(ColorA(1.0f, 1.0f, 1.0f, 0.6f));
+		ci::gl::color(ci::ColorA(1.0f, 1.0f, 1.0f, 0.6f));
 
 	if (!m_isConnected)
 		if (getIsUnfolded())
-			gl::color(util::Design::errorColor(0.85f));
+			ci::gl::color(util::Design::errorColor(0.85f));
 		else
-			gl::color(util::Design::errorColor(0.45f));
+			ci::gl::color(util::Design::errorColor(0.45f));
 
 
 
-	gl::drawFrustum(m_cameraPersp);
-	gl::popMatrices();
+	ci::gl::drawFrustum(m_cameraPersp);
+	ci::gl::popMatrices();
 }
 
 void act::room::KinectRoomNode::drawSpecificSettings()
@@ -178,8 +178,8 @@ void act::room::KinectRoomNode::fromParams(ci::Json json)
 
 void act::room::KinectRoomNode::initCameraPersp(int width, int height)
 {
-	m_captureSize = ivec2(width, height);
-	m_displaySize = ivec2(m_captureSize.x * 0.25, m_captureSize.y * 0.25);
+	m_captureSize = glm::ivec2(width, height);
+	m_displaySize = glm::ivec2(m_captureSize.x * 0.25, m_captureSize.y * 0.25);
 }
 
 std::map<uint32_t, k4abt_skeleton_t> act::room::KinectRoomNode::repositionBodies(std::map<uint32_t, k4abt_skeleton_t> bodyMap)
@@ -191,7 +191,7 @@ std::map<uint32_t, k4abt_skeleton_t> act::room::KinectRoomNode::repositionBodies
 		for (int i = 0; i < 32; i++)
 		{
 			k4a_float3_t::_xyz kinPos = body.second.joints[i].position.xyz;
-			vec3 newPos = calcRoomPos(vec3(kinPos.x, kinPos.y, kinPos.z));
+			glm::vec3 newPos = calcRoomPos(glm::vec3(kinPos.x, kinPos.y, kinPos.z));
 
 			body.second.joints[i].position.xyz.x = newPos.x;
 			body.second.joints[i].position.xyz.y = newPos.y;
@@ -204,7 +204,7 @@ std::map<uint32_t, k4abt_skeleton_t> act::room::KinectRoomNode::repositionBodies
 	return retMap;
 }
 
-vec3 act::room::KinectRoomNode::calcRoomPos(vec3 pos)
+glm::vec3 act::room::KinectRoomNode::calcRoomPos(glm::vec3 pos)
 {
 	//TODO: tilt 1.3 degrees if using WFOV depth mode
 	//https://docs.microsoft.com/en-us/azure/kinect-dk/coordinate-systems

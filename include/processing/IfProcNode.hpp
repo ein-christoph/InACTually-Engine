@@ -19,9 +19,6 @@
 
 #include "ProcNodeBase.hpp"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace proc {
@@ -57,7 +54,7 @@ namespace act {
 
 			bool compareValue(float number);
 			bool compareText(std::string text);
-			bool compareVec(vec3 pos);
+			bool compareVec(glm::vec3 pos);
 
 			void sendResult(bool val);
 
@@ -65,7 +62,7 @@ namespace act {
 			void onText(std::string text);
 			void onFeature(feature f);
 			void onFeatures(featureList fList);
-			void onVec(vec3 pos);
+			void onVec(glm::vec3 pos);
 
 		}; using IfProcNodeRef = std::shared_ptr<IfProcNode>;
 

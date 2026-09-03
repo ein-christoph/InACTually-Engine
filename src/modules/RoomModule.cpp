@@ -31,13 +31,13 @@ act::mod::RoomModule::RoomModule() {
 
 	m_stage = room::Stage::create();
 
-	m_fboSize = vec2(600, 400);
+	m_fboSize = glm::vec2(600, 400);
 	setupFbo();
 
-	m_lookAt = vec3(0.0f);
-	m_camera.setEyePoint(vec3(5.0f, 5.0f, 10.0f));
+	m_lookAt = glm::vec3(0.0f);
+	m_camera.setEyePoint(glm::vec3(5.0f, 5.0f, 10.0f));
 	m_camera.lookAt(m_lookAt);
-	m_camUi = CameraUi(&m_camera);
+	m_camUi = ci::CameraUi(&m_camera);
 };
 
 act::mod::RoomModule::~RoomModule() {
@@ -55,17 +55,17 @@ void act::mod::RoomModule::setup(act::room::RoomManagers roomMgrs, act::net::Net
 	}
 
 	m_stage->setup(m_roomMgrs);
-	fs::path path = app::getAssetPath("recentRoom.json");
+	ci::fs::path path = ci::app::getAssetPath("recentRoom.json");
 	if (path.empty()) {
-		path = app::getAssetPath("").string() + "recentRoom.json";
-		writeJson(path, ""); // touch
+		path = ci::app::getAssetPath("").string() + "recentRoom.json";
+		ci::writeJson(path, ""); // touch
 		saveToFile(path);
 	}
 	loadFromFile(path);
 }
 
 void act::mod::RoomModule::cleanUp() {
-	saveToFile(app::getAssetPath("recentRoom.json"));
+	saveToFile(ci::app::getAssetPath("recentRoom.json"));
 	m_stage.reset();
 }
 
@@ -74,14 +74,14 @@ void act::mod::RoomModule::update() {
 }
 
 void act::mod::RoomModule::draw() {
-	gl::ScopedFramebuffer fbScp(m_fbo);
-	gl::ScopedViewport scpVp(ivec2(0), m_fbo->getSize());
+	ci::gl::ScopedFramebuffer fbScp(m_fbo);
+	ci::gl::ScopedViewport scpVp(glm::ivec2(0), m_fbo->getSize());
 
-	gl::ScopedMatrices scpMatrices;
-	//gl::setMatricesWindow(m_fbo->getSize(), true);
-	gl::setMatrices(m_camera);
+	ci::gl::ScopedMatrices scpMatrices;
+	//ci::gl::setMatricesWindow(m_fbo->getSize(), true);
+	ci::gl::setMatrices(m_camera);
 
-	gl::clear(util::Design::backgroundColor());
+	ci::gl::clear(util::Design::backgroundColor());
 	ci::gl::ScopedColor scpColor(1.0f, 1.0f, 1.0f);
 	ci::gl::ScopedLineWidth scpLW(1);
 
@@ -146,7 +146,7 @@ void act::mod::RoomModule::drawGUI() {
 	ImGui::Begin("Room Editor");
 	handleResize();
 
-	ImGui::Image(m_fbo->getColorTexture(), m_fbo->getSize(), vec2(0, 1), vec2(1, 0));
+	ImGui::Image(m_fbo->getColorTexture(), m_fbo->getSize(), glm::vec2(0, 1), glm::vec2(1, 0));
 	isRoomEditorHovered = ImGui::IsItemHovered();
 
 	m_iaHelper->evaluate();
@@ -182,8 +182,8 @@ void act::mod::RoomModule::onMouseDrag(ci::app::MouseEvent event)
 	m_mousePos = event.getPos();
 
 	if (m_node) {
-		Ray ray = getMouseRay();
-		vec3 pos = ray.calcPosition(ci::distance(m_node->getPosition(), ray.getOrigin()));
+		ci::Ray ray = getMouseRay();
+		glm::vec3 pos = ray.calcPosition(ci::distance(m_node->getPosition(), ray.getOrigin()));
 		m_node->setPosition(pos);
 	}
 	else {
@@ -218,7 +218,7 @@ void act::mod::RoomModule::fromParams(ci::Json json)
 	if (json.contains("camera")) {
 		ci::Json cameraJson = json["camera"];
 
-		vec3 vec = m_camera.getEyePoint();
+		glm::vec3 vec = m_camera.getEyePoint();
 		util::setValueFromJson(cameraJson, "eyepoint", vec);
 		m_camera.setEyePoint(vec);
 
@@ -229,7 +229,7 @@ void act::mod::RoomModule::fromParams(ci::Json json)
 
 ci::Ray act::mod::RoomModule::getMouseRay()
 {
-	vec2 mouse = m_iaHelper->getNormalizedMousePos();
+	glm::vec2 mouse = m_iaHelper->getNormalizedMousePos();
 	return m_camera.generateRay(mouse.x, 1.0f - mouse.y, m_camera.getAspectRatio());
 }
 
@@ -268,13 +268,13 @@ void act::mod::RoomModule::setupFbo()
 
 	m_camera.setPerspective(60, m_fboSize.x / m_fboSize.y, 1, 1000);
 
-	gl::Fbo::Format format;
+	ci::gl::Fbo::Format format;
 	format.setSamples(4);
 
 	try {
-		m_fbo = gl::Fbo::create(m_fboSize.x, m_fboSize.y, format);
+		m_fbo = ci::gl::Fbo::create(m_fboSize.x, m_fboSize.y, format);
 	}
-	catch (gl::FboExceptionInvalidSpecification exc) {
+	catch (ci::gl::FboExceptionInvalidSpecification exc) {
 		CI_LOG_F("Fbo creation failed: " << exc.what());
 	}
 }
@@ -319,7 +319,7 @@ void act::mod::RoomModule::drawCreateButton(std::string nodeName) {
 void act::mod::RoomModule::handleResize() {
 	ImVec2 max = ImGui::GetWindowContentRegionMax();
 	ImVec2 min = ImGui::GetWindowContentRegionMin();
-	ci::vec2 size = ci::vec2(max.x - min.x, max.y - min.y);
+	glm::vec2 size = glm::vec2(max.x - min.x, max.y - min.y);
 	if (m_fboSize.x != size.x || m_fboSize.y != size.y) {
 		m_fboSize = size;
 		setupFbo();
@@ -328,7 +328,7 @@ void act::mod::RoomModule::handleResize() {
 }
 
 
-void act::mod::RoomModule::saveToFile(fs::path path) {
+void act::mod::RoomModule::saveToFile(ci::fs::path path) {
 
 	ci::writeJson(path, getFullDescription());
 }
@@ -347,8 +347,8 @@ ci::Json act::mod::RoomModule::getFullDescription()
 	return description;
 }
 
-void act::mod::RoomModule::loadFromFile(fs::path path) {
-	ci::Json description = ci::loadJson(loadFile(path));
+void act::mod::RoomModule::loadFromFile(ci::fs::path path) {
+	ci::Json description = ci::loadJson(ci::loadFile(path));
 
 	util::setValueFromJson(description, "isActive", m_isActive);
 	m_stage->fromJson(description["stage"]);

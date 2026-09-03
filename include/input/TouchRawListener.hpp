@@ -11,24 +11,28 @@
 #pragma once
 
 #include "ListenerBase.hpp"
+
+
 #pragma warning( push )
 #pragma warning( disable : 4081)
+
 namespace act {
 	namespace input {
+
 		class TouchRawListener : public ListenerBase<TouchRawListener>
 		{
 		public:
-			eventCall(touchesRawBegan, TouchEvent)
-			eventCall(touchesRawMoved, TouchEvent)
-			eventCall(touchesRawEnded, TouchEvent)
+			eventCall(touchesRawBegan, ci::app::TouchEvent)
+			eventCall(touchesRawMoved, ci::app::TouchEvent)
+			eventCall(touchesRawEnded, ci::app::TouchEvent)
 		};
 
 		class TouchListener : public ListenerBase<TouchListener>
 		{
 		public:
-			eventCall(onTouchesBegin, TouchEvent)
-			eventCall(onTouchesMove, TouchEvent)
-			eventCall(onTouchesEnd, TouchEvent)
+			eventCall(onTouchesBegin, ci::app::TouchEvent)
+			eventCall(onTouchesMove, ci::app::TouchEvent)
+			eventCall(onTouchesEnd, ci::app::TouchEvent)
 		};
 	}
 }

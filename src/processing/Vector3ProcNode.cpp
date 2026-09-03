@@ -17,8 +17,8 @@
 #include "Vector3ProcNode.hpp"
 
 act::proc::Vector3ProcNode::Vector3ProcNode() : ProcNodeBase("Vector3") {
-	m_drawSize = ci::ivec2(200, 200);
-	m_vector = ci::vec3(0);
+	m_drawSize = glm::ivec2(200, 200);
+	m_vector = glm::vec3(0);
 
 	m_outPort = createVec3Output("out");
 }

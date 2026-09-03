@@ -40,14 +40,14 @@ void TouchInput::update() {
 }
 
 void TouchInput::drawDebug() {
-	gl::color(ColorA(0.8f, 0.2f, 0.2f, 0.7f));
+	ci::gl::color(ci::ColorA(0.8f, 0.2f, 0.2f, 0.7f));
 	for (const auto &touch : mActivePoints) {
-		gl::drawSolidCircle(touch.second, 40);
+		ci::gl::drawSolidCircle(touch.second, 40);
 		std::stringstream id;
 		id << touch.first << " at " << touch.second.x << ", " << touch.second.y;
-		gl::drawString(id.str(), touch.second + vec2(-40, -60), ColorA(0.8f, 0.2f, 0.2f, 0.7f));
-		//gl::lineWidth(5);
-		//gl::drawLine(touch.second, touch.second + (normalize(touch.second - touch.getPrevPos()) * vec2(60)));
+		ci::gl::drawString(id.str(), touch.second + glm::vec2(-40, -60), ci::ColorA(0.8f, 0.2f, 0.2f, 0.7f));
+		//ci::gl::lineWidth(5);
+		//ci::gl::drawLine(touch.second, touch.second + (normalize(touch.second - touch.getPrevPos()) * glm::vec2(60)));
 	}
 }
 

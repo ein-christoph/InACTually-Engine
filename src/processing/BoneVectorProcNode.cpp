@@ -20,7 +20,7 @@
 
 
 act::proc::BoneVectorProcNode::BoneVectorProcNode() : ProcNodeBase("BoneVector") {
-	m_drawSize = ivec2(250, 250);
+	m_drawSize = glm::ivec2(250, 250);
 
 	m_doNormalize = false;
 
@@ -65,8 +65,8 @@ void act::proc::BoneVectorProcNode::onSkeleton(room::BodyRef event) {
 	if (m_fromJoint == m_toJoint)
 		return;
 
-	vec3 from = event->joints[m_fromJoint]->position;
-	vec3 to = event->joints[m_toJoint]->position;
+	glm::vec3 from = event->joints[m_fromJoint]->position;
+	glm::vec3 to = event->joints[m_toJoint]->position;
 
 	m_currentVec = to - from;
 

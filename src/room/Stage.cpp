@@ -23,9 +23,9 @@ act::room::Stage::Stage()
 {
 	auto colorShader = ci::gl::getStockShader(ci::gl::ShaderDef().color());
 
-	m_size = ci::vec3(12.0f, 3.5f, 11.0f);
+	m_size = glm::vec3(12.0f, 3.5f, 11.0f);
 
-	m_wirePlane	= ci::gl::Batch::create(ci::geom::WirePlane().size(ci::vec2(15)).subdivisions(ci::ivec2(15)), colorShader);
+	m_wirePlane	= ci::gl::Batch::create(ci::geom::WirePlane().size(glm::vec2(15)).subdivisions(glm::ivec2(15)), colorShader);
 	m_wireRoom	= ci::gl::Batch::create(ci::geom::WireCube(), colorShader);
 }
 
@@ -49,8 +49,8 @@ void act::room::Stage::draw()
 {
 
 	ci::gl::color(0.3f, 0.3f, 0.3f);
-	//ci::gl::drawStrokedCube(m_size * vec3(0.5f), m_size);
-	//ci::gl::drawBillboard(vec3(0, 0, 0), vec2(0.15, 0.15), 0.0, vec3(0.0, 0.0, 1.0), vec3(1.0, 0.0, 0.0));
+	//ci::gl::drawStrokedCube(m_size * glm::vec3(0.5f), m_size);
+	//ci::gl::drawBillboard(glm::vec3(0, 0, 0), glm::vec2(0.15, 0.15), 0.0, glm::vec3(0.0, 0.0, 1.0), glm::vec3(1.0, 0.0, 0.0));
 	
 	//ci::gl::drawCoordinateFrame();
 	util::drawCoords();
@@ -64,7 +64,7 @@ void act::room::Stage::draw()
 		ci::gl::pushMatrices();
 		ci::gl::translate(-6.0f, 0.0f, -5.5f);
 		ci::gl::ScopedColor color(ci::Color::gray(0.25f)); 
-		ci::gl::translate(m_size * vec3(0.5f, 0.0f, 0.5f));
+		ci::gl::translate(m_size * glm::vec3(0.5f, 0.0f, 0.5f));
 		m_wirePlane->draw();
 
 		ci::gl::ScopedModelMatrix model;
@@ -104,7 +104,7 @@ act::room::RoomNodeBaseRef act::room::Stage::getNodeByUID(act::UID uid)
 	return nullptr;
 }
 
-bool act::room::Stage::hit(ci::vec3 pos)
+bool act::room::Stage::hit(glm::vec3 pos)
 {
 	for (auto&& node : m_nodes) {
 		if (node->hit(pos)) 
@@ -130,7 +130,7 @@ bool act::room::Stage::hitRay(ci::Ray ray)
 	return false;
 }
 
-act::room::RoomNodeBaseRef act::room::Stage::getNodeAtPos(ci::vec3 pos)
+act::room::RoomNodeBaseRef act::room::Stage::getNodeAtPos(glm::vec3 pos)
 {
 	for (auto&& node : m_nodes) {
 		if (node->hit(pos))

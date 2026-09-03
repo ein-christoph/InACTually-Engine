@@ -30,6 +30,7 @@
 #include <opencv2/aruco.hpp>
 #endif
 
+
 namespace act {
 	namespace comp {
 
@@ -87,9 +88,9 @@ namespace act {
 			ci::gl::TextureRef getFeedbackTexture() {
 				cv::UMat mat = cv::UMat(m_feedbackImage);
 				//m_feedbackImage.copyTo(mat);
-				auto img = fromOcv(mat);
+				auto img = ci::fromOcv(mat);
 				if (img)
-					return gl::Texture::create(img, ci::gl::Texture::Format().loadTopDown());
+					return ci::gl::Texture::create(img, ci::gl::Texture::Format().loadTopDown());
 
 				return nullptr;
 			}

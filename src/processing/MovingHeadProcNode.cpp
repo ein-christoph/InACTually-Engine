@@ -19,19 +19,19 @@
 #include "MovingHeadProcNode.hpp"
 
 act::proc::MovingHeadProcNode::MovingHeadProcNode() : ProcNodeBase("MovingHead", NT_OUTPUT) {
-	m_drawSize = ivec2(400, 300);
+	m_drawSize = glm::ivec2(400, 300);
 	
 	m_dim = 1.0f;
 	m_zoom = 0.0f;
-	m_color = Color::white();
-	m_lookAt = vec3(0.0f);
+	m_color = ci::Color::white();
+	m_lookAt = glm::vec3(0.0f);
 	m_isLookingAt = false;
 
 	auto dimmer		= createNumberInput("dimmer",			[&](float dim) { this->onDimmer(dim); });
 	auto color		= createColorInput("color",				[&](ci::Color color) { this->onColor(color); });
 	auto islooking	= createBoolInput("isLookingAt",		[&](bool isLookingAt) { m_isLookingAt = isLookingAt; });
-	auto lookAt		= createVec3Input("lookAt",				[&](vec3 lookAt) { this->onLookAt(lookAt); });
-	auto lookInDir	= createVec3Input("lookInDirection",	[&](vec3 lookDir) { 
+	auto lookAt		= createVec3Input("lookAt",				[&](glm::vec3 lookAt) { this->onLookAt(lookAt); });
+	auto lookInDir	= createVec3Input("lookInDirection",	[&](glm::vec3 lookDir) { 
 		if(m_movingHead)
 			this->onLookAt(m_movingHead->getPosition() + (ci::normalize(lookDir) * 2.0f));
 	});
@@ -114,7 +114,7 @@ void act::proc::MovingHeadProcNode::onColor(ci::Color color) {
 		m_movingHead->setColor(m_color);
 }
 
-void act::proc::MovingHeadProcNode::onLookAt(vec3 lookAt) {
+void act::proc::MovingHeadProcNode::onLookAt(glm::vec3 lookAt) {
 	m_lookAt = lookAt;
 	if (m_movingHead && m_isLookingAt)
 		m_movingHead->lookAt(lookAt);

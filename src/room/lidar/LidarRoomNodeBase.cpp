@@ -17,7 +17,7 @@
 #include "lidar/LidarRoomNodeBase.hpp"
 
 
-act::room::LidarRoomNodeBase::LidarRoomNodeBase(const std::string& portName, ci::Json description, std::string name, ci::vec3 position, ci::vec3 rotation, float radius, act::UID replyUID)
+act::room::LidarRoomNodeBase::LidarRoomNodeBase(const std::string& portName, ci::Json description, std::string name, glm::vec3 position, glm::vec3 rotation, float radius, act::UID replyUID)
 	: RoomNodeBase(name, position, rotation, radius, replyUID)
 {
 	m_portName		= portName;
@@ -45,27 +45,27 @@ void act::room::LidarRoomNodeBase::update()
 
 void act::room::LidarRoomNodeBase::draw()
 {
-	gl::ScopedColor color;
+	ci::gl::ScopedColor color;
 
-	gl::pushMatrices();
-	gl::translate(m_position);
+	ci::gl::pushMatrices();
+	ci::gl::translate(m_position);
 
-	gl::color(Color::white());
+	ci::gl::color(ci::Color::white());
 	enableStatusColor();
 
 	// device body
-	gl::drawCube(ci::vec3(-0.025f, -0.3f, -0.025f), ci::vec3(0.025f, 0.0f, 0.025f));
-	gl::scale(0.05f, 0.05f, 0.05f);
+	ci::gl::drawCube(glm::vec3(-0.025f, -0.3f, -0.025f), glm::vec3(0.025f, 0.0f, 0.025f));
+	ci::gl::scale(0.05f, 0.05f, 0.05f);
 	m_mesh->draw();
 
-	gl::popMatrices();
+	ci::gl::popMatrices();
 
 	auto& points = getData();
 	if (points.empty())
 		return;
 
 	// build a VBO from the current scan in one go
-	std::vector<ci::vec3> verts;
+	std::vector<glm::vec3> verts;
 	verts.reserve(points.size());
 	for (const auto& p : points) {
 		// lidar data is in the XZ plane relative to the sensor position
@@ -74,18 +74,18 @@ void act::room::LidarRoomNodeBase::draw()
 		                   m_position.z + p.y);
 	}
 
-	gl::pushMatrices();
+	ci::gl::pushMatrices();
 
-	auto vboMesh = gl::VboMesh::create(
+	auto vboMesh = ci::gl::VboMesh::create(
 	    static_cast<uint32_t>(verts.size()),
 	    GL_POINTS,
-	    { gl::VboMesh::Layout().usage(GL_STREAM_DRAW).attrib(geom::POSITION, 3) });
+	    { ci::gl::VboMesh::Layout().usage(GL_STREAM_DRAW).attrib(ci::geom::POSITION, 3) });
 
-	vboMesh->bufferAttrib(geom::POSITION, verts);
-	gl::pointSize(3);
-	gl::draw(vboMesh);
-	gl::pointSize(1);
-	gl::popMatrices();
+	vboMesh->bufferAttrib(ci::geom::POSITION, verts);
+	ci::gl::pointSize(3);
+	ci::gl::draw(vboMesh);
+	ci::gl::pointSize(1);
+	ci::gl::popMatrices();
 }
 
 void act::room::LidarRoomNodeBase::cleanUp()

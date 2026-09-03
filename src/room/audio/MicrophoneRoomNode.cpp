@@ -22,8 +22,8 @@
 
 
 
-act::room::MicrophoneRoomNode::MicrophoneRoomNode(int channel, ci::vec3 position, float radius, std::string name)
-	: AudioRoomNodeBase("microphone", position, ci::vec3(0.0f), radius), m_channel(channel)
+act::room::MicrophoneRoomNode::MicrophoneRoomNode(int channel, glm::vec3 position, float radius, std::string name)
+	: AudioRoomNodeBase("microphone", position, glm::vec3(0.0f), radius), m_channel(channel)
 {
 	m_isFixed = false;
 
@@ -57,7 +57,7 @@ void act::room::MicrophoneRoomNode::draw()
 		ci::gl::ScopedModelMatrix model;
 		ci::gl::multModelMatrix(m_transform);
 
-		//ci::gl::drawCube(getPosition(), ci::vec3(getRadius()) * ci::vec3(1.0f, 1.1f, 1.0f));
+		//ci::gl::drawCube(getPosition(), glm::vec3(getRadius()) * glm::vec3(1.0f, 1.1f, 1.0f));
 		m_mesh->draw();
 	}
 }

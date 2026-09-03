@@ -17,7 +17,7 @@
 #include "AddProcNode.hpp"
 
 act::proc::AddProcNode::AddProcNode() : ProcNodeBase("Add") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 	m_secondary = 0.0f;
 
 	createNumberInput("primary", [&](number val) { m_sumPort->send(val + m_secondary); });

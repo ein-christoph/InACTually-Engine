@@ -26,8 +26,6 @@
 #include <atomic>
 #include <mutex>
 
-using namespace ci;
-using namespace ci::app;
 
 namespace act {
 	namespace mod {

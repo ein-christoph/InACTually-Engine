@@ -46,7 +46,7 @@ namespace act {
 			virtual ci::Json toJson();
 			virtual void fromJson(ci::Json json);
 
-			act::room::RoomNodeBaseRef addActionspace(std::string name, vec3 position = vec3(0.0f, 0.0f, 0.0f));
+			act::room::RoomNodeBaseRef addActionspace(std::string name, glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f));
 
 		private:
 			

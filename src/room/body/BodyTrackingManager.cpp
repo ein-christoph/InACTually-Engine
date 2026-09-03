@@ -65,7 +65,7 @@ void act::room::BodyTrackingManager::draw()
 		node->draw();
 	}
 
-	gl::lineWidth(1);
+	ci::gl::lineWidth(1);
 }
 
 act::room::RoomNodeBaseRef act::room::BodyTrackingManager::drawMenu()

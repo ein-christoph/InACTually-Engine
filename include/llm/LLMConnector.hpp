@@ -28,7 +28,9 @@
 
 #include "llm/LLMToolManager.hpp"
 
+
 namespace act {
+
 	namespace room {
 		class RoomManagers;
 	}

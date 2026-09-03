@@ -20,9 +20,6 @@
 #include "roompch.hpp"
 #include "dmx/DMXPro.hpp"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace room {

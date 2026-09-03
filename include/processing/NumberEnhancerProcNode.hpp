@@ -20,9 +20,6 @@
 #include "ProcNodeBase.hpp"
 #include "cinder/Rand.h"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace proc {

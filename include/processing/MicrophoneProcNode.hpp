@@ -21,9 +21,7 @@
 #include "MatListener.hpp"
 
 #include "audio/AudioManager.hpp"
-
-using namespace ci;
-using namespace ci::app;
+ 
 
 namespace act {
 	namespace proc {
@@ -50,7 +48,7 @@ namespace act {
 
 			void							attachMic(room::MicrophoneRoomNodeRef mic);
 
-			OutputPortRef<audio::NodeRef>	m_audioNodeOutPort;
+			OutputPortRef<ci::audio::NodeRef>	m_audioNodeOutPort;
 
 			bool							m_show;
 

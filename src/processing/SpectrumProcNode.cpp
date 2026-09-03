@@ -22,7 +22,7 @@
 
 act::proc::SpectrumProcNode::SpectrumProcNode() : ProcNodeBase("Spectrum") {
 	
-	m_drawSize = ivec2(600, 400);
+	m_drawSize = glm::ivec2(600, 400);
 
 	m_show = false;
 
@@ -33,7 +33,7 @@ act::proc::SpectrumProcNode::SpectrumProcNode() : ProcNodeBase("Spectrum") {
 
 	auto audioNodeIn = createAudioNodeInput(
 		"audioNode",
-		[&](audio::NodeRef audioNode) {
+		[&](ci::audio::NodeRef audioNode) {
 			ci::app::App::get()->dispatchAsync([this, audioNode]() {
 				audioNode >> m_monitorSpectralNode;
 			});
@@ -47,10 +47,10 @@ act::proc::SpectrumProcNode::~SpectrumProcNode() {
 }
 
 void act::proc::SpectrumProcNode::setup(act::room::RoomManagers roomMgrs) {
-	auto ctx = audio::Context::master();
+	auto ctx = ci::audio::Context::master();
 	
-	auto monitorFormat = audio::MonitorSpectralNode::Format().fftSize(4096).windowSize(2048);
-	m_monitorSpectralNode = ctx->makeNode(new audio::MonitorSpectralNode(monitorFormat));
+	auto monitorFormat = ci::audio::MonitorSpectralNode::Format().fftSize(4096).windowSize(2048);
+	m_monitorSpectralNode = ctx->makeNode(new ci::audio::MonitorSpectralNode(monitorFormat));
 }
 
 void act::proc::SpectrumProcNode::update() {
@@ -96,9 +96,9 @@ void act::proc::SpectrumProcNode::draw() {
 	ImGui::SliderFloat("volume", &m_volume, 0.0f, 120.f);
 
 	if (m_show) {
-		gl::pushMatrices();
+		ci::gl::pushMatrices();
 		
-		gl::pushMatrices();
+		ci::gl::pushMatrices();
 	}
 
 	endNodeDraw();

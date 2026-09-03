@@ -22,13 +22,13 @@
 
 
 act::proc::IfProcNode::IfProcNode() : ProcNodeBase("If") {
-	m_drawSize = ivec2(300, 300);
+	m_drawSize = glm::ivec2(300, 300);
 
 	auto number = createNumberInput("number", [&](float num) { this->onNumber(num); });
 	auto text = createTextInput("text", [&](std::string text) { this->onText(text); });
 	auto feat = createFeatureInput("feature", [&](feature f) { this->onFeature(f); });
 	auto featList = createFeatureListInput("feature list", [&](featureList fl) { this->onFeatures(fl); });
-	auto vecCompare = createVec3Input("vec3", [&](vec3 pos) {this->onVec(pos); });
+	auto vecCompare = createVec3Input("vec3", [&](glm::vec3 pos) {this->onVec(pos); });
 
 	
 	m_resultPort = createBoolOutput("result");
@@ -130,7 +130,7 @@ bool act::proc::IfProcNode::compareText(std::string text) {
 	return false;
 }
 
-bool act::proc::IfProcNode::compareVec(vec3 pos)
+bool act::proc::IfProcNode::compareVec(glm::vec3 pos)
 {
 	float x = abs(pos.x - m_compareVec3[0]);
 	float y = abs(pos.y - m_compareVec3[1]);
@@ -183,7 +183,7 @@ void act::proc::IfProcNode::onFeatures(act::proc::featureList fList) {
 	sendResult(val);
 }
 
-void act::proc::IfProcNode::onVec(vec3 pos)
+void act::proc::IfProcNode::onVec(glm::vec3 pos)
 {
 	bool val = compareVec(pos);
 	sendResult(val);

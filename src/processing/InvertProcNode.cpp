@@ -17,7 +17,7 @@
 #include "InvertProcNode.hpp"
 
 act::proc::InvertProcNode::InvertProcNode() : ProcNodeBase("Invert") {
-	m_drawSize = ci::ivec2(200, 200);
+	m_drawSize = glm::ivec2(200, 200);
 	m_secondary = 1.0f;
 
 	createNumberInput("primary", [&](number val) { m_invertedPort->send(m_secondary - val); });

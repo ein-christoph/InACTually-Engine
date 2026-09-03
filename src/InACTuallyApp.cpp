@@ -19,13 +19,13 @@
 
 #include "cinder/Log.h"
 
-using namespace ci;
-using namespace ci::app;
+
+
 using namespace std;
 
 using namespace act;
 
-class InACTuallyApp : public App {
+class InACTuallyApp : public ci::app::App {
   public:
 		
 	  void setup() override;
@@ -50,7 +50,7 @@ class InACTuallyApp : public App {
 	  virtual void	keyDown(ci::app::KeyEvent event)		override { keyRawListener->keyRawDown(event); }
 	  virtual void	keyUp(ci::app::KeyEvent event)			override { keyRawListener->keyRawUp(event); }
 
-	  void fileDrop(FileDropEvent event) override;
+	  void fileDrop(ci::app::FileDropEvent event) override;
 	  void resize() override;
 
 	  shared_ptr<InACTually> inACTually;
@@ -101,12 +101,12 @@ void InACTuallyApp::draw()
 	inACTually->draw();
 }
 
-void InACTuallyApp::mouseDown(MouseEvent event)
+void InACTuallyApp::mouseDown(ci::app::MouseEvent event)
 {
 	mouseRawListener->mouseRawDown(event);
 }
 
-void InACTuallyApp::fileDrop(FileDropEvent event)
+void InACTuallyApp::fileDrop(ci::app::FileDropEvent event)
 {
 	inACTually->fileDrop(event);
 }
@@ -116,7 +116,7 @@ void InACTuallyApp::resize()
 	inACTually->resize();
 }
 
-CINDER_APP(InACTuallyApp, RendererGl(RendererGl::Options().msaa(4)), [](App::Settings* settings) {
+CINDER_APP(InACTuallyApp, ci::app::RendererGl(ci::app::RendererGl::Options().msaa(4)), [](ci::app::App::Settings* settings) {
 	settings->setMultiTouchEnabled(true);
 
 	settings->setHighDensityDisplayEnabled(false);

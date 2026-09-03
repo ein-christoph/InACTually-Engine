@@ -19,8 +19,8 @@
 #include "VideoRecorderProcNode.hpp"
 
 act::proc::VideoRecorderProcNode::VideoRecorderProcNode() : ProcNodeBase("VideoRecorder") {
-	m_videoSize = ivec2(0, 0);
-	m_drawSize = ivec2(m_videoSize.x * 0.25, m_videoSize.y * 0.25);
+	m_videoSize = glm::ivec2(0, 0);
+	m_drawSize = glm::ivec2(m_videoSize.x * 0.25, m_videoSize.y * 0.25);
 
 	m_isRecording = false;
 	m_isSaveDialog = false;
@@ -43,7 +43,7 @@ void act::proc::VideoRecorderProcNode::update() {
 		m_isSaveDialog = false;
 		std::vector<std::string> exts;
 		exts.push_back("mp4");
-		m_path = ci::app::getSaveFilePath(app::getAssetPath("./../recordings/"), exts).string();
+		m_path = ci::app::getSaveFilePath(ci::app::getAssetPath("./../recordings/"), exts).string();
 		m_path = m_path.substr(0, m_path.find(".")) + ".mp4";
 		saveVideo(m_path);
 	}
@@ -69,10 +69,10 @@ void act::proc::VideoRecorderProcNode::draw() {
 	}
 
 	if (m_videoTexture) {
-		gl::pushMatrices();
-		gl::rotate(toRadians(180.0f));
-		ImGui::Image(m_videoTexture, m_drawSize, vec2(1, 1), vec2(0, 0));
-		gl::pushMatrices();
+		ci::gl::pushMatrices();
+		ci::gl::rotate(ci::toRadians(180.0f));
+		ImGui::Image(m_videoTexture, m_drawSize, glm::vec2(1, 1), glm::vec2(0, 0));
+		ci::gl::pushMatrices();
 	}
 
 	endNodeDraw();
@@ -92,7 +92,7 @@ void act::proc::VideoRecorderProcNode::fromParams(ci::Json json) {
 void act::proc::VideoRecorderProcNode::onImage(cv::UMat image)
 {
 	if (m_videoSize.x == 0)
-		m_videoSize = ivec2(image.cols, image.rows);
+		m_videoSize = glm::ivec2(image.cols, image.rows);
 
 	if(m_isRecording)
 		m_outputVideo << image;

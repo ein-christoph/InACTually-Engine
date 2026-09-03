@@ -18,9 +18,6 @@
 #include "ProcNodeBase.hpp"
 #include "EasingProcNode.hpp"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace proc {

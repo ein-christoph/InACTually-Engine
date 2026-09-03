@@ -24,6 +24,7 @@
 
 #include "dmx/DMXPro.hpp"
 
+
 namespace act {
 	namespace room {
 

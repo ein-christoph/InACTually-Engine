@@ -25,15 +25,16 @@
 
 #include <memory>
 
+
 namespace act {
 	namespace room {
 
 		class MicrophoneRoomNode : public AudioRoomNodeBase {
 		public:
-			MicrophoneRoomNode(int channel, ci::vec3 position, float radius, std::string name);
+			MicrophoneRoomNode(int channel, glm::vec3 position, float radius, std::string name);
 			~MicrophoneRoomNode();
 
-			static std::shared_ptr<MicrophoneRoomNode> create(int channel, ci::vec3 position, float radius, std::string name = "Mic") { return std::make_shared<MicrophoneRoomNode>(channel, position, radius, name); };
+			static std::shared_ptr<MicrophoneRoomNode> create(int channel, glm::vec3 position, float radius, std::string name = "Mic") { return std::make_shared<MicrophoneRoomNode>(channel, position, radius, name); };
 
 			virtual void		setup()		override;
 			virtual void		update()	override;

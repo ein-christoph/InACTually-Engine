@@ -30,9 +30,9 @@ KeyInput::~KeyInput()
 
 void KeyInput::update() {};
 
-void KeyInput::keyRawDown(KeyEvent event) {
+void KeyInput::keyRawDown(ci::app::KeyEvent event) {
 	onKeyDown(event);
 };
-void KeyInput::keyRawUp(KeyEvent event) {
+void KeyInput::keyRawUp(ci::app::KeyEvent event) {
 	onKeyUp(event);
 };

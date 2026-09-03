@@ -19,9 +19,6 @@
 
 #include "ProcNodeBase.hpp"
 
-using namespace ci;
-using namespace ci::app;
-
 
 namespace act {
 	namespace proc {
@@ -56,7 +53,7 @@ namespace act {
 			int		m_faceAvailHistoryThreshold;
 			std::deque<int> m_faceAvailHistory;
 
-			cv::CascadeClassifier					mFaceCascade;
+			//cv::CascadeClassifier					mFaceCascade;
 			std::vector<ci::Rectf>					mFaces;
 			std::deque<std::vector<ci::Rectf>>		mFacesHistory;
 			int										mFaceHistorySize;

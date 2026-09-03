@@ -25,15 +25,16 @@
 
 #include <memory>
 
+
 namespace act {
 	namespace room {
 
 		class SpeakerRoomNode : public AudioRoomNodeBase {
 		public:
-			SpeakerRoomNode(int channel, ci::vec3 position, float radius, std::string name);
+			SpeakerRoomNode(int channel, glm::vec3 position, float radius, std::string name);
 			~SpeakerRoomNode();
 
-			static std::shared_ptr<SpeakerRoomNode> create(int channel, ci::vec3 position, float radius, std::string name = "Speaker") { return std::make_shared<SpeakerRoomNode>(channel, position, radius, name); };
+			static std::shared_ptr<SpeakerRoomNode> create(int channel, glm::vec3 position, float radius, std::string name = "Speaker") { return std::make_shared<SpeakerRoomNode>(channel, position, radius, name); };
 
 			virtual void		setup()		override;
 			virtual void		update()	override;
@@ -64,11 +65,11 @@ namespace act {
 			ci::audio::GenSineNodeRef	m_sine;
 			ci::audio::GainNodeRef		m_sineGain;
 			float						m_sineVolume;
-			Anim<float>					m_sineFreq;
+			ci::Anim<float>				m_sineFreq;
 
 			ci::audio::GenNoiseNodeRef	m_noise;
 			ci::audio::GainNodeRef		m_noiseGain;
-			Anim<float>					m_noiseVolume;
+			ci::Anim<float>				m_noiseVolume;
 
 			ci::audio::AddNodeRef		m_add;
 			//EqualizerNodeRef			m_eq;
