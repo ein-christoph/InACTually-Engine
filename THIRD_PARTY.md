@@ -27,9 +27,9 @@ These third party projects may contain other projects to function. Please refer 
 - Copyright (c) 2014, The Cinder Project
 - Source on [GitHub](https://github.com/cinder/Cinder/tree/master/samples/_audio/common)
 
-### OpenCV 4
-- License: [Apache License Version 2.0](3rd/OpenCV4/LICENSE)
-- [Copyright list](3rd/OpenCV4/COPYRIGHT)
+### OpenCV 5
+- License: [Apache License Version 2.0](3rd/OpenCV5/LICENSE)
+- [Copyright list](3rd/OpenCV5/COPYRIGHT)
 - Source on [GitHub](https://github.com/opencv/opencv)
 - Notes: not included, but needed
 

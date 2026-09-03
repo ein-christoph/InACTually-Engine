@@ -64,8 +64,8 @@ act::room::PointcloudRoomNode::PointcloudRoomNode(glm::vec3 position, float radi
 
     );
 
-    m_shader = ci::gl::GlslProg::create(vs, fs);
-    m_shader->uniform("uTexture", 0);
+    //m_shader = ci::gl::GlslProg::create(vs, fs);
+    //m_shader->uniform("uTexture", 0);
 }
 
 act::room::PointcloudRoomNode::~PointcloudRoomNode()

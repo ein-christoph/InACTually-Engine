@@ -10,9 +10,6 @@
     <Filter Include="Source Files\ImPlot">
       <UniqueIdentifier>{725b3832-90bb-431a-88c8-8d657fa79145}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\OpenCV4">
-      <UniqueIdentifier>{48fdb7f5-3d92-426b-adab-52f5b6d8035f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\OSC">
       <UniqueIdentifier>{abaf0ec1-ab2a-4960-a17c-c11c16ba45c2}</UniqueIdentifier>
     </Filter>
@@ -90,6 +87,9 @@
     </Filter>
     <Filter Include="Source Files\oneTBB">
       <UniqueIdentifier>{192a168a-1343-4c0b-a104-8ed6f34e3dce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\OpenCV5">
+      <UniqueIdentifier>{48fdb7f5-3d92-426b-adab-52f5b6d8035f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -740,18 +740,6 @@
     <ClInclude Include="..\3rd\smbPitchShift\smbPitchShift.h">
       <Filter>Source Files\audio</Filter>
     </ClInclude>
-    <ClInclude Include="..\3rd\OpenCV4\include\CinderOpenCV.h">
-      <Filter>Source Files\OpenCV4</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rd\OpenCV4\include\opencv2\cvconfig.h">
-      <Filter>Source Files\OpenCV4</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rd\OpenCV4\include\opencv2\opencv.hpp">
-      <Filter>Source Files\OpenCV4</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rd\OpenCV4\include\opencv2\opencv_modules.hpp">
-      <Filter>Source Files\OpenCV4</Filter>
-    </ClInclude>
     <ClInclude Include="..\3rd\Cinder-PortAudio\lib\portaudio\include\portaudio.h">
       <Filter>Source Files\Cinder-PortAudio\lib\portaudio\include</Filter>
     </ClInclude>
@@ -1396,6 +1384,18 @@
     </ClInclude>
     <ClInclude Include="..\3rd\oneTBB\include\oneapi\tbb.h">
       <Filter>Source Files\oneTBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\OpenCV5\include\CinderOpenCV.h">
+      <Filter>Source Files\OpenCV5</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\OpenCV5\include\opencv2\opencv.hpp">
+      <Filter>Source Files\OpenCV5</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\OpenCV5\include\opencv2\cvconfig.h">
+      <Filter>Source Files\OpenCV5</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\OpenCV5\include\opencv2\opencv_modules.hpp">
+      <Filter>Source Files\OpenCV5</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
