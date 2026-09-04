@@ -37,21 +37,21 @@ std::string act::room::OFLDescriptionMapper::getName()
 
 bool act::room::OFLDescriptionMapper::searchLibraryPath()
 {
-	fs::path usualPath = app::getAssetPath("dmx/ofl_export_ofl");
+	ci::fs::path usualPath = ci::app::getAssetPath("dmx/ofl_export_ofl");
 	return setLibarayPath(usualPath);
 }
 
-fs::path act::room::OFLDescriptionMapper::getLibarayPath()
+ci::fs::path act::room::OFLDescriptionMapper::getLibarayPath()
 {
 	return m_ofl.libraryPath;
 }
 
-bool act::room::OFLDescriptionMapper::setLibarayPath(fs::path path)
+bool act::room::OFLDescriptionMapper::setLibarayPath(ci::fs::path path)
 {
 	// Check if a manufacturer index exists at provided path
-	fs::path check = path;
+	ci::fs::path check = path;
 	check.append(m_ManufacturerIdxFileName);
-	if (!fs::exists(check))
+	if (!ci::fs::exists(check))
 	{
 		CI_LOG_W("No Open Fixture Library found at path '" << path.string() << "'");
 		return false;
@@ -79,11 +79,11 @@ std::vector<act::room::OFLDescriptionMapper::OFLManufacturerRef> act::room::OFLD
 bool act::room::OFLDescriptionMapper::parseLibraryMeta()
 {
 	ci::Json manufacturersJson;
-	fs::path manufacturersDescriptionPath = m_ofl.libraryPath;
+	ci::fs::path manufacturersDescriptionPath = m_ofl.libraryPath;
 	manufacturersDescriptionPath.append(m_ManufacturerIdxFileName);
 	try
 	{
-		manufacturersJson = ci::loadJson(loadFile(manufacturersDescriptionPath));
+		manufacturersJson = ci::loadJson(ci::loadFile(manufacturersDescriptionPath));
 	}
 	catch (cinder::Exception e) {
 		CI_LOG_E(e.what());
@@ -93,7 +93,7 @@ bool act::room::OFLDescriptionMapper::parseLibraryMeta()
 	m_ofl.isParsed = false;
 	m_ofl.manufacturers.clear();
 
-	for (Json::iterator it = manufacturersJson.begin(); it != manufacturersJson.end(); ++it)
+	for (ci::Json::iterator it = manufacturersJson.begin(); it != manufacturersJson.end(); ++it)
 	{
 		if (!it.value().is_object())
 			continue;
@@ -109,9 +109,9 @@ bool act::room::OFLDescriptionMapper::parseLibraryMeta()
 		};
 
 		// check if the key corresponds to a directors (as it should)
-		fs::path manufacturerDirectoryPath = m_ofl.libraryPath;
+		ci::fs::path manufacturerDirectoryPath = m_ofl.libraryPath;
 		manufacturerDirectoryPath.append(oflManufacturer.key);
-		if (!fs::is_directory(manufacturerDirectoryPath))
+		if (!ci::fs::is_directory(manufacturerDirectoryPath))
 		{
 			CI_LOG_E("OFLImport: Could not find directory: "<< manufacturerDirectoryPath);
 			continue;
@@ -120,7 +120,7 @@ bool act::room::OFLDescriptionMapper::parseLibraryMeta()
 		// iterate files in the directors and use their names as fixture names
 		// this might not be the real fixture name but otherwise all json descriptons
 		// would have to be parsed, most of which will not be needed
-		for (const auto& entry : fs::directory_iterator(manufacturerDirectoryPath))
+		for (const auto& entry : ci::fs::directory_iterator(manufacturerDirectoryPath))
 		{
 			if (!entry.path().has_extension() || entry.path().extension() != ".json")
 				continue;
@@ -162,7 +162,7 @@ bool act::room::OFLDescriptionMapper::parseFixtureDescription(OFLFixtureDescript
 
 	try
 	{
-		fixtureDescription->externalDescription = ci::loadJson(loadFile(fixtureDescription->descriptionPath));
+		fixtureDescription->externalDescription = ci::loadJson(ci::loadFile(fixtureDescription->descriptionPath));
 	}
 	catch (const std::exception& e)
 	{

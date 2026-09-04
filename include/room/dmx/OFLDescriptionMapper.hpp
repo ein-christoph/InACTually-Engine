@@ -47,7 +47,7 @@ namespace act {
 			struct OFLFixtureDescription {
 				act::UID uid;
 				std::string name;
-				fs::path descriptionPath;
+				ci::fs::path descriptionPath;
 				ci::Json externalDescription;
 				std::vector<OFLModeRef> modes;
 				std::string type;
@@ -73,7 +73,7 @@ namespace act {
 			// each holding a vector of modes
 			struct OpenFixtureLibaray {
 				std::string name;
-				fs::path libraryPath;
+				ci::fs::path libraryPath;
 				std::vector<OFLManufacturerRef> manufacturers{};
 				bool isParsed;
 			}; using OpenFixtureLibarayRef = std::shared_ptr<OpenFixtureLibaray>;
@@ -81,8 +81,8 @@ namespace act {
 
 			std::string getName();
 			bool searchLibraryPath();
-			fs::path getLibarayPath();
-			bool setLibarayPath(fs::path path);
+			ci::fs::path getLibarayPath();
+			bool setLibarayPath(ci::fs::path path);
 			bool getIsParsed();
 			std::vector<OFLManufacturerRef> getManufacturers(bool allowParsing);
 

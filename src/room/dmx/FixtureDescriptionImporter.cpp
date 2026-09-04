@@ -61,7 +61,7 @@ void act::room::FixtureDescriptionImporter::update()
 	if (m_openOFLInBrowser)
 	{
 		CI_LOG_D("Opening Open Fixture Libaray Website");
-		ci::app::Platform::get()->launchWebBrowser(Url("https://open-fixture-library.org/"));
+		ci::app::Platform::get()->launchWebBrowser(ci::Url("https://open-fixture-library.org/"));
 		m_openOFLInBrowser = false;
 	}
 	if (m_searchOFLAgain)
@@ -122,7 +122,7 @@ void act::room::FixtureDescriptionImporter::drawOFLImport()
 			ImGui::Text("No Path to the Open Fixture Libaray Found!");
 			ImGui::Spacing();
 			ImGui::TextWrapped("Please download the 'Open Fixture Libaray JSON' ZIP-Archive from https://open-fixture-library.org/ and extract it as 'ofl_export_ofl' into the 'dmx' subfolder of the assets folder.");
-			std::string assetsPath = "Current assets folder: " + getAssetPath("").string();
+			std::string assetsPath = "Current assets folder: " + ci::app::getAssetPath("").string();
 			ImGui::Spacing();
 			ImGui::TextWrapped(assetsPath.c_str());
 			if (ImGui::Button("Open OFL Website"))
