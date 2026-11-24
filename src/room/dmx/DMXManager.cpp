@@ -227,6 +227,8 @@ void act::room::DMXManager::fromJson(ci::Json json)
 
 	}
 
+	m_fixtureNodesMissingDesc.clear(); // NOTE: this is not done in clear() where m_nodes get cleared because broken fixtures
+									   // relate to loaded JSON file which is being first loaded or replaced here
 	if (json.contains("nodes")) {
 		auto nodesJson = json["nodes"];
 		for (auto&& node : nodesJson) {
